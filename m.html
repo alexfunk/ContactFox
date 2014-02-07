@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ContactFox</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+	<link rel="stylesheet" href="lib/jquery.mobile-1.4.0.css" />
+	<script type="text/javascript" src="lib/jquery.min.js"></script>
+	<script type="text/javascript" src="lib/i18next-1.7.1.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.mobile-1.4.0.js"></script>
+	<script type="text/javascript" src="js/ContactFox.min.js"></script>
+</head>
+<body>
+	<div data-role="page" id="pIntro" data-theme="b" data-position="fixed">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="app.name"></h1>
+		</div>
+		<div data-role="content" data-theme="b">
+		  <div class="i18n" data-i18n="app.introduction"></div>
+                    <div data-role="fieldcontain">
+ 	              <fieldset data-role="controlgroup">
+		        <input type="checkbox" name="checkbox-1" id="checkbox-1" class="custom" />
+		        <label class="i18n" for="checkbox-1" data-i18n="app.intronotagain"></label>
+                      </fieldset>
+                    </div>
+		    <div class="nav">
+                        <a href="#" data-role="button" data-i18n="nav.home"></a> 
+	            </div>
+		</div>
+	</div>
+	<div data-role="page" id="pStart" data-theme="b" data-position="fixed">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="app.name"></h1>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div><span id="CONTACTSREAD"> </span> <span class="i18n" data-i18n="start.contactsread"></span></div>
+			<div class="nav">
+				<a href="#" data-role="button" data-i18n="nav.pDuplicates"></a> 
+				<a href="#" data-role="button" data-i18n="nav.pFunnyCharacters"></a> 
+				<a href="#" data-role="button" data-i18n="nav.pMissingPlus"></a> 
+				<a href="#" data-role="button" data-i18n="nav.pAbout"></a> 
+                                <a href="#" data-role="button" data-i18n="nav.pDebug"></a> 
+                                <a href="#pChangeContactTest" data-role="button">TestPage</a> 
+			</div>
+		</div>
+	</div>
+	<div data-role="page" id="pDuplicates" data-theme="b">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="duplicates.title"></h1>
+			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+				data-i18n="nav.home"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div id="CONTACTLIST" ></div>
+		</div>
+	</div>
+	<div data-role="page" id="pFunnyCharacters" data-theme="b">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="funchar.title"></h1>
+			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+				data-i18n="nav.home"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div id="FUNCHARLIST" ></div>
+		</div>
+	</div>
+	<div data-role="page" id="pMissingPlus" data-theme="b">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="missingplus.title"></h1>
+			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+				data-i18n="nav.home"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div id="MISSINGPLUSLIST" ></div>
+		</div>
+	</div>
+	<div data-role="page" id="pChangeContact" data-theme="b">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="changecontact.title"></h1>
+			<a href="#pDuplicates" class="i18n" data-role="button" data-icon="back"
+				data-i18n="nav.pDuplicates"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div id="CONTACTCHANGE"></div>
+		</div>
+	</div>
+	<div data-role="page" id="pChangeContactTest" data-theme="b">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="changecontact.title"></h1>
+			<a href="#pDuplicates" class="i18n" data-role="button" data-icon="back"
+				data-i18n="nav.pDuplicates"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div id="XXX"></div>
+		</div>
+	</div>
+	<div data-role="page" id="pAbout" data-theme="b">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="about.title"></h1>
+			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+				data-i18n="nav.home"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div class="i18n" data-i18n="about.text" ></div>
+		</div>
+	</div>
+	<div data-role="page" id="pDebug" data-theme="b">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="debug.title"></h1>
+			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+				data-i18n="nav.home"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<a class="i18n" href="#" data-role="button" data-i18n="debug.addtestdata"></a> 
+			<div id="CONSOLE" ></div>
+			<textarea id="TEXTAREA" cols="40" rows="8" name="textarea-1" class
+="ui-disabled"></textarea>
+		</div>
+	</div>
+</body>
+</html>

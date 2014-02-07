@@ -1,0 +1,127 @@
+module.exports = function(grunt) {
+    var srcFileArray = ['js/c*.js', 'js/ContactFox.js'];
+    var testFileArray = ['test/**.js'];
+    // Project configuration.
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+        uglify: {
+            options: {
+                banner: '/*! <%= pkg.name, pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+            },
+            build: {
+                src: srcFileArray,
+                dest: 'dist/js/<%= pkg.name %>.min.js'
+            }
+        },
+        concat: {
+            options: {
+                banner: '/*! <%= pkg.name, pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+            },
+            build: {
+                src: srcFileArray,
+                dest: 'dist/js/<%= pkg.name %>.min.js'
+            }
+        },
+        copy: {
+            libs: {
+                src: ['lib/jquery.mobile-1.4.0.js'],
+                dest: 'dist/'
+            },
+            resources: {
+                src: ['m.html', 'lib/jquery.mobile-1.4.0.css', 'lib/images/*', 'images/*'],
+                dest: 'dist/'
+            },
+            locales: {
+                src: ['locales/**'],
+                dest: 'dist/'
+            },
+            jquery: {
+                expand: true,
+                files: [{
+                    expand: true,
+                    cwd: 'node_modules/jquery/dist/',
+                    src: ['jquery.min.js'],
+                    dest: 'dist/lib/'
+                }]
+            },
+            i18next: {
+                expand: true,
+                files: [{
+                    expand: true,
+                    cwd: 'node_modules/i18next/lib/dep/',
+                    src: ['i18next-1.7.1.min.js'],
+                    dest: 'dist/lib/'
+                }]
+            }
+        },
+        jshint: {
+            sources: {
+                src: srcFileArray
+            },
+            tests: {
+                src: testFileArray
+            },
+            locales: {
+                src: 'locales/**/*.json'
+            }
+        },
+        jsbeautifier: {
+            sources: {
+                src: srcFileArray
+            },
+            tests: {
+                src: testFileArray
+            },
+            grunt: {
+                src: 'Gruntfile.js'
+            },
+            locales: {
+                src: 'locales/**/*.json'
+            }
+        },
+        firefoxManifest: {
+            options: {
+                manifest: 'dist/manifest.webapp',
+            },
+            ContactFoxManifest: {}
+        },
+        clean: {
+            dist: ['dist'],
+        },
+        nodeunit: {
+            all: testFileArray
+        },
+        prettify: {
+            options: {
+                indent: 2,
+                indent_char: ' ',
+                wrap_line_length: 78,
+                brace_style: 'expand',
+                unformatted: ['a']
+
+            },
+            files: {
+                src: 'm.html',
+                dest: 'dist/m.html'
+            }
+        }
+
+
+    });
+
+    // Load the plugin that provides the "uglify" task.
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-jsbeautifier');
+    grunt.loadNpmTasks('grunt-firefox-manifest');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-nodeunit');
+    grunt.loadNpmTasks('grunt-prettify');
+
+    // Default task(s).
+    grunt.registerTask('default', ['uglify', 'copy', 'firefoxManifest']);
+    grunt.registerTask('debug', ['jsbeautifier', 'jshint', 'nodeunit', 'concat', 'copy', 'firefoxManifest']);
+
+};

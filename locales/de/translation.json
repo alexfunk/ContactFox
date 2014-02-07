@@ -1,0 +1,49 @@
+{
+    "app": {
+        "name": "Contact Fox",
+        "introduction": "Doppelte Kontakte oder Kontakte mit fehlenden Infos werden in Ihrer Kontaktliste erkannt und Sie können die Fehler einfach korrigieren.",
+        "intronotagain": "Nicht nochmal anzeigen"
+    },
+    "start": {
+        "contactsread": "Kontakte gelesen",
+        "ready": "Fertig"
+    },
+    "nav": {
+        "home": "Start",
+        "pStart": "Start",
+        "pDuplicates": "Doppelte",
+        "pDebug": "Debug",
+        "pFunnyCharacters": "Seltsame Zeichen",
+        "pMissingPlus": "Fehlende +XX Vorwahl",
+        "pAbout": "Über ContactFox..."
+    },
+    "duplicates": {
+        "title": "Doppelte"
+    },
+    "missingplus": {
+        "title": "Fehlende +XX Vorwahl"
+    },
+    "funchars": {
+        "title": "Komische Zeichen"
+    },
+    "changecontact": {
+        "title": "Kontakt ändern"
+    },
+    "contact": {
+        "merge": "Zusammenführen",
+        "name": "Name",
+        "phone": "Telefon:",
+        "delete": "Löschen",
+        "copies": "Kopien",
+        "keep": "Erhalten"
+    },
+    "about": {
+        "title": "Über ContactFox",
+        "text": "Alex Funk (c) 2014"
+    },
+    "debug": {
+        "title": "Debug Console",
+        "addtestdata": "Testdaten hinzufügen"
+    }
+
+}

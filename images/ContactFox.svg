@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+ <defs>
+  <radialGradient r="0.5" fy="0.125" fx="0.061198" cy="0.421875" cx="0.463542" spreadMethod="pad" id="svg_3">
+   <stop offset="0" stop-opacity="0.996094" stop-color="#ff7f00"/>
+   <stop offset="1" stop-opacity="0.996094" stop-color="#bf5f00"/>
+  </radialGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <circle id="svg_1" r="48.548944" cy="128" cx="171" stroke-width="2" stroke="#000000" fill="url(#svg_3)"/>
+  <rect id="svg_4" height="43" width="97" y="107" x="122" stroke-width="2" stroke="#000000" fill="#ffffff"/>
+  <image xlink:href="ContactFox-Dateien/Contacts_120.png" id="svg_7" height="29" width="30.000001" y="113.601169" x="124.800534"/>
+  <line id="svg_10" y2="119.20005" x2="202.601032" y1="119.20005" x1="160.601032" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="2" stroke="#000000" fill="none"/>
+  <line id="svg_13" y2="124.916718" x2="203.915363" y1="124.916718" x1="161.915363" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="2" stroke="#000000" fill="none"/>
+  <line id="svg_15" y2="135.916718" x2="204.915363" y1="135.916718" x1="162.915363" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="2" stroke="#000000" fill="none"/>
+ </g>
+</svg>

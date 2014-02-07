@@ -1,0 +1,59 @@
+{
+  "name": "ContactFox",
+  "version": "0.0.1",
+  "description": "Confortable manage your contacts on Firefox OS",
+  "author": {
+    "name": "Alex Funk",
+    "email": "ContactFox@alexfunk.de",
+    "url": "http://alexfunk.de"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/alexfunk/ContactFox.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alexfunk/ContactFox/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/alexfunk/ContactFox/LICENSE-MIT"
+    }
+  ],
+
+  "dependencies" : {
+    "jquery" : ">=1.8.0",
+    "i18next": "~1.7.1"
+  }, 
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.6.3",
+    "grunt-contrib-nodeunit": ">=0.2.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-jsbeautifier" : "~0.2.6",
+    "grunt-firefox-manifest" : "~0.1.3",
+    "grunt-contrib-copy" : "~0.5.0",
+    "grunt-contrib-clean" : "~0.4.0",
+    "grunt-contrib-qunit" : "~0.3.0",
+    "jsdom": "~0.2.15",
+    "grunt-contrib-concat" : "~0.3.0",
+    "grunt-prettify" : "~0.3.4"
+  },
+  "firefoxManifest": {
+    "type" : "privileged",
+    "launch_path": "m.html",
+    "icons": {
+        "64": "/images/ContactFox.png",
+        "128": "/images/ContactFox128.png"
+    },
+    "installs_allowed_from": ["*"],
+    "default_locale": "en",
+    "permissions": {
+	"contacts": {
+	    "description": "to unify your contacts",
+	    "access": "readwrite"
+    	}
+    }
+
+  }
+}

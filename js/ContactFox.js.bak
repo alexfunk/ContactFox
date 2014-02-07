@@ -1,0 +1,294 @@
+function log(e) {
+	console.log(e);
+	$('#' + ids.CONSOLE).append(e + "<br/>");
+}
+
+/**
+ * extends the String prototype with a startsWith function, so that it returns
+ * true if the string object </div> <div data-role="content" starts with the
+ * argument string, just as in ordinary Java
+ */
+if (typeof String.prototype.startsWith != 'function') {
+	String.prototype.startsWith = function(str) {
+		return this.slice(0, str.length) == str;
+	};
+}
+
+// some constants used in the applícation:
+
+var pages = {
+	START : "pStart",
+};
+
+var ids = {
+	CONSOLE : "CONSOLE",
+	CONTACTLIST : "CONTACTLIST",
+	TEXTAREA : "TEXTAREA",
+	TMP : "TMP",
+};
+
+var classes = {
+
+};
+
+// Init the start page
+$(document)
+		.delegate(
+				"#" + pages.START,
+				"pageinit",
+				function() {
+					console.log("script startpage init");
+					clearDupplicateContactForTesting();
+					createDupplicateContactForTesting();
+					try {
+						// make the title a bit wider, so that more information
+						// can be
+						// displayed
+						$('.ui-title').css({
+							'margin-left' : '10%',
+							'margin-right' : '10%'
+						});
+
+						$('#' + ids.CONTACTLIST).append("<ul></ul>");
+
+						var allContacts = navigator.mozContacts.getAll({
+							sortBy : "familyName",
+							sortOrder : "descending"
+						});
+
+						allContacts.onsuccess = function(event) {
+							try {
+								var cursor = event.target;
+								if (cursor.result) {
+									var key = keyFromContact(cursor.result);
+									var id = cursor.result.id;
+									if (typeof id === 'undefined' || id === null)
+										id = key;
+									var map = {};
+									if (!$('#' + key).length) {
+										$('#' + ids.TMP)
+												.append(
+														'<li id="' +
+																 key +
+																 '"><a>' +
+																displayName(cursor.result) + 
+																'<span class="ui-li-count">0</span>' +
+															        '</a></li>');
+									} else {
+										map = $('#' + key + " a").data("map");
+										var element = $('#' + key).detach();
+										$('#' + ids.CONTACTLIST + " ul")
+												.append(element);
+										$('#' + key)
+												.bind(
+														"modelchange",
+														function() {
+															var id = $(this)
+																	.attr("id");
+															var map = $(
+																	"#" + id + " a")
+																	.data("map");
+															if (map) {
+																$('#' + key)
+																		.detach();
+															}
+															$(
+																	'#'
+																			+ ids.CONTACTLIST
+																			+ " ul")
+																	.listview()
+																	.listview(
+																			'refresh');
+														});
+									}
+									map[id] = cursor.result;
+									$('#' + key + " a").data("map", map);
+									$('#' + key + " .ui-li-count").text(
+											Object.keys(map).length);
+								    cursor.continue();
+								} else {
+									// end of list reached
+									$('#' + ids.CONTACTLIST + " ul").attr(
+											"data-filter", "true");
+									$('#' + ids.CONTACTLIST + " ul").listview()
+											.listview('refresh');
+									$('#' + ids.CONTACTLIST + " ul li a")
+											.click(
+													function(e) {
+														try {
+															var map = $(this)
+																	.data("map");
+															unifyContactMap(map);
+														} catch (e) {
+															log(e);
+														}
+														;
+													});
+
+								}
+								;
+							} catch (e) {
+								log(e);
+							}
+							;
+						};
+
+						allContacts.onerror = function() {
+							log("Something went terribly wrong! :(");
+						};
+
+					} catch (e) {
+						log(e);
+					}
+					;
+				});
+
+function keyFromContact(contact) {
+	var givenName = contact.givenName[0];
+	if (typeof givenName === 'undefined' || givenName == null)
+		givenName = "";
+	var familyName = contact.familyName[0];
+	if (typeof familyName === 'undefined' || familyName == null)
+		familyName = "";
+	// TODO escape
+	return familyName + "_" + givenName;
+
+}
+
+function displayName(contact) {
+	var givenName = contact.givenName[0];
+	if (typeof givenName === 'undefined' || givenName == null)
+		givenName = "";
+	var familyName = contact.familyName[0];
+	if (typeof familyName === 'undefined' || familyName == null)
+		familyName = "";
+	var name = contact.name[0];
+	if (typeof name === 'undefined' || name == null)
+		name = "";
+	// TODO escape
+	return givenName + " " + familyName + " name: " + name;
+
+}
+
+function areContactsUnifiable(contact1, contact2) {
+	return false;
+};
+
+function unifyContacts(contact1, contact2) {
+	try {
+		if (!contact1.tel) {
+			contact1.tel = [];
+		}
+		;
+		if (contact2.tel) {
+			$.each(contact2.tel, function(i, e) {
+				// TODO is contact1.tel defined?
+				contact1.tel[contact1.tel.length] = e;
+			});
+		}
+		;
+		var saveResult = navigator.mozContacts.save(contact1);
+		saveResult.onerror = function() {
+			$('#' + ids.TEXTAREA).append("saveError");
+		};
+		saveResult.onsuccess = function() {
+			$('#' + ids.TEXTAREA).append("saveSuccess");
+		};
+		var deleteResult = navigator.mozContacts.remove(contact2);
+		deleteResult.onerror = function() {
+			$('#' + ids.TEXTAREA).append("removeError");
+		};
+		deleteResult.onsuccess = function() {
+			$('#' + ids.TEXTAREA).append("removeSuccess");
+		};
+		var key = keyFromContact(contact1);
+		$('#' + key).trigger("modelchange");
+	} catch (e) {
+		log(e);
+	}
+	;
+};
+
+function unifyContactMap(map) {
+	var keys = Object.keys(map);
+	primary = map[keys[0]];
+	for ( var i = 1; i < keys.length; i++) {
+		var secondary = map[keys[i]];
+		delete map[keys[i]];
+		unifyContacts(primary, secondary);
+	}
+	;
+};
+
+function createDupplicateContactForTesting() {
+	var contacts = [ {
+		givenName : [ 'John' ],
+		familyName : [ 'Doe' ],
+		name : [ 'John Doe' ],
+		tel : [ {
+			type : 'mobile',
+			value : '0421 5551234'
+		} ],
+		note : [ 'testContact' ],
+	}, {
+		givenName : [ 'John' ],
+		familyName : [ 'Doe' ],
+		name : [ 'John Doe' ],
+		tel : [ {
+			type : 'mobile',
+			value : '0421 5554321'
+		} ],
+		note : [ 'testContact' ], // to clean up test contacts
+	}, {
+		givenName : [ 'Bart' ],
+		familyName : [ 'Simpson' ],
+		name : [ 'The Bartman' ],
+		tel : [ {
+			type : 'mobile',
+			value : '0162 5554321'
+		} ],
+		note : [ 'testContact' ], // to clean up test contacts
+	}
+
+	];
+	$.each(contacts, function(i, e) {
+		var saveResult = navigator.mozContacts.save(e);
+		saveResult.onerror = function() {
+			$('#' + ids.TEXTAREA).append(i + " contact saveError");
+		};
+		saveResult.onsuccess = function() {
+			$('#' + ids.TEXTAREA).append(i + " contact1 saveSuccess");
+		};
+	});
+};
+
+function clearDupplicateContactForTesting() {
+	var filter = {
+		filterBy : [ 'note' ],
+		filterValue : 'testContact',
+		filterOp : 'equals',
+		filterLimit : 100
+	};
+
+	var request = window.navigator.mozContacts.find(filter);
+
+	request.onsuccess = function() {
+		$.each(result, function(i, e) {
+			$('#' + ids.TEXTAREA).append("removing: " + e + " " + e.note);
+			var deleteResult = navigator.mozContacts.remove(e);
+			deleteResult.onerror = function() {
+				$('#' + ids.TEXTAREA)
+						.append("removing testContact removeError");
+			};
+			deleteResult.onsuccess = function() {
+				$('#' + ids.TEXTAREA).append(
+						"removing testContact removeSuccess");
+			};
+
+		});
+	}
+
+	request.onerror = function() {
+		$('#' + ids.TEXTAREA).append("removing testContact failed");
+	}
+}

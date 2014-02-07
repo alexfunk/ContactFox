@@ -1,0 +1,49 @@
+{
+    "app": {
+        "name": "Contact Fox",
+        "introduction": "Duplicate Contacts or contacts with missing information are recognized in your contactlist and you may fix these problemes here.",
+        "intronotagain": "Do not show again"
+    },
+    "start": {
+        "contactsread": "contacts read",
+        "ready": "ready"
+    },
+    "nav": {
+        "home": "Home",
+        "pStart": "Start",
+        "pDuplicates": "Duplicates",
+        "pDebug": "Debug",
+        "pFunnyCharacters": "Funny Characters",
+        "pMissingPlus": "Missing +XX Prefix",
+        "pAbout": "about ContactFox..."
+    },
+    "duplicates": {
+        "title": "Duplicates"
+    },
+    "missingplus": {
+        "title": "Missing +XX Prefix"
+    },
+    "funchars": {
+        "title": "Funny Characters"
+    },
+
+    "changecontact": {
+        "title": "Change Contact"
+    },
+    "contact": {
+        "merge": "merge",
+        "name": "Name",
+        "phone": "Phone:",
+        "delete": "Delete",
+        "copies": "Copies",
+        "keep": "Keep"
+    },
+    "about": {
+        "title": "About ContacFox",
+        "text": "Alex Funk (c) 2014"
+    },
+    "debug": {
+        "title": "Debug Console",
+        "addtestdata": "Add test data"
+    }
+}

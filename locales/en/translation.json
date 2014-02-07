@@ -40,7 +40,7 @@
     },
     "about": {
         "title": "About ContacFox",
-        "text": "Alex Funk (c) 2014"
+        "text": "Alex Funk (c) 2014, https://github.com/alexfunk/ContactFox"
     },
     "debug": {
         "title": "Debug Console",

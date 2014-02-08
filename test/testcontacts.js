@@ -48,56 +48,55 @@
           value: '0421 555666'
       }]
   }];
-  var c0 = new cContact(fixture[0]),
-      c1 = new cContact(fixture[1]),
-      c2 = new cContact(fixture[2]),
-      c3 = new cContact(fixture[3]);
+  var c = [];
+  $.each(fixture, function(i, e) {
+      c.push(new cContact(e));
+  });
   var list = [];
-  list = c0.addToList(list);
-  list = c1.addToList(list);
-  list = c2.addToList(list);
-  list = c3.addToList(list);
+  for (var i = 0; i < 4; i++) {
+      list = c[i].addToUnifyList(list);
+  }
 
   exports.cContacts = {
       'key': function(test) {
           test.expect(1);
 
-          test.equal(c0.key(), "Doe_John");
+          test.equal(c[0].key(), "Doe_John");
           test.done();
       },
       'displayName': function(test) {
           test.expect(1);
-          test.equal(c0.displayName(), "John Doe");
+          test.equal(c[0].displayName(), "John Doe");
           test.done();
       },
       'containsNumber': function(test) {
           test.expect(3);
-          test.equal(c0.containsNumber('0421 5554321'), true);
-          test.equal(c1.containsNumber('0421 5551234'), true);
-          test.equal(c1.containsNumber('0421 5554321'), false);
+          test.equal(c[0].containsNumber('0421 5554321'), true);
+          test.equal(c[1].containsNumber('0421 5551234'), true);
+          test.equal(c[1].containsNumber('0421 5554321'), false);
           test.done();
       },
       'unify': function(test) {
           test.expect(7);
-          test.equal(c0.isUnifiyable(c1), true);
-          test.equal(c0.isUnifiyable(c2), false);
-          test.equal(c2.isUnifiyable(c2), true);
-          test.equal(c0.unify(c1), null);
-          test.equal(c0.c.tel.length, 2);
-          test.equal(c0.containsNumber('0421 5554321'), true);
-          test.equal(c0.containsNumber('0421 5551234'), true);
+          test.equal(c[0].isUnifiyable(c[1]), true);
+          test.equal(c[0].isUnifiyable(c[2]), false);
+          test.equal(c[2].isUnifiyable(c[2]), true);
+          test.equal(c[0].unify(c[1]), null);
+          test.equal(c[0].c.tel.length, 2);
+          test.equal(c[0].containsNumber('0421 5554321'), true);
+          test.equal(c[0].containsNumber('0421 5551234'), true);
           test.done();
       },
-      'addToList': function(test) {
+      'addToUnifyList': function(test) {
           test.expect(4);
           test.equal(list.length, 3);
           test.equal(list[0].length + list[1].length, 3);
-          c2.addToList(list);
+          c[2].addToUnifyList(list);
           test.equal(list[0].length, 2);
           test.equal(list[1].length, 2);
           test.done();
       },
-      'appendListToUL': function(test) {
+      'appendUnifyListToUL': function(test) {
           test.expect(11);
           test.equal($(document.body).length, 1);
           $(document.body).append("<ul></ul>");

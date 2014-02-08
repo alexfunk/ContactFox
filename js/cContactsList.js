@@ -4,8 +4,8 @@ cContactList.prototype = {
     _list: [],
     _unifyList: [],
     add: function(c) {
-        this._list[this._list.length] = c;
-        c.addToList(this._unifyList);
+        this._list.push(c);
+        c.addToUnifyList(this._unifyList);
     },
     size: function() {
         return this._list.length;
@@ -38,6 +38,11 @@ cContactList.prototype = {
                 if (entry.key() == key) {
                     entry.save();
                     for (var j = 1; j < e.length; j++) {
+                        var removeEntry = e[j];
+                        var mainListIndex = this._list.indexOf(e[j]);
+                        if (mainListIndex != -1) {
+                            this._list.splice(mainListIndex, 1);
+                        }
                         e[j].remove();
                     }
                     uList.splice(i, 1);

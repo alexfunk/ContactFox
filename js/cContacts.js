@@ -43,18 +43,50 @@ cContact.prototype = {
         }
         return result;
     },
+    /**
+     * copies all informations from the given contact to this contact unless
+     * it is already there
+     */
     unify: function(contact) {
-        var t = this;
-        if (!t.c.tel) {
-            t.c.tel = [];
-        }
-        if ($.isArray(contact.c.tel)) {
-            $.each(contact.c.tel, function(i, e) {
-                if (!t.containsNumber(e.value)) {
-                    t.c.tel[contact.c.tel.length] = e;
+        // some member of a contact can be unified easily, since it is just
+        // an array of string. For other mebers there should be a special function
+        // in the unifymember map.
+        var unifymember = {
+            "tel": function(t, contact) {
+                if (!t.c.tel) {
+                    t.c.tel = [];
                 }
-            });
-        }
+                if ($.isArray(contact.c.tel)) {
+                    $.each(contact.c.tel, function(i, e) {
+                        if (!t.containsNumber(e.value)) {
+                            t.c.tel.push(e);
+                        }
+                    });
+                }
+            },
+            "addr": function(t, contact) {},
+            "email": function(t, contact) {}
+        };
+        var t = this;
+
+        $.each(this.members, function(key, value) {
+            if (typeof unifymember[key] !== "undefined") {
+                unifymember[key](t, contact);
+            } else {
+                if (value == "arrayString") {
+                    if (!t.c[key]) {
+                        t.c[key] = [];
+                    }
+                    if ($.isArray(contact.c[key])) {
+                        $.each(contact.c[key], function(i, e) {
+                            if (t.c[key].indexOf(e) != -1) {
+                                t.c[key].push(e);
+                            }
+                        });
+                    }
+                }
+            }
+        });
     },
     save: function() {
         var saveResult = navigator.mozContacts.save(this.c);
@@ -76,22 +108,22 @@ cContact.prototype = {
         };
     },
     /**
-     * list is an array or arrays of contacts. Each sublist contains unifiable contacts
+     * unifyList is an array or arrays of contacts. Each sublist contains unifiable contacts
      */
-    addToList: function(list) {
+    addToUnifyList: function(unifyList) {
         var added = false;
         var current = this;
-        $.each(list, function(i, e) {
+        $.each(unifyList, function(i, e) {
             var entry = e[0];
             if (current.isUnifiyable(entry)) {
-                e[e.length] = current;
+                e.push(current);
                 added = true;
             }
         });
         if (!added) {
-            list[list.length] = [this];
+            unifyList.push([this]);
         }
-        return list;
+        return unifyList;
     },
     members: {
         id: 'string', // Read only The unique id of the contact in the device's contact database.

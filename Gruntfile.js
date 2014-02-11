@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name, pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+                banner: '/*! <%= pkg.name =>, <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
             build: {
                 src: srcFileArray,
@@ -15,7 +15,7 @@ module.exports = function(grunt) {
         },
         concat: {
             options: {
-                banner: '/*! <%= pkg.name, pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+                banner: '/*! <%= pkg.name %>, <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
             build: {
                 src: srcFileArray,
@@ -87,6 +87,7 @@ module.exports = function(grunt) {
         },
         clean: {
             dist: ['dist'],
+            release: ['release'],
         },
         nodeunit: {
             all: testFileArray
@@ -104,9 +105,22 @@ module.exports = function(grunt) {
                 src: 'm.html',
                 dest: 'dist/m.html'
             }
+        },
+        // make a zipfile
+        compress: {
+            main: {
+                options: {
+                    archive: 'release/<%= pkg.name %><%= pkg.version %>.zip'
+                },
+                files: [{
+                        expand: true,
+                        cwd: 'dist/',
+                        src: ['**'],
+                        dest: '/'
+                    } // includes files in path and its subdirs
+                ]
+            }
         }
-
-
     });
 
     // Load the plugin that provides the "uglify" task.
@@ -119,9 +133,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-prettify');
+    grunt.loadNpmTasks('grunt-contrib-compress');
 
     // Default task(s).
     grunt.registerTask('default', ['uglify', 'copy', 'firefoxManifest']);
-    grunt.registerTask('debug', ['jsbeautifier', 'jshint', 'nodeunit', 'concat', 'copy', 'firefoxManifest']);
+    grunt.registerTask('debug', ['jsbeautifier', 'jshint', 'nodeunit', 'concat', 'copy', 'firefoxManifest', 'compress']);
 
 };

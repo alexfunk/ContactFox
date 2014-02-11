@@ -43,6 +43,18 @@ cContact.prototype = {
         }
         return result;
     },
+    containsEMail: function(mailaddress) {
+        var result = false;
+        if ($.isArray(this.c.email)) {
+            $.each(this.c.email, function(i, e) {
+                if (e.value == mailaddress) {
+                    result = true;
+                    return false;
+                }
+            });
+        }
+        return result;
+    },
     /**
      * copies all informations from the given contact to this contact unless
      * it is already there
@@ -65,7 +77,18 @@ cContact.prototype = {
                 }
             },
             "addr": function(t, contact) {},
-            "email": function(t, contact) {}
+            "email": function(t, contact) {
+                if (!t.c.email) {
+                    t.c.email = [];
+                }
+                if ($.isArray(contact.c.email)) {
+                    $.each(contact.c.email, function(i, e) {
+                        if (!t.containsEMail(e.value)) {
+                            t.c.email.push(e);
+                        }
+                    });
+                }
+            }
         };
         var t = this;
 
@@ -147,7 +170,7 @@ cContact.prototype = {
         bday: 'date', // A Date object representing the birthday date of the contact.
         note: 'arrayString', // An array of string representing notes about the contact.
         impp: 'arrayString', // An array of object, each representing an Instant Messaging address with a few extra metadata.
-        anniversary: 'arrayString', // A Date object representing the anniversary date of the contact.
+        anniversary: 'date', // A Date object representing the anniversary date of the contact.
         sex: 'String', // A string representing the sex of the contact.
         genderIdentity: 'String', // A string representing the gender identity of the contact.
         key: 'arrayString' // A array of string representing the public encryption key associated with the contact.

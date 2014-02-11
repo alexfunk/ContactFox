@@ -37,11 +37,12 @@
     "grunt-contrib-qunit" : "~0.3.0",
     "jsdom": "~0.2.15",
     "grunt-contrib-concat" : "~0.3.0",
-    "grunt-prettify" : "~0.3.4"
+    "grunt-prettify" : "~0.3.4",
+    "grunt-contrib-compress" : "~0.6.0"
   },
   "firefoxManifest": {
     "type" : "privileged",
-    "launch_path": "m.html",
+    "launch_path": "/m.html",
     "icons": {
         "64": "/images/ContactFox.png",
         "128": "/images/ContactFox128.png"
@@ -50,7 +51,7 @@
     "default_locale": "en",
     "permissions": {
 	"contacts": {
-	    "description": "to unify your contacts",
+	    "description": "to read, corect and merge your contacts",
 	    "access": "readwrite"
     	}
     }

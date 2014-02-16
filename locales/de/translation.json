@@ -32,7 +32,9 @@
     "contact": {
         "merge": "Zusammenführen",
         "name": "Name",
-        "phone": "Telefon:",
+        "phone": "Telefon",
+        "email": "E-Mail",
+        "adr": "Anschrift",
         "delete": "Löschen",
         "copies": "Kopien",
         "keep": "Erhalten"
@@ -43,7 +45,9 @@
     },
     "debug": {
         "title": "Debug Console",
-        "addtestdata": "Testdaten hinzufügen"
+        "addtestdata": "Testdaten hinzufügen",
+        "showintroagain": "Intro wieder anzeigen",
+        "log": "Ausgaben zur Fehlersuche"
     }
 
 }

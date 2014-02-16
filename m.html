@@ -15,11 +15,12 @@
 			<h1 class="i18n" data-i18n="app.name"></h1>
 		</div>
 		<div data-role="content" data-theme="b">
+                  <img src="images/ContactFox.png" style="float:left; margin-right: 5px;"></img>
 		  <div class="i18n" data-i18n="app.introduction"></div>
                     <div data-role="fieldcontain">
  	              <fieldset data-role="controlgroup">
-		        <input type="checkbox" name="checkbox-1" id="checkbox-1" class="custom" />
-		        <label class="i18n" for="checkbox-1" data-i18n="app.intronotagain"></label>
+		        <input type="checkbox" name="checkbox-1" id="CBINTRONOTAGAIN" class="custom" />
+		        <label class="i18n" for="CBINTRONOTAGAIN" data-i18n="app.intronotagain"></label>
                       </fieldset>
                     </div>
 		    <div class="nav">
@@ -83,16 +84,6 @@
 			<div id="CONTACTCHANGE"></div>
 		</div>
 	</div>
-	<div data-role="page" id="pChangeContactTest" data-theme="b">
-		<div data-role="header">
-			<h1 class="i18n" data-i18n="changecontact.title"></h1>
-			<a href="#pDuplicates" class="i18n" data-role="button" data-icon="back"
-				data-i18n="nav.pDuplicates"></a>
-		</div>
-		<div data-role="content" data-theme="b">
-			<div id="XXX"></div>
-		</div>
-	</div>
 	<div data-role="page" id="pAbout" data-theme="b">
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="about.title"></h1>
@@ -101,6 +92,7 @@
 		</div>
 		<div data-role="content" data-theme="b">
 			<div class="i18n" data-i18n="about.text" ></div>
+                        <a href="https://github.com/alexfunk/ContactFox">https://github.com/alexfunk/ContactFox</a>
 		</div>
 	</div>
 	<div data-role="page" id="pDebug" data-theme="b">
@@ -111,9 +103,20 @@
 		</div>
 		<div data-role="content" data-theme="b">
 			<a class="i18n" href="#" data-role="button" data-i18n="debug.addtestdata"></a> 
-			<div id="CONSOLE" ></div>
+			<a class="i18n" href="#" data-role="button" data-i18n="debug.showintroagain"></a> 
+			<div class="i18n" data-i18n="debug.log"></div>
 			<textarea id="TEXTAREA" cols="40" rows="8" name="textarea-1" class
 ="ui-disabled"></textarea>
+		</div>
+	</div>
+	<div data-role="page" id="pChangeContactTest" data-theme="b">
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="changecontact.title"></h1>
+			<a href="#pDuplicates" class="i18n" data-role="button" data-icon="back"
+				data-i18n="nav.pDuplicates"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div id="XXX"></div>
 		</div>
 	</div>
 </body>

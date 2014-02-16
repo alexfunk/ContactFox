@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name =>, <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+                banner: '/*! <%= pkg.name %>, <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
             build: {
                 src: srcFileArray,
@@ -136,7 +136,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-compress');
 
     // Default task(s).
-    grunt.registerTask('default', ['uglify', 'copy', 'firefoxManifest']);
+    grunt.registerTask('default', ['uglify', 'copy', 'firefoxManifest', 'compress']);
     grunt.registerTask('debug', ['jsbeautifier', 'jshint', 'nodeunit', 'concat', 'copy', 'firefoxManifest', 'compress']);
 
 };

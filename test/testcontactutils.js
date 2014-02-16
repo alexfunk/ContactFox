@@ -1,11 +1,4 @@
-  require('../js/cContacts.js');
-  require('../js/cContactUtils.js');
-  require('../js/cContactsList.js');
-  jqFactory = require('../node_modules/jquery/dist/jquery.js');
-  var jsdom = require("jsdom").jsdom,
-      document = jsdom("<html><head></head><body>hello world</body></html>"),
-      window = document.createWindow();
-  $ = jqFactory(window);
+  require('./testutilities.js');
 
   var fixture = [{
       givenName: ['John'],

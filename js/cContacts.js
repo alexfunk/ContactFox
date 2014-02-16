@@ -2,6 +2,11 @@ cContact = function(c) {
     this.c = c;
 };
 
+function log(e) {
+    console.log(e);
+}
+
+
 cContact.prototype = {
     key: function() {
         var givenName = "";
@@ -55,6 +60,30 @@ cContact.prototype = {
         }
         return result;
     },
+    addressEqual: function(adr1, adr2) {
+        var keys = ['streetAddress', 'locality', 'region', 'postalCode', 'countryName'];
+        var result = true;
+        $.each(keys, function(i, e) {
+            if (adr1[e] != adr2[e]) {
+                result = false;
+                return false;
+            }
+        });
+        return result;
+    },
+    containsAddress: function(adress) {
+        var t = this;
+        var result = false;
+        if ($.isArray(this.c.adr)) {
+            $.each(this.c.adr, function(i, e) {
+                if (t.addressEqual(e, adress)) {
+                    result = true;
+                    return false;
+                }
+            });
+        }
+        return result;
+    },
     /**
      * copies all informations from the given contact to this contact unless
      * it is already there
@@ -76,7 +105,18 @@ cContact.prototype = {
                     });
                 }
             },
-            "addr": function(t, contact) {},
+            "adr": function(t, contact) {
+                if (!t.c.adr) {
+                    t.c.adr = [];
+                }
+                if ($.isArray(contact.c.adr)) {
+                    $.each(contact.c.adr, function(i, e) {
+                        if (!t.containsAddress(e)) {
+                            t.c.adr.push(e);
+                        }
+                    });
+                }
+            },
             "email": function(t, contact) {
                 if (!t.c.email) {
                     t.c.email = [];
@@ -102,7 +142,7 @@ cContact.prototype = {
                     }
                     if ($.isArray(contact.c[key])) {
                         $.each(contact.c[key], function(i, e) {
-                            if (t.c[key].indexOf(e) != -1) {
+                            if (t.c[key].indexOf(e) == -1) {
                                 t.c[key].push(e);
                             }
                         });
@@ -112,22 +152,24 @@ cContact.prototype = {
         });
     },
     save: function() {
+        log(JSON.stringify(this.c));
         var saveResult = navigator.mozContacts.save(this.c);
         saveResult.onerror = function() {
-            $('#' + ids.TEXTAREA).append("saveError");
+            log("saveError");
         };
         saveResult.onsuccess = function() {
-            $('#' + ids.TEXTAREA).append("saveSuccess");
+            log("saveSuccess");
         };
 
     },
     remove: function() {
+        log(JSON.stringify(this.c));
         var removeResult = navigator.mozContacts.remove(this.c);
         removeResult.onerror = function() {
-            $('#' + ids.TEXTAREA).append("removeError");
+            log("removeError");
         };
         removeResult.onsuccess = function() {
-            $('#' + ids.TEXTAREA).append("removeSuccess");
+            log("removeSuccess");
         };
     },
     /**

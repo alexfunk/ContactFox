@@ -1,12 +1,4 @@
-  require('../js/cContacts.js');
-  require('../js/cContactUtils.js');
-  require('../js/cContactsList.js');
-  jqFactory = require('../node_modules/jquery/dist/jquery.js');
-  var jsdom = require("jsdom").jsdom,
-      document = jsdom("<html><head></head><body>hello world</body></html>"),
-      window = document.createWindow();
-  $ = jqFactory(window);
-
+  require('./testutilities.js');
   var fixture = [{
       givenName: ['John'],
       familyName: ['Doe'],
@@ -38,7 +30,7 @@
   var contactList = new cContactList();
   exports.cContacts = {
       'list': function(test) {
-          test.expect(5);
+          test.expect(7);
 
           test.equal(contactList.size(), 0);
           contactList.add(c0);
@@ -47,6 +39,9 @@
           contactList.add(c1);
           test.equal(contactList.size(), 2);
           test.equal(contactList.hasDuplicates(), true);
+          contactList.merge(c0.key());
+          test.equal(contactList.hasDuplicates(), false);
+          test.equal(contactList.size(), 1);
           test.done();
       }
   };

@@ -33,7 +33,9 @@
     "contact": {
         "merge": "merge",
         "name": "Name",
-        "phone": "Phone:",
+        "phone": "Phone",
+        "email": "email",
+        "adr": "address",
         "delete": "Delete",
         "copies": "Copies",
         "keep": "Keep"
@@ -44,6 +46,8 @@
     },
     "debug": {
         "title": "Debug Console",
-        "addtestdata": "Add test data"
+        "addtestdata": "Add test data",
+        "showintroagain": "Show Intro again",
+        "log": "Logbook for debugging"
     }
 }

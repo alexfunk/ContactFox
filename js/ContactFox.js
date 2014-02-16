@@ -23,23 +23,17 @@ var pages = {
 };
 
 var ids = {
-    CONSOLE: "CONSOLE",
     CONTACTLIST: "CONTACTLIST",
     CONTACTCHANGE: "CONTACTCHANGE",
     TEXTAREA: "TEXTAREA",
-    CONTACTSREAD: "CONTACTSREAD"
-};
-
-var classes = {
-
+    CONTACTSREAD: "CONTACTSREAD",
+    CBINTRONOTAGAIN: "CBINTRONOTAGAIN"
 };
 
 function log(e) {
     console.log(e);
     $('#' + ids.TEXTAREA).append(e + "\n");
 }
-
-
 
 var contactList = new cContactList();
 
@@ -69,7 +63,17 @@ function initApp() {
         loadContacts();
     });
     $('#' + pages.START).data("buttons", buttons);
-
+    $('#' + ids.CBINTRONOTAGAIN + ":parent").click(function(e) {
+        try {
+            log("intronotagain clicked");
+            var $checkbox = $(this).find(':checkbox');
+            var wasChecked = $checkbox.attr('checked');
+            $checkbox.attr('checked', !wasChecked);
+            window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, !wasChecked);
+        } catch (ex) {
+            log(ex);
+        }
+    });
     //Init i18n
     i18n.init(function(t) {
         // translate nav
@@ -77,6 +81,17 @@ function initApp() {
         // translate app
         $(".i18n").i18n();
     });
+    try {
+        var intronotagain = window.localStorage.getItem("ContactFox." + ids.CBINTRONOTAGAIN);
+        log("intronotagain was selected: " + intronotagain);
+        if (intronotagain == 'true') {
+            loadContacts();
+            $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.START);
+        }
+    } catch (ex) {
+        log(ex);
+    }
+
 }
 
 function updateButtons() {
@@ -122,20 +137,23 @@ function loadContacts() {
                         cursor.
                         continue ();
                     } else {
-                        $('#' + ids.CONTACTLIST).append("<ul></ul>");
-                        contactList.appendUnifyListToUL($('#' + ids.CONTACTLIST + " ul"));
-                        $('#' + ids.CONTACTLIST + " ul li").click(function(event) {
+                        // let jquery mobile make this list filterable
+                        $('#' + ids.CONTACTLIST).append('<ul data-filter="true"></ul>');
+                        contactList.appendUnifyListToUL($('#' + ids.CONTACTLIST + ' ul'));
+                        $('#' + ids.CONTACTLIST + ' ul li').click(function(event) {
                             changeContactSelected(event);
                         });
                         $('#' + ids.CONTACTLIST + " ul").listview()
                             .listview('refresh');
                     }
-                } catch (e) {
-                    log(e);
+                } catch (ex) {
+                    log(ex);
                 }
             };
 
             allContacts.onerror = function() {
+                //TODO: better error handling and i18n
+                alert("Can not read your contacts. Did you give permissions?");
                 log("Something went terribly wrong! :(");
             };
         }
@@ -156,7 +174,7 @@ function changeContactSelected(event) {
             var n = $('#' + ids.CONTACTCHANGE);
             n.empty();
             n.append('<a data-role="button" data-i18n="contact.merge"></a>');
-            n.append('<div class="contacaction" data-i18n="contact.keep"></div>');
+            n.append('<div class="contactaction" data-i18n="contact.keep"></div>');
             n.append('<div><span data-i18n="contact.name"></span><span>: </span><span class="contactcontent" >' + cname + '</span></div>');
             if ($.isArray(contact.c.tel)) {
                 $.each(contact.c.tel, function(i, e) {
@@ -164,17 +182,32 @@ function changeContactSelected(event) {
                     n.append('<div><span data-i18n="contact.phone"></span><span> ' + (i + 1) + ': </span><span class="contactcontent" >' + number + '</span></div>');
                 });
             }
-            n.append('<div><span  class="contacaction" data-i18n="contact.delete"></span><span>: </span><span class="contactcontent" >' + (data.length - 1) + ' </span> <span data-i18n="contact.copies"></span></div>');
+            if ($.isArray(contact.c.email)) {
+                $.each(contact.c.email, function(i, e) {
+                    var mail = e.value;
+                    n.append('<div><span data-i18n="contact.email"></span><span> ' + (i + 1) + ': </span><span class="contactcontent" >' + mail + '</span></div>');
+                });
+            }
+            if ($.isArray(contact.c.adr)) {
+                $.each(contact.c.adr, function(i, e) {
+                    var adr = e.streetAddress;
+                    n.append('<div><span data-i18n="contact.adr"></span><span> ' + (i + 1) + ': </span><span class="contactcontent" >' + adr + '</span></div>');
+                });
+            }
+
+            n.append('<div><span  class="contactaction" data-i18n="contact.delete"></span><span>: </span><span class="contactcontent" >' + (data.length - 1) + ' </span> <span data-i18n="contact.copies"></span></div>');
             $('.contactcontent').css('font-weight', 'bold');
-            $('.contacaction').css('color', 'blue');
-            $('.contacaction').css('font-style', 'italic');
+            $('.contactaction').css('color', 'blue');
+            $('.contactaction').css('font-style', 'italic');
             $('[data-i18n = "contact.merge"]').data("contact", contact);
             $('[data-i18n = "contact.merge"]').data("data", data);
             $('[data-i18n = "contact.merge"]').click(function(e) {
                 try {
+                    log("click merge");
                     var contact = $(this).data("contact");
                     $('#' + contact.key()).css("display", "none");
                     contactList.merge(contact.key());
+                    log("merged, go back");
                     $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.DUPLICATES, {
                         transition: 'slide'
                     });
@@ -182,6 +215,7 @@ function changeContactSelected(event) {
                     log(ex);
                 }
             });
+
             // translate all
             $('#' + ids.CONTACTCHANGE).i18n();
 
@@ -204,7 +238,6 @@ $(document)
         '#' + pages.INTRO,
         function() {
             try {
-                log("InitApp");
                 initApp();
             } catch (e) {
                 log(e);
@@ -220,7 +253,15 @@ $(document)
                 $('[data-i18n = "debug.addtestdata"]').click(function(e) {
                     contactUtils.createDuplicateContactForTesting();
                 });
-            } catch (e) {
-                log(e);
+                $('[data-i18n = "debug.showintroagain"]').click(function(e) {
+                    try {
+                        log("showintroagain clicked");
+                        window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, "false");
+                    } catch (ex) {
+                        log(ex);
+                    }
+                });
+            } catch (ex) {
+                log(ex);
             }
         });

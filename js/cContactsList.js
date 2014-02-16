@@ -32,6 +32,7 @@ cContactList.prototype = {
     },
     merge: function(key) {
         var uList = this._unifyList;
+        var mList = this._list;
         $.each(uList, function(i, e) {
             if ($.isArray(e) && e.length > 1) {
                 var entry = e[0];
@@ -39,9 +40,9 @@ cContactList.prototype = {
                     entry.save();
                     for (var j = 1; j < e.length; j++) {
                         var removeEntry = e[j];
-                        var mainListIndex = this._list.indexOf(e[j]);
+                        var mainListIndex = mList.indexOf(e[j]);
                         if (mainListIndex != -1) {
-                            this._list.splice(mainListIndex, 1);
+                            mList.splice(mainListIndex, 1);
                         }
                         e[j].remove();
                     }

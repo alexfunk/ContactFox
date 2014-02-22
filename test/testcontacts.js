@@ -70,7 +70,7 @@
      name: ['John Doe'],
      adr: [{
          type: 'home',
-         streetAddress: 'Backerstreet 221a',
+         streetAddress: 'Bakerstreet 221a',
          locality: 'London',
          postalCode: 'AB1 CD2',
          countryName: 'UK'
@@ -82,7 +82,7 @@
      name: ['John Doe'],
      adr: [{
          type: 'work',
-         streetAddress: 'Backerstreet 221a',
+         streetAddress: 'Bakerstreet 221a',
          locality: 'London',
          postalCode: 'AB1 CD2',
          countryName: 'UK'
@@ -118,8 +118,66 @@
          test.equal(c[1].containsNumber('0421 5554321'), false);
          test.done();
      },
+     'containsEMail': function(test) {
+         test.expect(3);
+         test.equal(c[4].containsEMail('John@JohnDoe.de'), false);
+         test.equal(c[5].containsEMail('John@JohnDoe.de'), true);
+         test.equal(c[1].containsEMail('0421 5551234'), false);
+         test.done();
+     },
+     'addressEqual': function(test) {
+         test.expect(7);
+         var differentType = {
+             type: 'home',
+             streetAddress: 'Bakerstreet 221a',
+             locality: 'London',
+             postalCode: 'AB1 CD2',
+             countryName: 'UK'
+         };
+         // same adress differen type should be equal
+         test.equal(c[1].addressEqual(differentType, c[7].c.adr[0]), true);
+         test.equal(c[1].addressEqual(c[7].c.adr[0], differentType), true);
+         //
+         test.equal(c[1].addressEqual(c[7].c.adr[0], c[7].c.adr[0]), true);
+         test.equal(c[2].addressEqual(c[7].c.adr[0], c[7].c.adr[1]), false);
+         test.equal(c[3].addressEqual(c[7].c.adr[0], null), false);
+         test.equal(c[4].addressEqual(null, c[7].c.adr[0]), false);
+         test.equal(c[5].addressEqual(null, null), true);
+         test.done();
+     },
+     'addressToString': function(test) {
+         test.expect(2);
+         test.equal(c[5].addressToString(c[7].c.adr[0]), 'Bakerstreet 221a,AB1 CD2,London,UK');
+         test.equal(c[5].addressToString({
+             type: 'home',
+             locality: 'London',
+             postalCode: 'AB1 CD2',
+             countryName: 'UK'
+         }), 'AB1 CD2,London,UK');
+         test.done();
+     },
+     'contactMemberToString': function(test) {
+         test.expect(11);
+         var strings = c[7].contactMemberToString('adr');
+         test.equal($.isArray(strings), true);
+         test.equal(strings.length, 2);
+         test.equal(strings[0], 'Bakerstreet 221a,AB1 CD2,London,UK');
+         test.equal(strings[1], 'Musterweg 1,33666,Bielefeld,Germany');
+         strings = c[6].contactMemberToString('adr');
+         test.equal($.isArray(strings), true);
+         test.equal(strings.length, 1);
+         test.equal(strings[0], 'Bakerstreet 221a,AB1 CD2,London,UK');
+         strings = c[6].contactMemberToString('photo');
+         test.equal($.isArray(strings), true);
+         console.log(JSON.stringify(strings));
+         test.equal(strings.length, 0);
+         strings = c[6].contactMemberToString('bday');
+         test.equal($.isArray(strings), true);
+         test.equal(strings.length, 0);
+         test.done();
+     },
      'unify': function(test) {
-         test.expect(19);
+         test.expect(20);
          test.equal(c[0].c.givenName.length, 1);
          test.equal(c[0].isUnifiyable(c[1]), true);
          test.equal(c[0].isUnifiyable(c[2]), false);
@@ -143,7 +201,7 @@
          test.equal(c[1].c.adr.length, 1);
          test.equal(c[1].containsAddress({
              type: 'home',
-             streetAddress: 'Backerstreet 221a',
+             streetAddress: 'Bakerstreet 221a',
              locality: 'London',
              postalCode: 'AB1 CD2',
              countryName: 'UK'
@@ -192,19 +250,3 @@
          test.done();
      }
  };
-
-
- //type
- //    A string representing the type for that address (e.g., "home", "work").
- //pref
- //    A boolean indicating if it is the preferred address (true) or not (false).
- //streetAddress
- //    A string representing the street name, number, etc. of the address.
- //locality
- //    A string representing the city of the address.
- //region
- //    A string representing the geographical region of the address.
- //postalCode
- //    A string representing the postal code for the address.
- //countryName
- //    A string representing the name of the country for the address.

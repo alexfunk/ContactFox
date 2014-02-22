@@ -34,6 +34,8 @@ cContact.prototype = {
 
     },
     isUnifiyable: function(contact) {
+        //TODO compare first and last name
+        // what about first + last = last + first
         return this.displayName() == contact.displayName();
     },
     containsNumber: function(number) {
@@ -60,7 +62,10 @@ cContact.prototype = {
         }
         return result;
     },
+    //TODO: this should be a static function. Not related to the contact object
     addressEqual: function(adr1, adr2) {
+        if (adr1 == adr2) return true;
+        if ((adr1 === null) || (adr2 === null)) return false;
         var keys = ['streetAddress', 'locality', 'region', 'postalCode', 'countryName'];
         var result = true;
         $.each(keys, function(i, e) {
@@ -70,6 +75,57 @@ cContact.prototype = {
             }
         });
         return result;
+    },
+    //TODO: this should be a static function. Not related to the contact object
+    addressToString: function(adr1) {
+        var keys = ['streetAddress', 'postalCode', 'locality', 'region', 'countryName'];
+        var result = "";
+        $.each(keys, function(i, e) {
+            if (typeof adr1[e] !== "undefined") {
+                if (result.length !== 0) result += ',';
+                result += adr1[e];
+            }
+        });
+        return result;
+    },
+    contactMemberToString: function(member) {
+        var f = {
+            'adr': this.addressToString,
+            'email': function(e) {
+                return e.value;
+            },
+            'tel': function(e) {
+                return e.value;
+            },
+            'photo': function(e) {
+                return "photo";
+            }
+        };
+        var handleArray = function(a, f) {
+            var result = [];
+            $.each(a, function(i, e) {
+                result.push(f(e));
+            });
+            return result;
+        };
+        if (typeof f[member] !== "undefined") {
+            if ($.isArray(this.c[member])) {
+                return handleArray(this.c[member], f[member]);
+            } else {
+                if (typeof this.c[member] !== "undefined" && this.c[member] !== null) {
+
+                    return [f[member](this.c.member)];
+                } else {
+                    return [];
+                }
+            }
+        } else {
+            if (typeof this.c[member] !== "undefined" && this.c[member] !== null) {
+                return [JSON.stringify(this.c[member])];
+            } else {
+                return [];
+            }
+        }
     },
     containsAddress: function(adress) {
         var t = this;
@@ -86,9 +142,10 @@ cContact.prototype = {
     },
     /**
      * copies all informations from the given contact to this contact unless
-     * it is already there
+     * the information is already there
      */
     unify: function(contact) {
+        this.backup();
         // some member of a contact can be unified easily, since it is just
         // an array of string. For other mebers there should be a special function
         // in the unifymember map.
@@ -163,7 +220,7 @@ cContact.prototype = {
 
     },
     remove: function() {
-        log(JSON.stringify(this.c));
+        this.backup();
         var removeResult = navigator.mozContacts.remove(this.c);
         removeResult.onerror = function() {
             log("removeError");
@@ -171,6 +228,17 @@ cContact.prototype = {
         removeResult.onsuccess = function() {
             log("removeSuccess");
         };
+    },
+    backup: function() {
+        log("Backup: " + JSON.stringify(this.c));
+        var backup = window.localStorage.getItem("ContactFox.Backup");
+        if (backup === null) {
+            backup = {};
+        } else {
+            backup = JSON.parse(backup);
+        }
+        backup[this.key()] = this.c;
+        window.localStorage.setItem("ContactFox.Backup", JSON.stringify(backup));
     },
     /**
      * unifyList is an array or arrays of contacts. Each sublist contains unifiable contacts
@@ -218,7 +286,22 @@ cContact.prototype = {
         key: 'arrayString' // A array of string representing the public encryption key associated with the contact.
 
     }
+    //members of an address
 
+    //type
+    //    A string representing the type for that address (e.g., "home", "work").
+    //pref
+    //    A boolean indicating if it is the preferred address (true) or not (false).
+    //streetAddress
+    //    A string representing the street name, number, etc. of the address.
+    //locality
+    //    A string representing the city of the address.
+    //region
+    //    A string representing the geographical region of the address.
+    //postalCode
+    //    A string representing the postal code for the address.
+    //countryName
+    //    A string representing the name of the country for the address.
 
 };
 //exports.cContact = cContact;

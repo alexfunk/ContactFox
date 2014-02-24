@@ -99,33 +99,53 @@ cContact.prototype = {
             },
             'photo': function(e) {
                 return "photo";
+            },
+            'id': function(e) {
+                return null;
+            },
+            'published': function(e) {
+                return null;
+            },
+            'updated': function(e) {
+                return null;
+            },
+            'name': function(e) {
+                return null;
             }
         };
         var handleArray = function(a, f) {
             var result = [];
             $.each(a, function(i, e) {
-                result.push(f(e));
+                var val = f(e);
+                if (val !== null) result.push(val);
             });
             return result;
         };
-        if (typeof f[member] !== "undefined") {
-            if ($.isArray(this.c[member])) {
-                return handleArray(this.c[member], f[member]);
-            } else {
-                if (typeof this.c[member] !== "undefined" && this.c[member] !== null) {
-
-                    return [f[member](this.c.member)];
-                } else {
-                    return [];
-                }
-            }
+        if ($.isArray(this.c[member])) {
+            return handleArray(this.c[member], f[member] || JSON.stringify);
         } else {
             if (typeof this.c[member] !== "undefined" && this.c[member] !== null) {
-                return [JSON.stringify(this.c[member])];
+                var result = (f[member] || JSON.stringify)(this.c.member);
+                if (result !== null) return [result];
+                else
+                    return [];
             } else {
                 return [];
             }
         }
+    },
+    appendAsString: function(div) {
+        var t = this;
+        $.each(this.members, function(i, e) {
+            var stringArray = t.contactMemberToString(i);
+            if (stringArray.length == 1) {
+                div.append('<div><span data-i18n="contact.' + i + '"></span><span> : </span><span class="contactcontent" >' + stringArray[0] + '</span></div>');
+            } else if (stringArray.length > 1) {
+                $.each(stringArray, function(j, string) {
+                    div.append('<div><span data-i18n="contact.' + i + '"></span><span> ' + (j + 1) + ': </span><span class="contactcontent" >' + string + '</span></div>');
+                });
+            }
+        });
     },
     containsAddress: function(adress) {
         var t = this;

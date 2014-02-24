@@ -93,6 +93,13 @@
          postalCode: '33666',
          countryName: 'Germany'
      }]
+ }, {
+     //8
+     id: "abcd",
+     givenName: ['John'],
+     familyName: ['Doe'],
+     name: ['John Doe'],
+     honorificSuffix: []
  }];
  var c = [];
  $.each(fixture, function(i, e) {
@@ -157,7 +164,7 @@
          test.done();
      },
      'contactMemberToString': function(test) {
-         test.expect(11);
+         test.expect(15);
          var strings = c[7].contactMemberToString('adr');
          test.equal($.isArray(strings), true);
          test.equal(strings.length, 2);
@@ -169,11 +176,17 @@
          test.equal(strings[0], 'Bakerstreet 221a,AB1 CD2,London,UK');
          strings = c[6].contactMemberToString('photo');
          test.equal($.isArray(strings), true);
-         console.log(JSON.stringify(strings));
          test.equal(strings.length, 0);
          strings = c[6].contactMemberToString('bday');
          test.equal($.isArray(strings), true);
          test.equal(strings.length, 0);
+         strings = c[8].contactMemberToString('honorificSuffix');
+         test.equal($.isArray(strings), true);
+         test.equal(strings.length, 0);
+         strings = c[8].contactMemberToString('id');
+         test.equal($.isArray(strings), true);
+         test.equal(strings.length, 0);
+
          test.done();
      },
      'unify': function(test) {
@@ -224,6 +237,14 @@
          test.equal(list[1].length, 2);
          test.done();
      },
+     'appendAsString': function(test) {
+         test.expect(1);
+         $(document.body).append('<div id="CONTACTCHANGE"></div>');
+         var div = $('#CONTACTCHANGE');
+         c[0].appendAsString(div);
+         test.equal($('#CONTACTCHANGE div').length, 4);
+         test.done();
+     },
      'appendUnifyListToUL': function(test) {
          test.expect(11);
          var list = [];
@@ -233,15 +254,15 @@
          list = c[2].addToUnifyList(list);
 
          test.equal($(document.body).length, 1);
-         $(document.body).append("<ul></ul>");
+         $(document.body).append('<ul></ul>');
          var ul = $('ul');
          test.equal(ul.length, 1);
          contactUtils.appendUnifyListToUL(list, ul);
          // how many list items (li) how many contacts to merge
          test.equal($('ul li').length, 2);
          $('ul li').each(function(index) {
-             var id = $(this).attr("id");
-             var data = $(this).data("list");
+             var id = $(this).attr('id');
+             var data = $(this).data('list');
              test.equal(typeof id === 'undefined', false);
              test.equal(typeof data === 'undefined', false);
              test.equal(data === null, false, "data may not be null");

@@ -63,12 +63,13 @@ function initApp() {
         loadContacts();
     });
     $('#' + pages.START).data("buttons", buttons);
-    $('#' + ids.CBINTRONOTAGAIN + ":parent").click(function(e) {
+    $('#' + ids.CBINTRONOTAGAIN + ":parent :parent").click(function(e) {
         try {
             log("intronotagain clicked");
             var $checkbox = $(this).find(':checkbox');
             var wasChecked = $checkbox.attr('checked');
             $checkbox.attr('checked', !wasChecked);
+            log("intronotagain is checked" + !wasChecked);
             window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, !wasChecked);
         } catch (ex) {
             log(ex);
@@ -173,35 +174,17 @@ function changeContactSelected(event) {
             // TODO use a template
             var n = $('#' + ids.CONTACTCHANGE);
             n.empty();
-            n.append('<a data-role="button" data-i18n="contact.merge"></a>');
+            n.append('<a data-role="button" data-i18n="contact.merge" id="merge' + contact.key() + '"></a>');
             n.append('<div class="contactaction" data-i18n="contact.keep"></div>');
             n.append('<div><span data-i18n="contact.name"></span><span>: </span><span class="contactcontent" >' + cname + '</span></div>');
-            if ($.isArray(contact.c.tel)) {
-                $.each(contact.c.tel, function(i, e) {
-                    var number = e.value;
-                    n.append('<div><span data-i18n="contact.phone"></span><span> ' + (i + 1) + ': </span><span class="contactcontent" >' + number + '</span></div>');
-                });
-            }
-            if ($.isArray(contact.c.email)) {
-                $.each(contact.c.email, function(i, e) {
-                    var mail = e.value;
-                    n.append('<div><span data-i18n="contact.email"></span><span> ' + (i + 1) + ': </span><span class="contactcontent" >' + mail + '</span></div>');
-                });
-            }
-            if ($.isArray(contact.c.adr)) {
-                $.each(contact.c.adr, function(i, e) {
-                    var adr = e.streetAddress;
-                    n.append('<div><span data-i18n="contact.adr"></span><span> ' + (i + 1) + ': </span><span class="contactcontent" >' + adr + '</span></div>');
-                });
-            }
-
+            contact.appendAsString(n);
             n.append('<div><span  class="contactaction" data-i18n="contact.delete"></span><span>: </span><span class="contactcontent" >' + (data.length - 1) + ' </span> <span data-i18n="contact.copies"></span></div>');
             $('.contactcontent').css('font-weight', 'bold');
             $('.contactaction').css('color', 'blue');
             $('.contactaction').css('font-style', 'italic');
-            $('[data-i18n = "contact.merge"]').data("contact", contact);
-            $('[data-i18n = "contact.merge"]').data("data", data);
-            $('[data-i18n = "contact.merge"]').click(function(e) {
+            $('[#contact' + contact.key() + ']').data("contact", contact);
+            $('[#contact' + contact.key() + ']').data("data", data);
+            $('[#contact' + contact.key() + ']').click(function(e) {
                 try {
                     log("click merge");
                     var contact = $(this).data("contact");

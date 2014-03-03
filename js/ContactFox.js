@@ -37,6 +37,16 @@ function log(e) {
 
 var contactList = new cContactList();
 
+function getEventsList($obj) {
+    var ev = [],
+        events = jQuery._data($obj, "events"),
+        i;
+    for (i in events) {
+        ev.push(i);
+    }
+    return ev.join(' ');
+}
+
 function initApp() {
     // make the title a bit wider, so that more information
     // can be
@@ -59,22 +69,38 @@ function initApp() {
             $(':mobile-pagecontainer').pagecontainer("change", '#' + key);
         });
     });
+    var cb = $('#' + ids.CBINTRONOTAGAIN).find(':checkbox');
+    cb.prop('checked', true).checkboxradio("refresh");
+    cb.bind('change', function(e) {
+        var wasChecked = $(this).prop('checked');
+        log("wasChecked " + wasChecked);
+        window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, wasChecked);
+    });
+    // For debugging log all events that are bound to the checkbox and look if the state changed  
+    //log("EventList: " + getEventsList(cb[0]));
+    //cb.on(getEventsList(cb[0]), function(e) {
+    //    try {
+    //        log("checkbox event: " + e.type);
+    //        var wasChecked = $(this).prop('checked');
+    //        log("Checkbox was checked " + wasChecked);
+    //    } catch (ex) {
+    //        log(ex);
+    //    }
+    //});
     buttons[pages.START].click(function(e) {
         loadContacts();
     });
-    $('#' + pages.START).data("buttons", buttons);
-    $('#' + ids.CBINTRONOTAGAIN + ":parent :parent").click(function(e) {
-        try {
-            log("intronotagain clicked");
-            var $checkbox = $(this).find(':checkbox');
-            var wasChecked = $checkbox.attr('checked');
-            $checkbox.attr('checked', !wasChecked);
-            log("intronotagain is checked" + !wasChecked);
-            window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, !wasChecked);
-        } catch (ex) {
-            log(ex);
-        }
-    });
+
+    //    $('#' + ids.CBINTRONOTAGAIN).on("click", function(e) {
+    //        try {
+    //            e.preventDefault();
+    //            var $checkbox = $(this).find(':checkbox');
+    //            $checkbox.trigger("checked");
+    //        } catch (ex) {
+    //            log(ex);
+    //        }
+    //    });
+
     //Init i18n
     i18n.init(function(t) {
         // translate nav
@@ -83,6 +109,8 @@ function initApp() {
         $(".i18n").i18n();
     });
     try {
+        // check if the intro was disabled by the user, and proceed to the start page
+        // 
         var intronotagain = window.localStorage.getItem("ContactFox." + ids.CBINTRONOTAGAIN);
         log("intronotagain was selected: " + intronotagain);
         if (intronotagain == 'true') {
@@ -174,7 +202,8 @@ function changeContactSelected(event) {
             // TODO use a template
             var n = $('#' + ids.CONTACTCHANGE);
             n.empty();
-            n.append('<a data-role="button" data-i18n="contact.merge" id="merge' + contact.key() + '"></a>');
+            var mergeButtonID = 'merge' + contact.key();
+            n.append('<a data-role="button" data-i18n="contact.merge" id="' + mergeButtonID + '"></a>');
             n.append('<div class="contactaction" data-i18n="contact.keep"></div>');
             n.append('<div><span data-i18n="contact.name"></span><span>: </span><span class="contactcontent" >' + cname + '</span></div>');
             contact.appendAsString(n);
@@ -182,18 +211,16 @@ function changeContactSelected(event) {
             $('.contactcontent').css('font-weight', 'bold');
             $('.contactaction').css('color', 'blue');
             $('.contactaction').css('font-style', 'italic');
-            $('[#contact' + contact.key() + ']').data("contact", contact);
-            $('[#contact' + contact.key() + ']').data("data", data);
-            $('[#contact' + contact.key() + ']').click(function(e) {
+            $('#' + mergeButtonID).data("contact", contact);
+            $('#' + mergeButtonID).data("data", data);
+            $('#' + mergeButtonID).click(function(e) {
                 try {
                     log("click merge");
                     var contact = $(this).data("contact");
                     $('#' + contact.key()).css("display", "none");
                     contactList.merge(contact.key());
                     log("merged, go back");
-                    $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.DUPLICATES, {
-                        transition: 'slide'
-                    });
+                    $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.DUPLICATES);
                 } catch (ex) {
                     log(ex);
                 }
@@ -204,9 +231,7 @@ function changeContactSelected(event) {
 
             // apply styles to the newly created subelements of the page
             $('#' + pages.CHANGECONTACT).trigger("create");
-            $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.CHANGECONTACT, {
-                transition: 'slide'
-            });
+            $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.CHANGECONTACT);
         }
     } catch (exception) {
         log(exception);
@@ -239,7 +264,11 @@ $(document)
                 $('[data-i18n = "debug.showintroagain"]').click(function(e) {
                     try {
                         log("showintroagain clicked");
-                        window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, "false");
+                        var cb = $('#' + ids.CBINTRONOTAGAIN).find(':checkbox');
+                        cb.prop('checked', false).checkboxradio("refresh");
+                        cb.trigger("change");
+                        var intronotagain = window.localStorage.getItem("ContactFox." + ids.CBINTRONOTAGAIN);
+                        log("intronotagain was selected: " + intronotagain);
                     } catch (ex) {
                         log(ex);
                     }

@@ -17,10 +17,10 @@
 		<div data-role="content" data-theme="b">
                   <img src="images/ContactFox.png" style="float:left; margin-right: 5px;"></img>
 		  <div class="i18n" data-i18n="app.introduction"></div>
-                    <div data-role="fieldcontain">
+                    <div data-role="fieldcontain" id="CBINTRONOTAGAIN">
  	              <fieldset data-role="controlgroup">
-		        <input type="checkbox" name="checkbox-1" id="CBINTRONOTAGAIN" class="custom" />
-		        <label class="i18n" for="CBINTRONOTAGAIN" data-i18n="app.intronotagain"></label>
+		        <input type="checkbox" name="checkbox-1"  class="custom" id="checkbox-1" />
+		        <label class="i18n" for="checkbox-1" data-i18n="app.intronotagain"></label>
                       </fieldset>
                     </div>
 		    <div class="nav">
@@ -44,7 +44,7 @@
 			</div>
 		</div>
 	</div>
-	<div data-role="page" id="pDuplicates" data-theme="b">
+	<div data-role="page" id="pDuplicates" data-theme="b" data-scroll='true'>
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="duplicates.title"></h1>
 			<a href="#pStart" class="i18n" data-role="button" data-icon="back"

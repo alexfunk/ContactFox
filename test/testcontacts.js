@@ -100,6 +100,11 @@
      familyName: ['Doe'],
      name: ['John Doe'],
      honorificSuffix: []
+ }, {
+     //9
+     id: "xyz",
+     org: ['John Doe Inc'],
+     honorificSuffix: []
  }];
  var c = [];
  $.each(fixture, function(i, e) {
@@ -114,8 +119,11 @@
          test.done();
      },
      'displayName': function(test) {
-         test.expect(1);
+         test.expect(4);
          test.equal(c[0].displayName(), "John Doe");
+         test.equal(c[2].displayName(), "The Bartman");
+         test.equal(c[3].displayName(), "NoLastName");
+         test.equal(c[9].displayName(), "John Doe Inc");
          test.done();
      },
      'containsNumber': function(test) {

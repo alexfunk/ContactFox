@@ -7,13 +7,25 @@ cContactUtils.prototype = {
                 try {
                     if (e.length > 1) {
                         var entry = e[0];
-                        ul.append('<li id="' +
+                        var html = '<li id="' +
                             entry.key() +
                             '"><a>' +
                             entry.displayName() +
                             '<span class="ui-li-count">' + e.length + '</span>' +
-                            '</a></li>');
-                        ul.children().last().data("list", e);
+                            '</a></li>';
+                        var li = ul.find('li');
+                        var inserted = false;
+                        $.each(li, function(i1, e1) {
+                            var list = $(e1).data("list");
+                            if (list.length > e.length) {
+                                $(e1).insertBefore(html);
+                                $('#' + entry.key()).data('list', e);
+                            }
+                        });
+                        if (!inserted) {
+                            ul.append(html);
+                            ul.children().last().data("list", e);
+                        }
                     }
                 } catch (ex) {
                     log(ex);

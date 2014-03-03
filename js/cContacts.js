@@ -9,28 +9,63 @@ function log(e) {
 
 cContact.prototype = {
     key: function() {
-        var givenName = "";
-        if (($.isArray(this.c.givenName)) && (this.c.givenName.length > 0)) {
-            givenName = this.c.givenName[0];
+        var result;
+        if (this.c.id) result = this.c.id;
+        else {
+            var givenName = "";
+            if (($.isArray(this.c.givenName)) && (this.c.givenName.length > 0)) {
+                givenName = this.c.givenName[0];
+            }
+            var familyName = "";
+            if (($.isArray(this.c.familyName)) && (this.c.familyName.length > 0)) {
+                familyName = this.c.familyName[0];
+            }
+            result = familyName + "_" + givenName;
         }
-        var familyName = "";
-        if (($.isArray(this.c.familyName)) && (this.c.familyName.length > 0)) {
-            familyName = this.c.familyName[0];
-        }
-        // TODO escape
-        return familyName + "_" + givenName;
+        return encodeURIComponent(result);
     },
+
+    escapeHTML: function(string) {
+        var entityMap = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': '&quot;',
+            "'": '&#39;',
+            "/": '&#x2F;'
+        };
+        return String(string).replace('/[&<>"\'\/]/g', function(s) {
+            return entityMap[s];
+        });
+    },
+
     displayName: function() {
-        var givenName = "";
-        if (($.isArray(this.c.givenName)) && (this.c.givenName.length > 0)) {
-            givenName = this.c.givenName[0];
+        var lResult;
+        var lName = "";
+        if (($.isArray(this.c.name)) && (this.c.name.length > 0)) {
+            lName = this.c.name[0];
         }
-        var familyName = "";
-        if (($.isArray(this.c.familyName)) && (this.c.familyName.length > 0)) {
-            familyName = this.c.familyName[0];
+        lResult = lName;
+        if (lResult.length === 0) {
+            var lGivenName = "";
+            if (($.isArray(this.c.givenName)) && (this.c.givenName.length > 0)) {
+                lGivenName = this.c.givenName[0];
+            }
+            var lFamilyName = "";
+            if (($.isArray(this.c.familyName)) && (this.c.familyName.length > 0)) {
+                lFamilyName = this.c.familyName[0];
+            }
+            if ((lFamilyName.length !== 0) && (lGivenName.length !== 0))
+                lResult = lGivenName + " " + lFamilyName;
         }
-        // TODO escape
-        return givenName + " " + familyName;
+        if (lResult.length === 0) {
+            var lOrg = "";
+            if (($.isArray(this.c.org)) && (this.c.org.length > 0)) {
+                lOrg = this.c.org[0];
+            }
+            lResult = lOrg;
+        }
+        return this.escapeHTML(lResult);
 
     },
     isUnifiyable: function(contact) {

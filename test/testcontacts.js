@@ -105,6 +105,42 @@
      id: "xyz",
      org: ['John Doe Inc'],
      honorificSuffix: []
+ }, {
+     //10
+     givenName: ['John'],
+     familyName: ['Doe'],
+     name: ['John Doe'],
+     tel: [{
+         type: 'mobile',
+         value: '00421 5551234-1'
+     }, {
+         type: 'mobile',
+         value: '+49421 5551234-2'
+     }]
+ }, {
+     //11
+     givenName: ['John'],
+     familyName: ['Doe'],
+     name: ['John Doe'],
+     tel: [{
+         type: 'mobile',
+         value: '0421 5551234-1'
+     }, {
+         type: 'mobile',
+         value: '+49421 5551234-2'
+     }]
+ }, {
+     //12
+     givenName: ['John'],
+     familyName: ['Doe'],
+     name: ['John Doe'],
+     tel: [{
+         type: 'mobile',
+         value: '00421 5551234-1'
+     }, {
+         type: 'mobile',
+         value: '0421 5551234-2'
+     }]
  }];
  var c = [];
  $.each(fixture, function(i, e) {
@@ -131,6 +167,33 @@
          test.equal(c[0].containsNumber('0421 5554321'), true);
          test.equal(c[1].containsNumber('0421 5551234'), true);
          test.equal(c[1].containsNumber('0421 5554321'), false);
+         test.done();
+     },
+     'hasMissingPrefix': function(test) {
+         test.expect(10);
+         test.equal(c[0].hasMissingPrefix(), true);
+         test.equal(c[1].hasMissingPrefix(), true);
+         test.equal(c[2].hasMissingPrefix(), true);
+         test.equal(c[3].hasMissingPrefix(), true);
+         test.equal(c[4].hasMissingPrefix(), true);
+         test.equal(c[5].hasMissingPrefix(), true);
+         test.equal(c[6].hasMissingPrefix(), false);
+         test.equal(c[10].hasMissingPrefix(), false);
+         test.equal(c[11].hasMissingPrefix(), true);
+         test.equal(c[12].hasMissingPrefix(), true);
+         test.done();
+     },
+     'insertPrefix': function(test) {
+         test.expect(6);
+         test.equal(c[10].hasMissingPrefix(), false);
+         c[10].insertPrefix("+44");
+         test.equal(c[10].hasMissingPrefix(), false);
+         test.equal(c[11].hasMissingPrefix(), true);
+         c[11].insertPrefix("+49");
+         test.equal(c[11].hasMissingPrefix(), false);
+         test.equal(c[12].hasMissingPrefix(), true);
+         c[12].insertPrefix("+49");
+         test.equal(c[12].hasMissingPrefix(), false);
          test.done();
      },
      'containsEMail': function(test) {

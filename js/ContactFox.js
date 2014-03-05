@@ -1,14 +1,3 @@
-/**
- * extends the String prototype with a startsWith function, so that it returns
- * true if the string object </div> <div data-role="content" starts with the
- * argument string, just as in ordinary Java
- */
-if (typeof String.prototype.startsWith != 'function') {
-    String.prototype.startsWith = function(str) {
-        return this.slice(0, str.length) == str;
-    };
-}
-
 // some constants used in the applícation:
 
 var pages = {
@@ -24,6 +13,7 @@ var pages = {
 
 var ids = {
     CONTACTLIST: "CONTACTLIST",
+    MISSINGPREFIXLIST: "MISSINGPREFIXLIST",
     CONTACTCHANGE: "CONTACTCHANGE",
     TEXTAREA: "TEXTAREA",
     CONTACTSREAD: "CONTACTSREAD",
@@ -69,24 +59,6 @@ function initApp() {
             $(':mobile-pagecontainer').pagecontainer("change", '#' + key);
         });
     });
-    var cb = $('#' + ids.CBINTRONOTAGAIN).find(':checkbox');
-    cb.prop('checked', true).checkboxradio("refresh");
-    cb.bind('change', function(e) {
-        var wasChecked = $(this).prop('checked');
-        log("wasChecked " + wasChecked);
-        window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, wasChecked);
-    });
-    // For debugging log all events that are bound to the checkbox and look if the state changed  
-    //log("EventList: " + getEventsList(cb[0]));
-    //cb.on(getEventsList(cb[0]), function(e) {
-    //    try {
-    //        log("checkbox event: " + e.type);
-    //        var wasChecked = $(this).prop('checked');
-    //        log("Checkbox was checked " + wasChecked);
-    //    } catch (ex) {
-    //        log(ex);
-    //    }
-    //});
     buttons[pages.START].click(function(e) {
         loadContacts();
     });
@@ -110,7 +82,6 @@ function initApp() {
     });
     try {
         // check if the intro was disabled by the user, and proceed to the start page
-        // 
         var intronotagain = window.localStorage.getItem("ContactFox." + ids.CBINTRONOTAGAIN);
         log("intronotagain was selected: " + intronotagain);
         if (intronotagain == 'true') {
@@ -120,6 +91,31 @@ function initApp() {
     } catch (ex) {
         log(ex);
     }
+    // The intro explains the purpose of the app and ask the user to confirm 
+    // the access to the contact list. 
+    // By a checkbox the user can controll if he wants to see the intro again
+    // on program start. 
+    // It is initialized to not show the intro again. This setting is stored in local
+    // storage so it is there on program start 
+    var cb = $('#' + ids.CBINTRONOTAGAIN).find(':checkbox');
+    cb.prop('checked', true).checkboxradio("refresh");
+    window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, true);
+    cb.bind('change', function(e) {
+        var wasChecked = $(this).prop('checked');
+        log("wasChecked " + wasChecked);
+        window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, wasChecked);
+    });
+    // For debugging log all events that are bound to the checkbox and look if the state changed  
+    //log("EventList: " + getEventsList(cb[0]));
+    //cb.on(getEventsList(cb[0]), function(e) {
+    //    try {
+    //        log("checkbox event: " + e.type);
+    //        var wasChecked = $(this).prop('checked');
+    //        log("Checkbox was checked " + wasChecked);
+    //    } catch (ex) {
+    //        log(ex);
+    //    }
+    //});
 
 }
 
@@ -134,7 +130,7 @@ function updateButtons() {
     } else {
         $('[data-i18n = "nav.pFunnyCharacters"]').addClass('ui-disabled');
     }
-    if (contactList.hasMissingPlus()) {
+    if (contactList.hasMissingPrefix()) {
         $('[data-i18n = "nav.pMissingPlus"]').removeClass('ui-disabled');
     } else {
         $('[data-i18n = "nav.pMissingPlus"]').addClass('ui-disabled');
@@ -166,14 +162,7 @@ function loadContacts() {
                         cursor.
                         continue ();
                     } else {
-                        // let jquery mobile make this list filterable
-                        $('#' + ids.CONTACTLIST).append('<ul data-filter="true"></ul>');
-                        contactList.appendUnifyListToUL($('#' + ids.CONTACTLIST + ' ul'));
-                        $('#' + ids.CONTACTLIST + ' ul li').click(function(event) {
-                            changeContactSelected(event);
-                        });
-                        $('#' + ids.CONTACTLIST + " ul").listview()
-                            .listview('refresh');
+                        addListsToHTML();
                     }
                 } catch (ex) {
                     log(ex);
@@ -191,7 +180,30 @@ function loadContacts() {
     }
 }
 
-function changeContactSelected(event) {
+function addListsToHTML() {
+    // dupplicates
+    // let jquery mobile make this list filterable
+    var cls = '#' + ids.CONTACTLIST;
+    $(cls).append('<ul data-filter="true"></ul>');
+    contactList.appendUnifyListToUL($(cls + ' ul'));
+    $(cls + ' ul li').click(function(event) {
+        mergeContactSelected(event);
+    });
+    $(cls + " ul").listview()
+        .listview('refresh');
+    //misingprefix
+    // let jquery mobile make this list filterable
+    var mls = '#' + ids.MISSINGPREFIXLIST;
+    $(mls).append('<ul data-filter="true"></ul>');
+    contactList.appendMissingPrefixListToUL($(mls + ' ul'));
+    $(mls + ' ul li').click(function(event) {
+        addPrefixContactSelected(event);
+    });
+    $(mls + " ul").listview()
+        .listview('refresh');
+}
+
+function mergeContactSelected(event) {
     try {
         var li = $(event.target).parent();
         var id = li.attr("id");
@@ -238,6 +250,15 @@ function changeContactSelected(event) {
     }
 }
 
+function addPrefixContactSelected(event) {
+    try {
+        var li = $(event.target).parent();
+        var id = li.attr("id");
+        log(id);
+    } catch (exception) {
+        log(exception);
+    }
+}
 
 // Init the start page
 $(document)
@@ -259,7 +280,11 @@ $(document)
         function() {
             try {
                 $('[data-i18n = "debug.addtestdata"]').click(function(e) {
-                    contactUtils.createDuplicateContactForTesting();
+                    try {
+                        contactUtils.createDuplicateContactForTesting();
+                    } catch (ex) {
+                        log(ex);
+                    }
                 });
                 $('[data-i18n = "debug.showintroagain"]').click(function(e) {
                     try {

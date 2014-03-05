@@ -1,3 +1,16 @@
+/**
+ * extends the String prototype with a startsWith function, so that it returns
+ * true if the string object </div> <div data-role="content" starts with the
+ * argument string, just as in ordinary Java
+ */
+if (typeof String.prototype.startsWith != 'function') {
+    String.prototype.startsWith = function(str) {
+        return this.slice(0, str.length) == str;
+    };
+}
+
+
+
 cContact = function(c) {
     this.c = c;
 };
@@ -72,6 +85,29 @@ cContact.prototype = {
         //TODO compare first and last name
         // what about first + last = last + first
         return this.displayName() == contact.displayName();
+    },
+    hasMissingPrefix: function() {
+        var result = false;
+        if ($.isArray(this.c.tel)) {
+            $.each(this.c.tel, function(i, e) {
+                if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
+                    result = true;
+                    return false;
+                }
+            });
+        }
+        return result;
+    },
+    insertPrefix: function(prefix) {
+        if ($.isArray(this.c.tel)) {
+            $.each(this.c.tel, function(i, e) {
+                if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
+                    if (e.value.startsWith("0")) {
+                        e.value = prefix + e.value.substring(1);
+                    }
+                }
+            });
+        }
     },
     containsNumber: function(number) {
         var result = false;

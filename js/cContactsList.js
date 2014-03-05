@@ -3,15 +3,22 @@ cContactList = function() {};
 cContactList.prototype = {
     _list: [],
     _unifyList: [],
+    _missingPrefixList: [],
     add: function(c) {
         this._list.push(c);
         c.addToUnifyList(this._unifyList);
+        if (c.hasMissingPrefix()) {
+            this._missingPrefixList.push(c);
+        }
     },
     size: function() {
         return this._list.length;
     },
     appendUnifyListToUL: function(ul) {
         return contactUtils.appendUnifyListToUL(this._unifyList, ul);
+    },
+    appendMissingPrefixListToUL: function(ul) {
+        return contactUtils.appendMissingPrefixListToUL(this._missingPrefixList, ul);
     },
     hasDuplicates: function() {
         var result = false;
@@ -27,8 +34,8 @@ cContactList.prototype = {
     hasFunnyCharacters: function() {
         return false;
     },
-    hasMissingPlus: function() {
-        return false;
+    hasMissingPrefix: function() {
+        return this._missingPrefixList.length !== 0;
     },
     merge: function(key) {
         var uList = this._unifyList;

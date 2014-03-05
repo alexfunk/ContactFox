@@ -1,6 +1,10 @@
 cContactUtils = function() {};
 
 cContactUtils.prototype = {
+    /**
+     * insert all members in a unify list to an ul jquery result
+     * this is done in order of the length of contacts to be unified
+     */
     appendUnifyListToUL: function(list, ul) {
         try {
             $.each(list, function(i, e) {
@@ -17,9 +21,11 @@ cContactUtils.prototype = {
                         var inserted = false;
                         $.each(li, function(i1, e1) {
                             var list = $(e1).data("list");
-                            if (list.length > e.length) {
-                                $(e1).insertBefore(html);
+                            if (list.length < e.length) {
+                                $(e1).before(html);
                                 $('#' + entry.key()).data('list', e);
+                                inserted = true;
+                                return false;
                             }
                         });
                         if (!inserted) {
@@ -27,6 +33,25 @@ cContactUtils.prototype = {
                             ul.children().last().data("list", e);
                         }
                     }
+                } catch (ex) {
+                    log(ex);
+                }
+            });
+        } catch (ex) {
+            log(ex);
+        }
+    },
+    appendMissingPrefixListToUL: function(list, ul) {
+        try {
+            $.each(list, function(i, e) {
+                try {
+                    var html = '<li id="prefix' +
+                        e.key() +
+                        '"><a>' +
+                        e.displayName() +
+                        '</a></li>';
+                    ul.append(html);
+
                 } catch (ex) {
                     log(ex);
                 }
@@ -50,7 +75,7 @@ cContactUtils.prototype = {
                 familyName: ['Doe'],
                 name: ['John Doe'],
                 tel: [{
-                    type: 'mobile',
+                    type: ['voice'],
                     value: '0421 5551234'
                 }],
                 note: ['testContact'],
@@ -59,24 +84,28 @@ cContactUtils.prototype = {
                 familyName: ['Doe'],
                 name: ['John Doe'],
                 tel: [{
-                    type: 'mobile',
+                    type: ['voice'],
                     value: '0421 5554321'
                 }],
-                note: ['testContact'], // to clean up test contacts
+                note: ['testContact'] // to clean up test contacts
             }, {
                 givenName: ['Bart'],
                 familyName: ['Simpson'],
                 name: ['The Bartman'],
                 tel: [{
-                    type: 'mobile',
+                    type: ['voice'],
                     value: '0162 5554321'
                 }],
-                note: ['testContact'], // to clean up test contacts
+                note: ['testContact'] // to clean up test contacts
             }
 
         ];
         $.each(contacts, function(i, e) {
-            var saveResult = navigator.mozContacts.save(e);
+            //this should work for b2g 1.2 and b2g 1.3 
+            var contact = new mozContact(e);
+            if ("init" in contact)
+                contact.init(e);
+            var saveResult = navigator.mozContacts.save(contact);
             saveResult.onerror = function() {
                 $('#' + ids.TEXTAREA).append(i + " contact saveError");
             };

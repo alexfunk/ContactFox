@@ -18,10 +18,15 @@
         "pAbout": "about ContactFox..."
     },
     "duplicates": {
-        "title": "Duplicates"
+        "title": "Duplicates",
+        "mergeall": "merge all"
     },
     "missingplus": {
-        "title": "Missing +XX Prefix"
+        "title": "Missing +XX Prefix",
+        "close": "close",
+        "correct": "correct",
+        "selectprefix": "select prefix",
+        "correctall": "correct all"
     },
     "funchars": {
         "title": "Funny Characters"

@@ -23,8 +23,8 @@
 		        <label class="i18n" for="checkbox-1" data-i18n="app.intronotagain"></label>
                       </fieldset>
                     </div>
-		    <div class="nav">
-                        <a href="#" data-role="button" data-i18n="nav.home"></a> 
+		    <div>
+                        <a href="#" data-role="button" data-nav="nav.home" class="i18n" data-i18n="nav.home"></a> 
 	            </div>
 		</div>
 	</div>
@@ -34,13 +34,12 @@
 		</div>
 		<div data-role="content" data-theme="b">
 			<div><span id="CONTACTSREAD"> </span> <span class="i18n" data-i18n="start.contactsread"></span></div>
-			<div class="nav">
-				<a href="#" data-role="button" data-i18n="nav.pDuplicates"></a> 
-				<a href="#" data-role="button" data-i18n="nav.pFunnyCharacters"></a> 
-				<a href="#" data-role="button" data-i18n="nav.pMissingPlus"></a> 
-				<a href="#" data-role="button" data-i18n="nav.pAbout"></a> 
-                                <a href="#" data-role="button" data-i18n="nav.pDebug"></a> 
-                                <a href="#pChangeContactTest" data-role="button">TestPage</a> 
+			<div>
+				<a href="#" data-role="button" data-nav="nav.pDuplicates"><span class="i18n" data-i18n="nav.pDuplicates"></span> <span id="NUMDUPLICATES">0</span></a> 
+				<a href="#" data-role="button" data-nav="nav.pFunnyCharacters"><span class="i18n" data-i18n="nav.pFunnyCharacters"></span> <span id="NUMFUNNYCHAR">0</span></a> 
+				<a href="#" data-role="button" data-nav="nav.pMissingPlus"> <span class="i18n" data-i18n="nav.pMissingPlus"></span> <span id="NUMMISSINGPREFIX">0</span></a> 
+				<a href="#" data-role="button" data-nav="nav.pAbout"> <span class="i18n" data-i18n="nav.pAbout"></span></a> 
+                                <a href="#" data-role="button" data-nav="nav.pDebug"><span class="i18n" data-i18n="nav.pDebug"></span> <span id="NUMMESSAGES">0</span></a> 
 			</div>
 		</div>
 	</div>
@@ -48,9 +47,11 @@
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="duplicates.title"></h1>
 			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
-				data-i18n="nav.home"></a>
+				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">
+                <a class="i18n" data-role="button" data-icon="gear"
+				data-i18n="duplicates.mergeall"></a>
 			<div id="CONTACTLIST" ></div>
 		</div>
 	</div>
@@ -58,19 +59,42 @@
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="funchar.title"></h1>
 			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
-				data-i18n="nav.home"></a>
+				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">
 			<div id="FUNCHARLIST" ></div>
 		</div>
 	</div>
 	<div data-role="page" id="pMissingPlus" data-theme="b">
+                <div data-role="panel" data-position="right" data-display="push" 
+                     id="MISSINGPREFIXPANEL">
+                    <div id="MISSINGPREFIXCONTENT" ></div>
+                    <div><a href="#" data-role="button" id="correct" data-i18n="missingplus.correct"></a> <a href="#" data-role="button" id="close" data-i18n="missingplus.close"></a></div>
+                </div>
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="missingplus.title"></h1>
 			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
-				data-i18n="nav.home"></a>
+				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">
+                <a class="i18n" data-role="button" data-icon="gear" 
+                                data-i18n="missingplus.correctall"></a>
+                        <div class="ui-field-contain">
+                           <label for="INPUTPREFIX" class="i18n" 
+                                  data-i18n="missingplus.selectprefix" style="width:40%"></label>
+                           <input type="tel" id="INPUTPREFIX" value="+49" style="width:30%"></input>
+                           <select id="SELECTPREFIX" style="width:30%">
+                             <option value="+49">+49</option>
+                             <option value="+41">+41</option>
+                             <option value="+42">+42</option>
+                             <option value="+43">+43</option>
+                             <option value="+44">+44</option>
+                             <option value="+45">+45</option>
+                             <option value="+46">+46</option>
+                             <option value="+47">+47</option>
+                             <option value="+48">+48</option>
+                           </select>
+                        </div>
 			<div id="MISSINGPREFIXLIST" ></div>
 		</div>
 	</div>
@@ -78,7 +102,7 @@
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="changecontact.title"></h1>
 			<a href="#pDuplicates" class="i18n" data-role="button" data-icon="back"
-				data-i18n="nav.pDuplicates"></a>
+				data-nav="nav.pDuplicates" data-i18n="nav.pDuplicates"></a>
 		</div>
 		<div data-role="content" data-theme="b">
 			<div id="CONTACTCHANGE"></div>
@@ -88,7 +112,7 @@
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="about.title"></h1>
 			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
-				data-i18n="nav.home"></a>
+				data-nav="nav.home"data-i18n="nav.home" ></a>
 		</div>
 		<div data-role="content" data-theme="b">
 			<div class="i18n" data-i18n="about.text" ></div>
@@ -99,7 +123,7 @@
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="debug.title"></h1>
 			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
-				data-i18n="nav.home"></a>
+				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">
 			<a class="i18n" href="#" data-role="button" data-i18n="debug.addtestdata"></a> 
@@ -107,16 +131,6 @@
 			<div class="i18n" data-i18n="debug.log"></div>
 			<textarea id="TEXTAREA" cols="40" rows="8" name="textarea-1" class
 ="ui-disabled"></textarea>
-		</div>
-	</div>
-	<div data-role="page" id="pChangeContactTest" data-theme="b">
-		<div data-role="header">
-			<h1 class="i18n" data-i18n="changecontact.title"></h1>
-			<a href="#pDuplicates" class="i18n" data-role="button" data-icon="back"
-				data-i18n="nav.pDuplicates"></a>
-		</div>
-		<div data-role="content" data-theme="b">
-			<div id="XXX"></div>
 		</div>
 	</div>
 </body>

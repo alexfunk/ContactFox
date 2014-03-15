@@ -18,10 +18,15 @@
         "pAbout": "Über ContactFox..."
     },
     "duplicates": {
-        "title": "Doppelte"
+        "title": "Doppelte",
+        "mergeall": "Alle zusammenführen"
     },
     "missingplus": {
-        "title": "Fehlende +XX Vorwahl"
+        "title": "Fehlende +XX Vorwahl",
+        "close": "Schließen",
+        "correct": "Korrigieren",
+        "selectprefix": "Vorwahl wählen",
+        "correctall": "Alle korrigieren"
     },
     "funchars": {
         "title": "Komische Zeichen"

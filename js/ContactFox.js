@@ -17,7 +17,12 @@ var ids = {
     CONTACTCHANGE: "CONTACTCHANGE",
     TEXTAREA: "TEXTAREA",
     CONTACTSREAD: "CONTACTSREAD",
-    CBINTRONOTAGAIN: "CBINTRONOTAGAIN"
+    CBINTRONOTAGAIN: "CBINTRONOTAGAIN",
+    MISSINGPREFIXPANEL: "MISSINGPREFIXPANEL",
+    MISSINGPREFIXCONTENT: "MISSINGPREFIXCONTENT",
+    INPUTPREFIX: "INPUTPREFIX",
+    SELECTPREFIX: "SELECTPREFIX",
+    NUMMISSINGPREFIX: "NUMMISSINGPREFIX"
 };
 
 function log(e) {
@@ -48,12 +53,12 @@ function initApp() {
 
     // link pages together ?!
     var buttons = {};
-    buttons[pages.DUPLICATES] = $('[data-i18n = "nav.pDuplicates"]');
-    buttons[pages.DEBUG] = $('[data-i18n = "nav.pDebug"]');
-    buttons[pages.START] = $('[data-i18n = "nav.home"]');
-    buttons[pages.FUNNYCHARS] = $('[data-i18n = "nav.pFunnyCharacters"]');
-    buttons[pages.MISSINGPLUS] = $('[data-i18n = "nav.pMissingPlus"]');
-    buttons[pages.ABOUT] = $('[data-i18n = "nav.pAbout"]');
+    buttons[pages.DUPLICATES] = $('[data-nav="nav.pDuplicates"]');
+    buttons[pages.DEBUG] = $('[data-nav="nav.pDebug"]');
+    buttons[pages.START] = $('[data-nav="nav.home"]');
+    buttons[pages.FUNNYCHARS] = $('[data-nav="nav.pFunnyCharacters"]');
+    buttons[pages.MISSINGPLUS] = $('[data-nav="nav.pMissingPlus"]');
+    buttons[pages.ABOUT] = $('[data-nav="nav.pAbout"]');
     $.each(buttons, function(key, value) {
         value.click(function(e) {
             $(':mobile-pagecontainer').pagecontainer("change", '#' + key);
@@ -62,6 +67,16 @@ function initApp() {
     buttons[pages.START].click(function(e) {
         loadContacts();
     });
+    try {
+        $('[data-i18n = "duplicates.mergeall"]').click(function(e) {
+            mergeAll();
+        });
+        $('[data-i18n = "missingplus.correctall"]').click(function(e) {
+            correctAll();
+        });
+    } catch (ex) {
+        log(ex);
+    }
 
     //    $('#' + ids.CBINTRONOTAGAIN).on("click", function(e) {
     //        try {
@@ -75,8 +90,6 @@ function initApp() {
 
     //Init i18n
     i18n.init(function(t) {
-        // translate nav
-        $(".nav").i18n();
         // translate app
         $(".i18n").i18n();
     });
@@ -116,24 +129,28 @@ function initApp() {
     //        log(ex);
     //    }
     //});
-
+    $('#' + ids.SELECTPREFIX).bind('change', function(e) {
+        var value = $('#' + ids.SELECTPREFIX).val();
+        log("selectedPRefix: " + value);
+        $('#' + ids.INPUTPREFIX).val(value);
+    });
 }
 
 function updateButtons() {
     if (contactList.hasDuplicates()) {
-        $('[data-i18n = "nav.pDuplicates"]').removeClass('ui-disabled');
+        $('[data-nav="nav.pDuplicates"]').removeClass('ui-disabled');
     } else {
-        $('[data-i18n = "nav.pDuplicates"]').addClass('ui-disabled');
+        $('[data-nav="nav.pDuplicates"]').addClass('ui-disabled');
     }
     if (contactList.hasFunnyCharacters()) {
-        $('[data-i18n = "nav.pFunnyCharacters"]').removeClass('ui-disabled');
+        $('[data-nav="nav.pFunnyCharacters"]').removeClass('ui-disabled');
     } else {
-        $('[data-i18n = "nav.pFunnyCharacters"]').addClass('ui-disabled');
+        $('[data-nav="nav.pFunnyCharacters"]').addClass('ui-disabled');
     }
     if (contactList.hasMissingPrefix()) {
-        $('[data-i18n = "nav.pMissingPlus"]').removeClass('ui-disabled');
+        $('[data-nav="nav.pMissingPlus"]').removeClass('ui-disabled');
     } else {
-        $('[data-i18n = "nav.pMissingPlus"]').addClass('ui-disabled');
+        $('[data-nav="nav.pMissingPlus"]').addClass('ui-disabled');
     }
 
 }
@@ -156,6 +173,9 @@ function loadContacts() {
                         try {
                             $('#' + ids.CONTACTSREAD).text(" " + contactList.size());
                             updateButtons();
+                            $('#' + ids.NUMMISSINGPREFIX).html(contactList.numMissingPrefix());
+                            $('#' + ids.NUMFUNNYCHARACTERS).html(contactList.numFunnyCharacters());
+                            $('#' + ids.NUMDUPLICATES).html(contactList.numDuplicates());
                         } catch (ex) {
                             log(ex);
                         }
@@ -201,6 +221,26 @@ function addListsToHTML() {
     });
     $(mls + " ul").listview()
         .listview('refresh');
+    //$('[data-i18n = "duplicates.mergeall"]').button("refresh");
+}
+
+function merge(id) {
+    $('#' + id).css("display", "none");
+    contactList.merge(id);
+}
+
+function mergeAll() {
+    try {
+        var cls = '#' + ids.CONTACTLIST;
+        $(cls + ' ul li').each(function(i, e) {
+            if (!$(e).hasClass('ui-screen-hidden')) {
+                var id = $(e).attr("id");
+                merge(id);
+            }
+        });
+    } catch (ex) {
+        log(ex);
+    }
 }
 
 function mergeContactSelected(event) {
@@ -229,8 +269,7 @@ function mergeContactSelected(event) {
                 try {
                     log("click merge");
                     var contact = $(this).data("contact");
-                    $('#' + contact.key()).css("display", "none");
-                    contactList.merge(contact.key());
+                    merge(contact.key());
                     log("merged, go back");
                     $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.DUPLICATES);
                 } catch (ex) {
@@ -250,11 +289,56 @@ function mergeContactSelected(event) {
     }
 }
 
+function correctPrefix(c, prefix) {
+    log("correctPRefix " + c.key() + " " + prefix);
+    c.insertPrefix(prefix);
+    c.save();
+    $('#prefix' + c.key()).hide();
+}
+
+function correctAll() {
+    try {
+        var prefix = $("#" + ids.INPUTPREFIX).val();
+        var mpls = '#' + ids.MISSINGPREFIXLIST;
+        $(mpls + ' ul li').each(function(i, e) {
+            if (!$(e).hasClass('ui-screen-hidden')) {
+                var id = $(e).attr("id");
+                id = id.substring("prefix".length);
+                c = contactList.getById(id);
+                correctPrefix(c, prefix);
+            }
+        });
+    } catch (ex) {
+        log(ex);
+    }
+}
+
+
 function addPrefixContactSelected(event) {
     try {
+        var prefix = $("#" + ids.INPUTPREFIX).val();
         var li = $(event.target).parent();
         var id = li.attr("id");
-        log(id);
+        var c = contactList.getById(id.substring('prefix'.length));
+        var panel = $('#' + ids.MISSINGPREFIXPANEL);
+        var content = $('#' + ids.MISSINGPREFIXCONTENT);
+        content.empty();
+        c.appendAsString(content);
+        panel.i18n();
+        panel.trigger("updatelayout");
+        $('#close').click(function(e) {
+            panel.panel("close");
+        });
+        $('#correct').click(function(e) {
+            try {
+                log("correct clicked");
+                panel.panel("close");
+                correctPrefix(c, prefix);
+            } catch (ex) {
+                log(ex);
+            }
+        });
+        panel.panel("open");
     } catch (exception) {
         log(exception);
     }

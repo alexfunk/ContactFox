@@ -142,16 +142,21 @@ function updateButtons() {
     } else {
         $('[data-nav="nav.pDuplicates"]').addClass('ui-disabled');
     }
+    var nd = contactList.numDuplicates();
+    log("num dup " + nd);
+    $('#' + ids.NUMDUPLICATES).html(nd);
     if (contactList.hasFunnyCharacters()) {
         $('[data-nav="nav.pFunnyCharacters"]').removeClass('ui-disabled');
     } else {
         $('[data-nav="nav.pFunnyCharacters"]').addClass('ui-disabled');
     }
+    $('#' + ids.NUMFUNNYCHARACTERS).html(contactList.numFunnyCharacters());
     if (contactList.hasMissingPrefix()) {
         $('[data-nav="nav.pMissingPlus"]').removeClass('ui-disabled');
     } else {
         $('[data-nav="nav.pMissingPlus"]').addClass('ui-disabled');
     }
+    $('#' + ids.NUMMISSINGPREFIX).html(contactList.numMissingPrefix());
 
 }
 
@@ -159,6 +164,7 @@ function loadContacts() {
     try {
         updateButtons();
         if (contactList.size() === 0) {
+            contactList.addChangeListener(updateButtons);
             var allContacts = navigator.mozContacts.getAll({
                 sortBy: "familyName",
                 sortOrder: "descending"
@@ -172,10 +178,7 @@ function loadContacts() {
                         contactList.add(contact);
                         try {
                             $('#' + ids.CONTACTSREAD).text(" " + contactList.size());
-                            updateButtons();
-                            $('#' + ids.NUMMISSINGPREFIX).html(contactList.numMissingPrefix());
-                            $('#' + ids.NUMFUNNYCHARACTERS).html(contactList.numFunnyCharacters());
-                            $('#' + ids.NUMDUPLICATES).html(contactList.numDuplicates());
+                            // updateButtons();
                         } catch (ex) {
                             log(ex);
                         }
@@ -211,7 +214,7 @@ function addListsToHTML() {
     });
     $(cls + " ul").listview()
         .listview('refresh');
-    //misingprefix
+    //missingprefix
     // let jquery mobile make this list filterable
     var mls = '#' + ids.MISSINGPREFIXLIST;
     $(mls).append('<ul data-filter="true"></ul>');

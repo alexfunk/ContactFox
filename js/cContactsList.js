@@ -5,12 +5,14 @@ cContactList.prototype = {
     _unifyList: [],
     _funnyCharacters: [],
     _missingPrefixList: [],
+    _listeners: [],
     add: function(c) {
         this._list.push(c);
         c.addToUnifyList(this._unifyList);
         if (c.hasMissingPrefix()) {
             this._missingPrefixList.push(c);
         }
+        this._notifyChange(this);
     },
     size: function() {
         return this._list.length;
@@ -83,10 +85,28 @@ cContactList.prototype = {
                         e[j].remove();
                     }
                     t._unifyList.splice(i, 1);
+                    t._notifyChange(t);
                     // break jquery each loop:
                     return false;
                 }
             }
         });
+    },
+    addChangeListener: function(f) {
+        this._listeners.push(f);
+    },
+    removeChangeListener: function(f) {
+        var index = this._listeners.indexOf(f);
+        if (index !== -1) this._listeners.splice(index, 1);
+    },
+    _notifyChange: function() {
+        $.each(this._listeners, function(i, e) {
+            try {
+                e(this);
+            } catch (ex) {
+                log("Error in listener " + ex);
+            }
+        });
     }
+
 };

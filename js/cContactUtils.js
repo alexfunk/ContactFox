@@ -69,7 +69,12 @@ cContactUtils.prototype = {
         return primary;
     },
 
-    createDuplicateContactForTesting: function() {
+    /** 
+     * adds some testdate to the phones adressbook to test the functions, even if the adressbook
+     * is optherwise clean. It also adds them to the contactlist, so the testdata is
+     * reflected in the app right away.
+     */
+    createDuplicateContactForTesting: function(contactList) {
         var contacts = [{
                 givenName: ['John'],
                 familyName: ['Doe'],
@@ -101,17 +106,22 @@ cContactUtils.prototype = {
 
         ];
         $.each(contacts, function(i, e) {
-            //this should work for b2g 1.2 and b2g 1.3 
-            var contact = new mozContact(e);
-            if ("init" in contact)
-                contact.init(e);
-            var saveResult = navigator.mozContacts.save(contact);
-            saveResult.onerror = function() {
-                $('#' + ids.TEXTAREA).append(i + " contact saveError");
-            };
-            saveResult.onsuccess = function() {
-                $('#' + ids.TEXTAREA).append(i + "S!");
-            };
+            try {
+                //this should work for b2g 1.2 and b2g 1.3 
+                var contact = new mozContact(e);
+                if ("init" in contact)
+                    contact.init(e);
+                var saveResult = navigator.mozContacts.save(contact);
+                saveResult.onerror = function() {
+                    $('#' + ids.TEXTAREA).append(i + " contact saveError");
+                };
+                saveResult.onsuccess = function() {
+                    $('#' + ids.TEXTAREA).append(i + "S!");
+                };
+                contactList.add(contact);
+            } catch (ex) {
+                log(ex);
+            }
         });
     },
 

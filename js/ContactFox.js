@@ -22,7 +22,10 @@ var ids = {
     MISSINGPREFIXCONTENT: "MISSINGPREFIXCONTENT",
     INPUTPREFIX: "INPUTPREFIX",
     SELECTPREFIX: "SELECTPREFIX",
-    NUMMISSINGPREFIX: "NUMMISSINGPREFIX"
+    NUMDUPLICATES: "NUMDUPLICATES",
+    NUMMISSINGPREFIX: "NUMMISSINGPREFIX",
+    NUMFUNNYCHAR: "NUMFUNNYCHAR",
+    NUMMESSAGES: "NUMMESSAGES"
 };
 
 function log(e) {
@@ -143,7 +146,6 @@ function updateButtons() {
         $('[data-nav="nav.pDuplicates"]').addClass('ui-disabled');
     }
     var nd = contactList.numDuplicates();
-    log("num dup " + nd);
     $('#' + ids.NUMDUPLICATES).html(nd);
     if (contactList.hasFunnyCharacters()) {
         $('[data-nav="nav.pFunnyCharacters"]').removeClass('ui-disabled');
@@ -157,7 +159,8 @@ function updateButtons() {
         $('[data-nav="nav.pMissingPlus"]').addClass('ui-disabled');
     }
     $('#' + ids.NUMMISSINGPREFIX).html(contactList.numMissingPrefix());
-
+    // if the list changed, also replace the html lists on the pages
+    replaceMissingPrefixHTML();
 }
 
 function loadContacts() {
@@ -204,9 +207,15 @@ function loadContacts() {
 }
 
 function addListsToHTML() {
-    // dupplicates
+    replaceDuplicatesHTML();
+    replaceMissingPrefixHTML();
+}
+
+function replaceDuplicatesHTML() {
+    // duplicates
     // let jquery mobile make this list filterable
     var cls = '#' + ids.CONTACTLIST;
+    $(cls).empty();
     $(cls).append('<ul data-filter="true"></ul>');
     contactList.appendUnifyListToUL($(cls + ' ul'));
     $(cls + ' ul li').click(function(event) {
@@ -214,9 +223,13 @@ function addListsToHTML() {
     });
     $(cls + " ul").listview()
         .listview('refresh');
+}
+
+function replaceMissingPrefixHTML() {
     //missingprefix
     // let jquery mobile make this list filterable
     var mls = '#' + ids.MISSINGPREFIXLIST;
+    $(mls).empty();
     $(mls).append('<ul data-filter="true"></ul>');
     contactList.appendMissingPrefixListToUL($(mls + ' ul'));
     $(mls + ' ul li').click(function(event) {
@@ -368,7 +381,7 @@ $(document)
             try {
                 $('[data-i18n = "debug.addtestdata"]').click(function(e) {
                     try {
-                        contactUtils.createDuplicateContactForTesting();
+                        contactUtils.createDuplicateContactForTesting(contactList);
                     } catch (ex) {
                         log(ex);
                     }

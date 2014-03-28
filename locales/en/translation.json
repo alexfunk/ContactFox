@@ -1,7 +1,7 @@
 {
     "app": {
         "name": "Contact Fox",
-        "introduction": "Duplicate Contacts or contacts with missing information are recognized in your contactlist and you may fix these problemes here.",
+        "introduction": "Duplicate Contacts or contacts with missing information are recognized in your contactlist and you may fix these problemes here. So you will  be asked to allow access to your contact list. Then your contact list will be analysed and possible improvements ordered by categories. Each Category has a list where improvements can be applied individualy or in one go by a single fingertip. Further more there is an filter that let you handle groups of contacts that match one pattern in the same way.",
         "intronotagain": "Do not show again"
     },
     "start": {
@@ -68,7 +68,8 @@
     },
     "about": {
         "title": "About ContacFox",
-        "text": "Alex Funk (c) 2014, https://github.com/alexfunk/ContactFox"
+         "text": "Alex Funk (c) 2014, Version 0.5. Further Informations can be found here: "
+       "text": "Alex Funk (c) 2014, https://github.com/alexfunk/ContactFox"
     },
     "debug": {
         "title": "Debug Console",

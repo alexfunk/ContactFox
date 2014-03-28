@@ -92,6 +92,15 @@ cContactList.prototype = {
             }
         });
     },
+    correctPrefix: function(key, prefix) {
+        var c = this.getById(key);
+        c.insertPrefix(prefix);
+        c.save();
+        var mpListIndex = this._missingPrefixList.indexOf(c);
+        if (mpListIndex != -1) {
+            this._missingPrefixList.splice(mpListIndex, 1);
+        }
+    },
     addChangeListener: function(f) {
         this._listeners.push(f);
     },

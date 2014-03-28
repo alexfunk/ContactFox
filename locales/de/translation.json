@@ -1,7 +1,7 @@
 {
     "app": {
         "name": "Contact Fox",
-        "introduction": "Doppelte Kontakte oder Kontakte mit fehlenden Infos werden in Ihrer Kontaktliste erkannt und Sie können die Fehler einfach korrigieren.",
+        "introduction": "Doppelte Kontakte oder Kontakte mit fehlenden Infos werden in Ihrer Kontaktliste erkannt und Sie können die Fehler einfach korrigieren.Deshalb werden sie gleich gebeten, einen Zugriff auf Ihre Kontakte zuzulassen. Anschließend wird ihre Kontaktliste analysiert und Verbesserungsvorschläge in Kategorien eingeordnet. Hinter jeder Kategorie wird eine Liste erreicht. Hier können die Verbesserugnsvorschläge einzelnd bearbeitet werden, oder auch mit einem Fingertip automatisch. Zusätzlich kann nach einem Muster gefiltert werden, um alle Kontakte dieses Musters gleich zu verarbeiten.",
         "intronotagain": "Nicht nochmal anzeigen"
     },
     "start": {
@@ -67,7 +67,7 @@
     },
     "about": {
         "title": "Über ContactFox",
-        "text": "Alex Funk (c) 2014, https://github.com/alexfunk/ContactFox"
+        "text": "Alex Funk (c) 2014, Version 0.5. Weiterführende Informationen sind unter folgender Adresse zu finden: "
     },
     "debug": {
         "title": "Debug Console",

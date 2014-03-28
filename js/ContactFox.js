@@ -160,7 +160,7 @@ function updateButtons() {
     }
     $('#' + ids.NUMMISSINGPREFIX).html(contactList.numMissingPrefix());
     // if the list changed, also replace the html lists on the pages
-    replaceMissingPrefixHTML();
+    replaceMissingPrefixListHTML();
 }
 
 function loadContacts() {
@@ -207,11 +207,11 @@ function loadContacts() {
 }
 
 function addListsToHTML() {
-    replaceDuplicatesHTML();
-    replaceMissingPrefixHTML();
+    replaceDuplicatesListHTML();
+    replaceMissingPrefixListHTML();
 }
 
-function replaceDuplicatesHTML() {
+function replaceDuplicatesListHTML() {
     // duplicates
     // let jquery mobile make this list filterable
     var cls = '#' + ids.CONTACTLIST;
@@ -225,7 +225,7 @@ function replaceDuplicatesHTML() {
         .listview('refresh');
 }
 
-function replaceMissingPrefixHTML() {
+function replaceMissingPrefixListHTML() {
     //missingprefix
     // let jquery mobile make this list filterable
     var mls = '#' + ids.MISSINGPREFIXLIST;
@@ -306,9 +306,8 @@ function mergeContactSelected(event) {
 }
 
 function correctPrefix(c, prefix) {
-    log("correctPRefix " + c.key() + " " + prefix);
-    c.insertPrefix(prefix);
-    c.save();
+    log("correctPrefix " + c.key() + " " + prefix);
+    contactList.correctPrefix(c.key(), prefix);
     $('#prefix' + c.key()).hide();
 }
 

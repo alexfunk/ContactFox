@@ -118,7 +118,7 @@ cContactUtils.prototype = {
                 saveResult.onsuccess = function() {
                     $('#' + ids.TEXTAREA).append(i + "S!");
                 };
-                contactList.add(contact);
+                contactList.add(new cContact(contact));
             } catch (ex) {
                 log(ex);
             }

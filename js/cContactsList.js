@@ -100,6 +100,7 @@ cContactList.prototype = {
         if (mpListIndex != -1) {
             this._missingPrefixList.splice(mpListIndex, 1);
         }
+        this._notifyChange(this);
     },
     addChangeListener: function(f) {
         this._listeners.push(f);

@@ -134,8 +134,15 @@ function initApp() {
     //});
     $('#' + ids.SELECTPREFIX).bind('change', function(e) {
         var value = $('#' + ids.SELECTPREFIX).val();
-        log("selectedPRefix: " + value);
+        log("selectedPrefix: " + value);
         $('#' + ids.INPUTPREFIX).val(value);
+    });
+    $('#' + ids.INPUTPREFIX).bind('change', function(e) {
+        var prefix = $("#" + ids.INPUTPREFIX).val();
+        $('#' + ids.SELECTPREFIX + ' option').filter(function() {
+            return $(this).text() == prefix;
+        }).prop('selected', true);
+        $('#' + ids.SELECTPREFIX).selectmenu('refresh', true);
     });
 }
 
@@ -237,7 +244,6 @@ function replaceMissingPrefixListHTML() {
     });
     $(mls + " ul").listview()
         .listview('refresh');
-    //$('[data-i18n = "duplicates.mergeall"]').button("refresh");
 }
 
 function merge(id) {
@@ -283,10 +289,8 @@ function mergeContactSelected(event) {
             $('#' + mergeButtonID).data("data", data);
             $('#' + mergeButtonID).click(function(e) {
                 try {
-                    log("click merge");
                     var contact = $(this).data("contact");
                     merge(contact.key());
-                    log("merged, go back");
                     $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.DUPLICATES);
                 } catch (ex) {
                     log(ex);

@@ -98,6 +98,22 @@ cContact.prototype = {
         }
         return result;
     },
+    clearDupplicateNumbers: function() {
+        if ($.isArray(this.c.tel)) {
+            var tel = this.c.tel;
+            var toDelete = [];
+            for (i = 0; i < tel.length; i++) {
+                var currentNumber = tel[i];
+                if (tel.indexOf(currentNumber, i) != -1)
+                    toDelete.push(i);
+            }
+            for (i = 0; i < toDelete.length; i++) {
+                tel.splice(i, 1);
+            }
+        }
+    },
+    /** insert the given prefix to all phone numbers that dont start with 00 or +
+     */
     insertPrefix: function(prefix) {
         if ($.isArray(this.c.tel)) {
             $.each(this.c.tel, function(i, e) {

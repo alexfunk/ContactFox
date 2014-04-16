@@ -8,7 +8,8 @@ var pages = {
     FUNNYCHARS: "pFunnyCharacters",
     MISSINGPLUS: "pMissingPlus",
     ABOUT: "pAbout",
-    DEBUG: "pDebug"
+    DEBUG: "pDebug",
+    RESTOREBACKUP: "pRestoreBackup"
 };
 
 var ids = {
@@ -25,7 +26,11 @@ var ids = {
     NUMDUPLICATES: "NUMDUPLICATES",
     NUMMISSINGPREFIX: "NUMMISSINGPREFIX",
     NUMFUNNYCHAR: "NUMFUNNYCHAR",
-    NUMMESSAGES: "NUMMESSAGES"
+    NUMMESSAGES: "NUMMESSAGES",
+    RESTOREBACKUPPANEL: "RESTOREBACKUPPANEL",
+    RESTOREBACKUPCONTENT: "RESTOREBACKUPCONTENT",
+    BUTTONRESTOREBACKUP: "ButtonRestoreBackup",
+    BUTTONRESTOREBACKUPLOSE: "RestoreBackupClose"
 };
 
 function log(e) {

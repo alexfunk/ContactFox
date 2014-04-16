@@ -101,14 +101,26 @@ cContact.prototype = {
     clearDupplicateNumbers: function() {
         if ($.isArray(this.c.tel)) {
             var tel = this.c.tel;
+            // put all indexes of telephone numbers the toDelete array 
             var toDelete = [];
-            for (i = 0; i < tel.length; i++) {
-                var currentNumber = tel[i];
-                if (tel.indexOf(currentNumber, i) != -1)
+            for (var i = 0; i < tel.length; i++) {
+                var currentNumber = tel[i].value;
+                // check if 'currentNumber' exist in the following numbers
+                var numberExists = false;
+                for (var j = i + 1; j < tel.length; j++) {
+                    if (currentNumber == tel[j].value) {
+                        numberExists = true;
+                        break;
+                    }
+                }
+
+                if (numberExists) {
                     toDelete.push(i);
+                }
             }
-            for (i = 0; i < toDelete.length; i++) {
-                tel.splice(i, 1);
+            // iterate backwards, so the indices in the toDelete Array will not be invalidated
+            for (i = toDelete.length; i > 0; i--) {
+                this.c.tel.splice(toDelete[i], 1);
             }
         }
     },
@@ -119,10 +131,14 @@ cContact.prototype = {
             $.each(this.c.tel, function(i, e) {
                 if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
                     if (e.value.startsWith("0")) {
+                        var oldValue = e.value;
                         e.value = prefix + e.value.substring(1);
                     }
                 }
             });
+            // ok, the prefix is added now, but maybe the fixed number was already in the contact
+            // so we check for dupplicate phonnumber entries here
+            this.clearDupplicateNumbers();
         }
     },
     containsNumber: function(number) {
@@ -258,6 +274,10 @@ cContact.prototype = {
         // in the unifymember map.
         var unifymember = {
             "tel": function(t, contact) {
+                // an entry is an object with type and value
+                // we look only at the value at the merge
+                // so if there are two numbers with the same value but different
+                // type, one type is lost.
                 if (!t.c.tel) {
                     t.c.tel = [];
                 }
@@ -270,6 +290,7 @@ cContact.prototype = {
                 }
             },
             "adr": function(t, contact) {
+                // checking that two adresses are equal is not trivial
                 if (!t.c.adr) {
                     t.c.adr = [];
                 }
@@ -282,6 +303,9 @@ cContact.prototype = {
                 }
             },
             "email": function(t, contact) {
+                // like phone numbers emails have a type,
+                // if there are two same email.adresses with different type
+                // they are considered equal and one is lost during unification
                 if (!t.c.email) {
                     t.c.email = [];
                 }
@@ -295,7 +319,8 @@ cContact.prototype = {
             }
         };
         var t = this;
-
+        // we know all valid memebers in a contact record and its expected type
+        // so we unify each member one by one
         $.each(this.members, function(key, value) {
             if (typeof unifymember[key] !== "undefined") {
                 unifymember[key](t, contact);
@@ -312,6 +337,12 @@ cContact.prototype = {
                         });
                     }
                 }
+                // if it is not an arrayString or an member handled special
+                // we still check if the master has no value but the contact to merge has 
+                else if (!t.c[key]) {
+                    t.c[key] = contact.c[key];
+                }
+
             }
         });
     },
@@ -327,25 +358,43 @@ cContact.prototype = {
 
     },
     remove: function() {
+        var name = this.displayName();
+        // before a contact is removed, it is backed up in local storage, 
+        // so it could be restored later on
         this.backup();
         var removeResult = navigator.mozContacts.remove(this.c);
         removeResult.onerror = function() {
-            log("removeError");
+            log("Error: Could not remove " + name);
         };
         removeResult.onsuccess = function() {
-            log("removeSuccess");
+            log(name + " successfully removed");
         };
     },
+    _lsBackup: "ContactFox.Backup",
     backup: function() {
-        log("Backup: " + JSON.stringify(this.c));
-        var backup = window.localStorage.getItem("ContactFox.Backup");
+        log("Backup: " + this.displayName());
+        var backup = window.localStorage.getItem(this._lsBackup);
         if (backup === null) {
             backup = {};
         } else {
             backup = JSON.parse(backup);
         }
         backup[this.key()] = this.c;
-        window.localStorage.setItem("ContactFox.Backup", JSON.stringify(backup));
+        window.localStorage.setItem(this._lsBackup, JSON.stringify(backup));
+    },
+    addBackupList: function(ul) {
+        var backup = window.localStorage.getItem(this._lsBackup);
+        if (backup === null) {
+            backup = {};
+        } else {
+            backup = JSON.parse(backup);
+        }
+        $.each(backup, function(k, v) {
+            var contact = new cContact(v);
+            var html = '<li id="Backup' + contact.key() + '">' + contact.displayName() + '</li>';
+            ul.append(html);
+            ul.children().last().data("contact", contact);
+        });
     },
     /**
      * unifyList is an array or arrays of contacts. Each sublist contains unifiable contacts

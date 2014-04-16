@@ -141,6 +141,30 @@
          type: 'mobile',
          value: '0421 5551234-2'
      }]
+ }, {
+     //13
+     givenName: ['John'],
+     familyName: ['Doe'],
+     name: ['John Doe'],
+     tel: [{
+         type: 'mobile',
+         value: '+49421 5551234-1'
+     }, {
+         type: 'mobile',
+         value: '+49421 5551234-1'
+     }]
+ }, {
+     //14
+     givenName: ['John'],
+     familyName: ['Doe'],
+     name: ['John Doe'],
+     tel: [{
+         type: 'mobile',
+         value: '+49421 5551234-1'
+     }, {
+         type: 'mobile',
+         value: '0421 5551234-1'
+     }]
  }];
  var c = [];
  $.each(fixture, function(i, e) {
@@ -183,8 +207,16 @@
          test.equal(c[12].hasMissingPrefix(), true);
          test.done();
      },
+     'clearDupplicateNumbers': function(test) {
+         test.expect(2);
+         c[13].clearDupplicateNumbers();
+         test.equal(c[13].c.tel.length, 1);
+         c[14].clearDupplicateNumbers();
+         test.equal(c[14].c.tel.length, 2);
+         test.done();
+     },
      'insertPrefix': function(test) {
-         test.expect(6);
+         test.expect(7);
          test.equal(c[10].hasMissingPrefix(), false);
          c[10].insertPrefix("+44");
          test.equal(c[10].hasMissingPrefix(), false);
@@ -194,6 +226,8 @@
          test.equal(c[12].hasMissingPrefix(), true);
          c[12].insertPrefix("+49");
          test.equal(c[12].hasMissingPrefix(), false);
+         c[14].insertPrefix("+49");
+         test.equal(c[14].c.tel.length, 1);
          test.done();
      },
      'containsEMail': function(test) {
@@ -338,6 +372,32 @@
              test.equal(typeof data === 'undefined', false);
              test.equal(data === null, false, "data may not be null");
              test.equal(data === '', false, "data may not be empty string");
+         });
+         test.done();
+     },
+     'addBackupList': function(test) {
+         // one entry was backed up before
+         c[2].backup();
+         c[3].backup();
+         var expectedLength = 3;
+         // two tests for the list and 5 tests for each list entires
+         test.expect(2 + expectedLength * 5);
+         $('#RESTOREBACKUPLIST').append('<ul></ul>');
+         var ul = $('#RESTOREBACKUPLIST ul');
+         test.equal(ul.length, 1);
+         // add backuplist has no relation to c[0], should be static
+         c[0].addBackupList(ul);
+         // get the list of li elements
+         var lis = $('#RESTOREBACKUPLIST ul li');
+         test.equal(lis.length, expectedLength);
+         lis.each(function(index) {
+             var id = $(this).attr('id');
+             var contact = $(this).data('contact');
+             test.equal(typeof id === 'undefined', false);
+             test.equal(typeof contact === 'undefined', false);
+             test.equal(contact === null, false, "data may not be null");
+             test.equal(contact === '', false, "data may not be empty string");
+             test.equal(id.indexOf(contact.key()) != -1, true, "the id of the li contains the id of the contact");
          });
          test.done();
      }

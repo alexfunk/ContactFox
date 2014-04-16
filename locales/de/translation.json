@@ -73,7 +73,14 @@
         "title": "Debug Console",
         "addtestdata": "Testdaten hinzufügen",
         "showintroagain": "Intro wieder anzeigen",
+        "restorebackup": "Wiederherstellung",
         "log": "Ausgaben zur Fehlersuche"
+    },
+    "restorebackup": {
+        "title": "Wiederherstellung",
+        "close": "Schließen",
+        "correct": "Wiederherstellen",
+        "correctall": "Alle Wiederherstellen"
     }
 
 }

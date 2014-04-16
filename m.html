@@ -72,7 +72,8 @@
                     <div><a href="#" data-role="button" id="correct" data-i18n="missingplus.correct"></a> <a href="#" data-role="button" id="close" data-i18n="missingplus.close"></a></div>
                 </div>
 		<div data-role="header">
-			<h1 class="i18n" data-i18n="missingplus.title"></h1>
+			<h1 class="i18n" data-i18			<a class="i18n" href="#" data-role="button" data-i18n="debug.showintroagain"></a> 
+n="missingplus.title"></h1>
 			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
@@ -129,9 +130,27 @@
 		<div data-role="content" data-theme="b">
 			<a class="i18n" href="#" data-role="button" data-i18n="debug.addtestdata"></a> 
 			<a class="i18n" href="#" data-role="button" data-i18n="debug.showintroagain"></a> 
+			<a class="i18n" href="#" data-role="button" data-i18n="debug.restorebackup"></a> 
 			<div class="i18n" data-i18n="debug.log"></div>
 			<textarea id="TEXTAREA" cols="40" rows="8" name="textarea-1" class
 ="ui-disabled"></textarea>
+		</div>
+	</div>
+	<div data-role="page" id="pRestoreBackup" data-theme="b">
+                <div data-role="panel" data-position="right" data-display="push" 
+                     id="RESTOREBACKUPPANEL">
+                    <div id="RESTOREBACKUPCONTENT" ></div>
+                    <div><a href="#" data-role="button" id="ButtonRestoreBackup" data-i18n="restorebackup.restore"></a> <a href="#" data-role="button" id="RestoreBackupClose" data-i18n="restorebackup.close"></a></div>
+                </div>
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="restorebackup.title"></h1>
+			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+				data-nav="nav.home" data-i18n="nav.home"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+                <a class="i18n" data-role="button" data-icon="gear" 
+                                data-i18n="restorebackup.restoreall"></a>
+			<div id="RESTOREBACKUPLIST" ></div>
 		</div>
 	</div>
 </body>

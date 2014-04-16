@@ -74,6 +74,14 @@
         "title": "Debug Console",
         "addtestdata": "Add test data",
         "showintroagain": "Show Intro again",
+        "restorebackup": "Restore back up copy",
         "log": "Logbook for debugging"
+    },
+    "restorebackup": {
+        "title": "Restore",
+        "close": "Close",
+        "correct": "Restore",
+        "correctall": "Restore All"
     }
+
 }

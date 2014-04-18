@@ -13,8 +13,10 @@ if (typeof String.prototype.startsWith != 'function') {
 
 cContact = function(c) {
     this.c = c;
+    this._backup = new cContactBackup();
 };
 
+//TODO: is this a bug. is everything still loged to the debug window
 function log(e) {
     console.log(e);
 }
@@ -268,7 +270,7 @@ cContact.prototype = {
      * the information is already there
      */
     unify: function(contact) {
-        this.backup();
+        this._backup.backup(this);
         // some member of a contact can be unified easily, since it is just
         // an array of string. For other mebers there should be a special function
         // in the unifymember map.
@@ -361,7 +363,7 @@ cContact.prototype = {
         var name = this.displayName();
         // before a contact is removed, it is backed up in local storage, 
         // so it could be restored later on
-        this.backup();
+        this._backup.backup(this);
         var removeResult = navigator.mozContacts.remove(this.c);
         removeResult.onerror = function() {
             log("Error: Could not remove " + name);
@@ -369,32 +371,6 @@ cContact.prototype = {
         removeResult.onsuccess = function() {
             log(name + " successfully removed");
         };
-    },
-    _lsBackup: "ContactFox.Backup",
-    backup: function() {
-        log("Backup: " + this.displayName());
-        var backup = window.localStorage.getItem(this._lsBackup);
-        if (backup === null) {
-            backup = {};
-        } else {
-            backup = JSON.parse(backup);
-        }
-        backup[this.key()] = this.c;
-        window.localStorage.setItem(this._lsBackup, JSON.stringify(backup));
-    },
-    addBackupList: function(ul) {
-        var backup = window.localStorage.getItem(this._lsBackup);
-        if (backup === null) {
-            backup = {};
-        } else {
-            backup = JSON.parse(backup);
-        }
-        $.each(backup, function(k, v) {
-            var contact = new cContact(v);
-            var html = '<li id="Backup' + contact.key() + '">' + contact.displayName() + '</li>';
-            ul.append(html);
-            ul.children().last().data("contact", contact);
-        });
     },
     /**
      * unifyList is an array or arrays of contacts. Each sublist contains unifiable contacts

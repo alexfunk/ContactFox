@@ -376,9 +376,10 @@
          test.done();
      },
      'addBackupList': function(test) {
+         var backup = new cContactBackup();
          // one entry was backed up before
-         c[2].backup();
-         c[3].backup();
+         backup.backup(c[2]);
+         backup.backup(c[3]);
          var expectedLength = 3;
          // two tests for the list and 5 tests for each list entires
          test.expect(2 + expectedLength * 5);
@@ -386,7 +387,7 @@
          var ul = $('#RESTOREBACKUPLIST ul');
          test.equal(ul.length, 1);
          // add backuplist has no relation to c[0], should be static
-         c[0].addBackupList(ul);
+         backup.addBackupList(ul);
          // get the list of li elements
          var lis = $('#RESTOREBACKUPLIST ul li');
          test.equal(lis.length, expectedLength);

@@ -1,5 +1,6 @@
 var fs = require('fs');
 require('../js/cContacts.js');
+require('../js/cContactBackup.js');
 require('../js/cContactUtils.js');
 require('../js/cContactsList.js');
 jqFactory = require('../node_modules/jquery/dist/jquery.js');

@@ -24,6 +24,9 @@ function log(e) {
 }
 
 
+/**
+ * start of the class
+ */
 cContact.prototype = {
     key: function() {
         var result;
@@ -86,8 +89,8 @@ cContact.prototype = {
 
     },
     isUnifiyable: function(contact) {
-        //TODO compare first and last name
-        // what about first + last = last + first
+        //TODO compare first and last name, but
+        // what is about first + last = last + first
         return this.displayName() == contact.displayName();
     },
     hasMissingPrefix: function() {

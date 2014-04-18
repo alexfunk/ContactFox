@@ -10,7 +10,9 @@ if (typeof String.prototype.startsWith != 'function') {
 }
 
 
-
+/**
+ * constructor of a contact object
+ */
 cContact = function(c) {
     this.c = c;
     this._backup = new cContactBackup();

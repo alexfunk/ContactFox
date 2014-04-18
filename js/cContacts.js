@@ -23,7 +23,9 @@ function log(e) {
     console.log(e);
 }
 
-
+/**
+ * start of the class
+ */
 cContact.prototype = {
     key: function() {
         var result;

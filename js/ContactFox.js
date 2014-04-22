@@ -1,5 +1,6 @@
-// some constants used in the applícation:
+// some pseudo-constants used in the applícation:
 
+// the app is distributed amoung some pages that can be addressed by this ids
 var pages = {
     INTRO: "pIntro",
     START: "pStart",
@@ -12,6 +13,7 @@ var pages = {
     RESTOREBACKUP: "pRestoreBackup"
 };
 
+// some elements in the pages have fixed ids that can be found here
 var ids = {
     CONTACTLIST: "CONTACTLIST",
     MISSINGPREFIXLIST: "MISSINGPREFIXLIST",
@@ -33,13 +35,21 @@ var ids = {
     BUTTONRESTOREBACKUPLOSE: "RestoreBackupClose"
 };
 
+// error messages are not only writen to the console, but to an textarea on the debug page
+// so that we can trace problems even on an actual device.
+// TODO: Add a Send Debug as email to developer function
 function log(e) {
     console.log(e);
     $('#' + ids.TEXTAREA).append(e + "\n");
 }
 
+// all contacts are kept in this object during application runtime
 var contactList = new cContactList();
 
+/**
+ * This function is usefull for debuging
+ * TODO: Remove from the final product
+ */
 function getEventsList($obj) {
     var ev = [],
         events = jQuery._data($obj, "events"),
@@ -50,6 +60,9 @@ function getEventsList($obj) {
     return ev.join(' ');
 }
 
+/**
+ * This function is called once when the user interface is initialized
+ */
 function initApp() {
     // make the title a bit wider, so that more information
     // can be
@@ -59,7 +72,8 @@ function initApp() {
         'margin-right': '10%'
     });
 
-    // link pages together ?!
+    // link pages with their buttons.
+    // each button knows it destination page by the data-nav attibute
     var buttons = {};
     buttons[pages.DUPLICATES] = $('[data-nav="nav.pDuplicates"]');
     buttons[pages.DEBUG] = $('[data-nav="nav.pDebug"]');
@@ -72,9 +86,12 @@ function initApp() {
             $(':mobile-pagecontainer').pagecontainer("change", '#' + key);
         });
     });
+    // if the start button is called, an extra function is called: loadContacts
+    // to init the contactList from the contacts stored in the device.
     buttons[pages.START].click(function(e) {
         loadContacts();
     });
+    // some functions for the buttons on other pages
     try {
         $('[data-i18n = "duplicates.mergeall"]').click(function(e) {
             mergeAll();
@@ -96,7 +113,7 @@ function initApp() {
     //        }
     //    });
 
-    //Init i18n
+    //Init i18n and replace text on objects in the class="i18n"
     i18n.init(function(t) {
         // translate app
         $(".i18n").i18n();
@@ -151,6 +168,11 @@ function initApp() {
     });
 }
 
+/**
+ * depending on the content of the contact some functions are available or not.
+ * If there is nothing to do the button for this function is disabled
+ * This is done in this function
+ */
 function updateButtons() {
     if (contactList.hasDuplicates()) {
         $('[data-nav="nav.pDuplicates"]').removeClass('ui-disabled');
@@ -175,6 +197,9 @@ function updateButtons() {
     replaceMissingPrefixListHTML();
 }
 
+/**
+ * Read the contacts from the firefox OS device using its api.
+ */
 function loadContacts() {
     try {
         updateButtons();
@@ -406,6 +431,7 @@ $(document)
                         log(ex);
                     }
                 });
+                //TODO: Add click function for backup restore
             } catch (ex) {
                 log(ex);
             }

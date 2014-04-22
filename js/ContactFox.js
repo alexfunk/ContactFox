@@ -201,10 +201,10 @@ function loadContacts() {
                         continue ();
                     } else {
                         addListsToHTML();
-                    }
+                    };
                 } catch (ex) {
                     log(ex);
-                }
+                };
             };
 
             allContacts.onerror = function() {
@@ -212,10 +212,10 @@ function loadContacts() {
                 alert("Can not read your contacts. Did you give permissions?");
                 log("Something went terribly wrong! :(");
             };
-        }
+        };
     } catch (exception) {
         log(exception);
-    }
+    };
 }
 
 function addListsToHTML() {

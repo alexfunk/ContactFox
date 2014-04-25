@@ -198,7 +198,15 @@ cContact.prototype = {
         });
         return result;
     },
+    /**
+     * converts one given member like 'adr' or 'tel' of the contact to an array of
+     * human readable string.
+     * Some members are arrays others objects of different types. This tries to deal with
+     * all situations. If the member is not set or cant be converted to string, an empty array is returned.
+     */
     contactMemberToString: function(member) {
+        // define a map of functions to convert one entry of a contact-member to a string.
+        // if some member should not be displayed, null is returned.
         var f = {
             'adr': this.addressToString,
             'email': function(e) {
@@ -223,10 +231,13 @@ cContact.prototype = {
                 return null;
             }
         };
+        // helper function to convert a memeber that contains a string
+        // each entry in the arry is maped with the function above. 
         var handleArray = function(a, f) {
             var result = [];
             $.each(a, function(i, e) {
-                var val = f(e);
+                // if f(e) returns null, we try JSON to convert to string
+                var val = f(e) || JSON.stringify(this.c[e]);
                 if (val !== null) result.push(val);
             });
             return result;
@@ -235,7 +246,8 @@ cContact.prototype = {
             return handleArray(this.c[member], f[member] || JSON.stringify);
         } else {
             if (typeof this.c[member] !== "undefined" && this.c[member] !== null) {
-                var result = (f[member] || JSON.stringify)(this.c.member);
+                // if f(e) returns null, we try JSON to convert to string
+                var result = f[member] || JSON.stringify(this.c[member]);
                 if (result !== null) return [result];
                 else
                     return [];
@@ -244,9 +256,17 @@ cContact.prototype = {
             }
         }
     },
+    /**
+     * adds a html string representation of this contact to a given div-element in the dom
+     * each non-empty member is added with a label. if on memeber has more than one entry it is
+     * added with numbers at the label.
+     * Labels for each entry can be found in each locale catalog under the keyword 'contact'.
+     * TODO: Maybe should be moved to another place, so that model and ui is not intermxed
+     */
     appendAsString: function(div) {
         var t = this;
         $.each(this.members, function(i, e) {
+            // i is the key of the entry like addr or phone
             var stringArray = t.contactMemberToString(i);
             if (stringArray.length == 1) {
                 div.append('<div><span data-i18n="contact.' + i + '"></span><span> : </span><span class="contactcontent" >' + stringArray[0] + '</span></div>');
@@ -257,6 +277,9 @@ cContact.prototype = {
             }
         });
     },
+    /**
+     * checks if this contact contains an adress
+     */
     containsAddress: function(adress) {
         var t = this;
         var result = false;
@@ -354,8 +377,10 @@ cContact.prototype = {
         });
     },
     save: function() {
-        log(JSON.stringify(this.c));
+        //TODO: Dont show personal data in the log file of the final product
+        log("save: " + JSON.stringify(this.c));
         var saveResult = navigator.mozContacts.save(this.c);
+        //TODO: Display Error message to the user if an operation fails.
         saveResult.onerror = function() {
             log("saveError");
         };
@@ -390,11 +415,14 @@ cContact.prototype = {
                 added = true;
             }
         });
+        // if this contact is not unifiable with any of the contacts in the list,
+        // this contact is added as its own array
         if (!added) {
             unifyList.push([this]);
         }
         return unifyList;
     },
+    // this is form the firefox os specification, describing the exact structure of a contact record.
     members: {
         id: 'string', // Read only The unique id of the contact in the device's contact database.
         published: 'date', // Read only A Date object giving the first time the contact was stored.

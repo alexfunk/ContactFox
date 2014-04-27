@@ -56,6 +56,11 @@ module.exports = function(grunt) {
         },
         jshint: {
             sources: {
+                // eclipse requires some semicolons that jshint would not accept by default
+                // so we tell that they should be ignored here.
+                options: {
+                    '-W032': true,
+                },
                 src: srcFileArray
             },
             tests: {

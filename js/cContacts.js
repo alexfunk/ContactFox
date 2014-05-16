@@ -207,7 +207,7 @@ cContact.prototype = {
     contactMemberToString: function(member) {
         // define a map of functions to convert one entry of a contact-member to a string.
         // if some member should not be displayed, null is returned.
-        var f = {
+        var memberfunction = {
             'adr': this.addressToString,
             'email': function(e) {
                 return e.value;
@@ -217,18 +217,6 @@ cContact.prototype = {
             },
             'photo': function(e) {
                 return "photo";
-            },
-            'id': function(e) {
-                return null;
-            },
-            'published': function(e) {
-                return null;
-            },
-            'updated': function(e) {
-                return null;
-            },
-            'name': function(e) {
-                return null;
             }
         };
         // helper function to convert a memeber that contains a string
@@ -237,17 +225,20 @@ cContact.prototype = {
             var result = [];
             $.each(a, function(i, e) {
                 // if f(e) returns null, we try JSON to convert to string
-                var val = f(e) || JSON.stringify(this.c[e]);
+                var val = f(e) || JSON.stringify(e);
                 if (val !== null) result.push(val);
             });
             return result;
         };
+        // define a function that converts this member to a string. If there is no 
+        // explicit function defined we use JSON.stringify. 
+        var convertFunction = memberfunction[member] || JSON.stringify;
         if ($.isArray(this.c[member])) {
-            return handleArray(this.c[member], f[member] || JSON.stringify);
+            return handleArray(this.c[member], convertFunction);
         } else {
             if (typeof this.c[member] !== "undefined" && this.c[member] !== null) {
-                // if f(e) returns null, we try JSON to convert to string
-                var result = f[member] || JSON.stringify(this.c[member]);
+                var value = this.c[member];
+                var result = convertFunction(value);
                 if (result !== null) return [result];
                 else
                     return [];
@@ -258,22 +249,31 @@ cContact.prototype = {
     },
     /**
      * adds a html string representation of this contact to a given div-element in the dom
-     * each non-empty member is added with a label. if on memeber has more than one entry it is
+     * each non-empty member is added with a label. if one memeber has more than one entry it is
      * added with numbers at the label.
      * Labels for each entry can be found in each locale catalog under the keyword 'contact'.
      * TODO: Maybe should be moved to another place, so that model and ui is not intermxed
+     * param div the div to add the string representation
      */
-    appendAsString: function(div) {
+    appendAsString: function(div, filter) {
         var t = this;
+        // if the caller sets no filter, a default is used
+        if (filter === undefined) {
+            filter = function(member) {
+                return ['name', 'id', 'updated', 'published'].indexOf(member) == -1;
+            };
+        }
         $.each(this.members, function(i, e) {
-            // i is the key of the entry like addr or phone
-            var stringArray = t.contactMemberToString(i);
-            if (stringArray.length == 1) {
-                div.append('<div><span data-i18n="contact.' + i + '"></span><span> : </span><span class="contactcontent" >' + stringArray[0] + '</span></div>');
-            } else if (stringArray.length > 1) {
-                $.each(stringArray, function(j, string) {
-                    div.append('<div><span data-i18n="contact.' + i + '"></span><span> ' + (j + 1) + ': </span><span class="contactcontent" >' + string + '</span></div>');
-                });
+            if (filter(i)) {
+                // i is the key of the entry like addr or phone
+                var stringArray = t.contactMemberToString(i);
+                if (stringArray.length == 1) {
+                    div.append('<div><span data-i18n="contact.' + i + '"></span><span> : </span><span class="contactcontent" >' + stringArray[0] + '</span></div>');
+                } else if (stringArray.length > 1) {
+                    $.each(stringArray, function(j, string) {
+                        div.append('<div><span data-i18n="contact.' + i + '"></span><span> ' + (j + 1) + ': </span><span class="contactcontent" >' + string + '</span></div>');
+                    });
+                }
             }
         });
     },

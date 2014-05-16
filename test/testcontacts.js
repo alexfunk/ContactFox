@@ -290,7 +290,7 @@
          test.equal(strings.length, 0);
          strings = c[8].contactMemberToString('id');
          test.equal($.isArray(strings), true);
-         test.equal(strings.length, 0);
+         test.equal(strings.length, 1);
 
          test.done();
      },

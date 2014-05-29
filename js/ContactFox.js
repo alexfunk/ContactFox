@@ -223,7 +223,7 @@ function loadContacts() {
                             log(ex);
                         }
                         cursor.
-                        continue ();
+                        continue();
                     } else {
                         addListsToHTML();
                     };

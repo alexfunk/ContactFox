@@ -144,7 +144,7 @@ cContact.prototype = {
                 }
             });
             // ok, the prefix is added now, but maybe the fixed number was already in the contact
-            // so we check for dupplicate phonnumber entries here
+            // so we check for dupplicate phonenumber entries here
             this.clearDupplicateNumbers();
         }
     },

@@ -187,10 +187,14 @@
          test.done();
      },
      'containsNumber': function(test) {
-         test.expect(3);
+         test.expect(7);
          test.equal(c[0].containsNumber('0421 5554321'), true);
+         test.equal(c[0].containsNumber('0421 5551234'), false);
          test.equal(c[1].containsNumber('0421 5551234'), true);
          test.equal(c[1].containsNumber('0421 5554321'), false);
+         test.equal(c[4].containsNumber('0421 5551234-1'), true);
+         test.equal(c[4].containsNumber('0421 5551234-2'), true);
+         test.equal(c[4].containsNumber('0421 5554321-2'), false);
          test.done();
      },
      'hasMissingPrefix': function(test) {

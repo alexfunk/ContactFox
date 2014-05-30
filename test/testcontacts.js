@@ -211,11 +211,11 @@
          test.equal(c[12].hasMissingPrefix(), true);
          test.done();
      },
-     'clearDupplicateNumbers': function(test) {
+     'clearDuplicateNumbers': function(test) {
          test.expect(2);
-         c[13].clearDupplicateNumbers();
+         c[13].clearDuplicateNumbers();
          test.equal(c[13].c.tel.length, 1);
-         c[14].clearDupplicateNumbers();
+         c[14].clearDuplicateNumbers();
          test.equal(c[14].c.tel.length, 2);
          test.done();
      },

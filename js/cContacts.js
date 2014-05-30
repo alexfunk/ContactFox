@@ -18,7 +18,7 @@ cContact = function(c) {
     this._backup = new cContactBackup();
 };
 
-//TODO: is this a bug. is everything still loged to the debug window
+//TODO: is this a bug? is everything still loged to the debug window?
 function log(e) {
     console.log(e);
 }
@@ -45,6 +45,10 @@ cContact.prototype = {
         return encodeURIComponent(result);
     },
 
+    /**
+     * Converts a user supplied String into one that can be displayed in HTML without problems.
+     * For example the String '<&' is converted to '&lt;&amp;'
+     */
     escapeHTML: function(string) {
         var entityMap = {
             "&": "&amp;",
@@ -58,7 +62,11 @@ cContact.prototype = {
             return entityMap[s];
         });
     },
-
+    /**
+     * to show a contact in a list a short string is needed. This is in most cases the
+     * name of the contact, but if the name is not set it is composed from Given Name
+     * and Family Name or the organisation of the contact.
+     */
     displayName: function() {
         var lResult;
         var lName = "";
@@ -88,11 +96,17 @@ cContact.prototype = {
         return this.escapeHTML(lResult);
 
     },
+    /**
+     * Checks if this contact can be unified with the contact given as parameter.
+     */
     isUnifiyable: function(contact) {
-        //TODO compare first and last name, but
+        //TODO this compares first and last name, but
         // what is about first + last = last + first
         return this.displayName() == contact.displayName();
     },
+    /**
+     * Checks if this contact has a nummber without an international dial prefix
+     */
     hasMissingPrefix: function() {
         var result = false;
         if ($.isArray(this.c.tel)) {
@@ -105,7 +119,30 @@ cContact.prototype = {
         }
         return result;
     },
-    clearDupplicateNumbers: function() {
+    /** 
+     * insert the given prefix to all phone numbers that dont start with 00 or +
+     */
+    insertPrefix: function(prefix) {
+        if ($.isArray(this.c.tel)) {
+            $.each(this.c.tel, function(i, e) {
+                if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
+                    if (e.value.startsWith("0")) {
+                        var oldValue = e.value;
+                        e.value = prefix + e.value.substring(1);
+                    }
+                }
+            });
+            // ok, the prefix is added now, but maybe there is a second number in the contact
+            // that has already the given prefix. So we check for duplicate phonenumber 
+            // entries and remove them in this contact here 
+            this.clearDuplicateNumbers();
+        }
+    },
+    /** 
+     * after applying a change to a contact, numbers may be duplicated in the same contact
+     * if this is the case, the duplicates are removed here.
+     */
+    clearDuplicateNumbers: function() {
         if ($.isArray(this.c.tel)) {
             var tel = this.c.tel;
             // put all indexes of telephone numbers the toDelete array 
@@ -131,23 +168,9 @@ cContact.prototype = {
             }
         }
     },
-    /** insert the given prefix to all phone numbers that dont start with 00 or +
+    /**
+     * checks if a contact contains a given number
      */
-    insertPrefix: function(prefix) {
-        if ($.isArray(this.c.tel)) {
-            $.each(this.c.tel, function(i, e) {
-                if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
-                    if (e.value.startsWith("0")) {
-                        var oldValue = e.value;
-                        e.value = prefix + e.value.substring(1);
-                    }
-                }
-            });
-            // ok, the prefix is added now, but maybe the fixed number was already in the contact
-            // so we check for dupplicate phonenumber entries here
-            this.clearDupplicateNumbers();
-        }
-    },
     containsNumber: function(number) {
         var result = false;
         if ($.isArray(this.c.tel)) {
@@ -160,6 +183,9 @@ cContact.prototype = {
         }
         return result;
     },
+    /**
+     * checks if a contact contains a given email address
+     */
     containsEMail: function(mailaddress) {
         var result = false;
         if ($.isArray(this.c.email)) {
@@ -172,6 +198,9 @@ cContact.prototype = {
         }
         return result;
     },
+    /** 
+     * checks if two street adresses are equal
+     */
     //TODO: this should be a static function. Not related to the contact object
     addressEqual: function(adr1, adr2) {
         if (adr1 == adr2) return true;
@@ -182,18 +211,6 @@ cContact.prototype = {
             if (adr1[e] != adr2[e]) {
                 result = false;
                 return false;
-            }
-        });
-        return result;
-    },
-    //TODO: this should be a static function. Not related to the contact object
-    addressToString: function(adr1) {
-        var keys = ['streetAddress', 'postalCode', 'locality', 'region', 'countryName'];
-        var result = "";
-        $.each(keys, function(i, e) {
-            if (typeof adr1[e] !== "undefined") {
-                if (result.length !== 0) result += ',';
-                result += adr1[e];
             }
         });
         return result;
@@ -246,6 +263,21 @@ cContact.prototype = {
                 return [];
             }
         }
+    },
+    /**
+     * converts a street adress from a contact to a string that can be displayed to the user
+     */
+    //TODO: this should be a static function. Not related to the contact object
+    addressToString: function(adr1) {
+        var keys = ['streetAddress', 'postalCode', 'locality', 'region', 'countryName'];
+        var result = "";
+        $.each(keys, function(i, e) {
+            if (typeof adr1[e] !== "undefined") {
+                if (result.length !== 0) result += ',';
+                result += adr1[e];
+            }
+        });
+        return result;
     },
     /**
      * adds a html string representation of this contact to a given div-element in the dom
@@ -376,6 +408,10 @@ cContact.prototype = {
             }
         });
     },
+    /**
+     * this transfers the contact object from the application memory
+     * to the address book of the phone.
+     */
     save: function() {
         //TODO: Dont show personal data in the log file of the final product
         log("save: " + JSON.stringify(this.c));
@@ -389,6 +425,9 @@ cContact.prototype = {
         };
 
     },
+    /**
+     * removes this contact from the phones adress book
+     */
     remove: function() {
         var name = this.displayName();
         // before a contact is removed, it is backed up in local storage, 
@@ -403,7 +442,9 @@ cContact.prototype = {
         };
     },
     /**
-     * unifyList is an array or arrays of contacts. Each sublist contains unifiable contacts
+     * Adds this contact to the unify list.
+     * The unify list is the sarting point of the unify opration.
+     * The UnifyList is an array or arrays of contacts. Each sublist contains unifiable contacts
      */
     addToUnifyList: function(unifyList) {
         var added = false;

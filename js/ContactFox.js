@@ -243,11 +243,18 @@ function loadContacts() {
     };
 }
 
+/**
+ * when all lists for the problems are available or they are changes, they are enterd into the 
+ * application document
+ */ 
 function addListsToHTML() {
     replaceDuplicatesListHTML();
     replaceMissingPrefixListHTML();
 }
 
+/**
+ * create the HTML-Code for the duplicates list and replace it at the prepared ID in the DOM
+ */
 function replaceDuplicatesListHTML() {
     // duplicates
     // let jquery mobile make this list filterable
@@ -262,6 +269,9 @@ function replaceDuplicatesListHTML() {
         .listview('refresh');
 }
 
+/**
+ * create the HTML-Code for the missing prefix list and replace it at the prepared ID in the DOM
+ */
 function replaceMissingPrefixListHTML() {
     //missingprefix
     // let jquery mobile make this list filterable
@@ -276,11 +286,18 @@ function replaceMissingPrefixListHTML() {
         .listview('refresh');
 }
 
+/**
+ * this merges all contacts in one entry of the duplicates list.
+ * It is also hidden from the list view after that.
+ */
 function merge(id) {
     $('#' + id).css("display", "none");
     contactList.merge(id);
 }
 
+/**
+ * merge all entries in the duplicates list
+ */
 function mergeAll() {
     try {
         var cls = '#' + ids.CONTACTLIST;
@@ -295,6 +312,10 @@ function mergeAll() {
     }
 }
 
+/**
+ * This is called when one entry in the dpulicates list is selected. A submenu is opened showing
+ * the potential result of the merge. Butons are created to apply or cancel the merge 
+ */
 function mergeContactSelected(event) {
     try {
         var li = $(event.target).parent();
@@ -339,12 +360,19 @@ function mergeContactSelected(event) {
     }
 }
 
+/**
+ * correct the prefix in all phonenumbers of the given contact 'c' with the given 'prefix'
+ * The contact is than hidden from the missing prefix list
+ */ 
 function correctPrefix(c, prefix) {
     log("correctPrefix " + c.key() + " " + prefix);
     contactList.correctPrefix(c.key(), prefix);
     $('#prefix' + c.key()).hide();
 }
 
+/**
+ * correct all contacts in the missing prefix list
+ */
 function correctAll() {
     try {
         var prefix = $("#" + ids.INPUTPREFIX).val();
@@ -362,7 +390,10 @@ function correctAll() {
     }
 }
 
-
+/**
+ * This is called when an item in the missing prefix list is selected.
+ * it opens a submenu, letting the user decide if he wants to correct this entry.
+ */
 function addPrefixContactSelected(event) {
     try {
         var prefix = $("#" + ids.INPUTPREFIX).val();

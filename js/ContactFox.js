@@ -213,6 +213,8 @@ function loadContacts() {
                 try {
                     var cursor = event.target;
                     if (cursor.result) {
+                        // the cursor contains a result: Another contact was found, 
+                        //so we add it to the contactList
                         var contact = new cContact(cursor.result);
                         contactList.add(contact);
                         try {
@@ -221,9 +223,13 @@ function loadContacts() {
                         } catch (ex) {
                             log(ex);
                         }
+                        // find the next contact. This is marked as an error because 
+                        // the FirefoxOS API uses a reserved word as a function name 
                         cursor.
                         continue();
                     } else {
+                        // no more contacts were found: the contactList is added to the 
+                        // user interface
                         addListsToHTML();
                     };
                 } catch (ex) {

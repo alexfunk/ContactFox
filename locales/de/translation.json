@@ -15,7 +15,8 @@
         "pDebug": "Debug",
         "pFunnyCharacters": "Seltsame Zeichen",
         "pMissingPlus": "Fehlende +XX Vorwahl",
-        "pAbout": "Über ContactFox..."
+        "pAbout": "Über ContactFox...",
+        "bExit": "Beenden"
     },
     "duplicates": {
         "title": "Doppelte",

@@ -15,7 +15,8 @@
         "pDebug": "Debug",
         "pFunnyCharacters": "Funny Characters",
         "pMissingPlus": "Missing +XX Prefix",
-        "pAbout": "about ContactFox..."
+        "pAbout": "about ContactFox...",
+        "bExit": "Close"
     },
     "duplicates": {
         "title": "Duplicates",

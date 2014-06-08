@@ -32,7 +32,8 @@ var ids = {
     RESTOREBACKUPPANEL: "RESTOREBACKUPPANEL",
     RESTOREBACKUPCONTENT: "RESTOREBACKUPCONTENT",
     BUTTONRESTOREBACKUP: "BUTTONRESTOREBACKUP",
-    BUTTONRESTOREBACKUPLOSE: "RESTOREBACKUPCLOSE"
+    BUTTONRESTOREBACKUPLOSE: "RESTOREBACKUPCLOSE",
+    BEXIT: "BEXIT"
 };
 
 // error messages are not only written to the console, but to an text-area on the debug page
@@ -89,6 +90,10 @@ function initApp() {
     // to init the contactList from the contacts stored in the device.
     buttons[pages.HOME].click(function(e) {
         loadContacts();
+    });
+    // exit
+    $('#'+ids.BEXIT).click(function(e) {
+    	window.close();
     });
     // some functions for the buttons on other pages
     try {

@@ -49,7 +49,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: 'node_modules/i18next/lib/dep/',
-                    src: ['i18next-1.7.1.min.js'],
+                    src: ['i18next.min.js'],
                     dest: 'dist/lib/'
                 }]
             }

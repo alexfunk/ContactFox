@@ -1,9 +1,9 @@
-// some pseudo-constants used in the applícation:
+// some pseudo-constants used in the application:
 
-// the app is distributed amoung some pages that can be addressed by this ids
+// the app is distributed among some pages that can be addressed by this IDs
 var pages = {
-    INTRO: "pIntro",
     START: "pStart",
+    HOME: "pHome",
     DUPLICATES: "pDuplicates",
     CHANGECONTACT: "pChangeContact",
     FUNNYCHARS: "pFunnyCharacters",
@@ -13,7 +13,7 @@ var pages = {
     RESTOREBACKUP: "pRestoreBackup"
 };
 
-// some elements in the pages have fixed ids that can be found here
+// some elements in the pages have fixed IDs that can be found here
 var ids = {
     CONTACTLIST: "CONTACTLIST",
     MISSINGPREFIXLIST: "MISSINGPREFIXLIST",
@@ -31,11 +31,11 @@ var ids = {
     NUMMESSAGES: "NUMMESSAGES",
     RESTOREBACKUPPANEL: "RESTOREBACKUPPANEL",
     RESTOREBACKUPCONTENT: "RESTOREBACKUPCONTENT",
-    BUTTONRESTOREBACKUP: "ButtonRestoreBackup",
-    BUTTONRESTOREBACKUPLOSE: "RestoreBackupClose"
+    BUTTONRESTOREBACKUP: "BUTTONRESTOREBACKUP",
+    BUTTONRESTOREBACKUPLOSE: "RESTOREBACKUPCLOSE"
 };
 
-// error messages are not only writen to the console, but to an textarea on the debug page
+// error messages are not only written to the console, but to an text-area on the debug page
 // so that we can trace problems even on an actual device.
 // TODO: Add a Send Debug as email to developer function
 function log(e) {
@@ -47,7 +47,7 @@ function log(e) {
 var contactList = new cContactList();
 
 /**
- * This function is usefull for debuging
+ * This function is usefull for debugging
  * TODO: Remove from the final product
  */
 function getEventsList($obj) {
@@ -65,19 +65,18 @@ function getEventsList($obj) {
  */
 function initApp() {
     // make the title a bit wider, so that more information
-    // can be
-    // displayed
+    // can be displayed
     $('.ui-title').css({
         'margin-left': '10%',
         'margin-right': '10%'
     });
 
     // link pages with their buttons.
-    // each button knows it destination page by the data-nav attibute
+    // each button knows its destination page by the data-nav attribute
     var buttons = {};
     buttons[pages.DUPLICATES] = $('[data-nav="nav.pDuplicates"]');
     buttons[pages.DEBUG] = $('[data-nav="nav.pDebug"]');
-    buttons[pages.START] = $('[data-nav="nav.home"]');
+    buttons[pages.HOME] = $('[data-nav="nav.home"]');
     buttons[pages.FUNNYCHARS] = $('[data-nav="nav.pFunnyCharacters"]');
     buttons[pages.MISSINGPLUS] = $('[data-nav="nav.pMissingPlus"]');
     buttons[pages.ABOUT] = $('[data-nav="nav.pAbout"]');
@@ -88,7 +87,7 @@ function initApp() {
     });
     // if the start button is called, an extra function is called: loadContacts
     // to init the contactList from the contacts stored in the device.
-    buttons[pages.START].click(function(e) {
+    buttons[pages.HOME].click(function(e) {
         loadContacts();
     });
     // some functions for the buttons on other pages
@@ -124,14 +123,14 @@ function initApp() {
         log("intronotagain was selected: " + intronotagain);
         if (intronotagain == 'true') {
             loadContacts();
-            $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.START);
+            $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.HOME);
         }
     } catch (ex) {
         log(ex);
     }
     // The intro explains the purpose of the app and ask the user to confirm 
     // the access to the contact list. 
-    // By a checkbox the user can controll if he wants to see the intro again
+    // By a checkbox the user can control if he wants to see the intro again
     // on program start. 
     // It is initialized to not show the intro again. This setting is stored in local
     // storage so it is there on program start 
@@ -244,9 +243,9 @@ function loadContacts() {
 }
 
 /**
- * when all lists for the problems are available or they are changes, they are enterd into the 
+ * when all lists for the problems are available or they are changes, they are entered into the
  * application document
- */ 
+ */
 function addListsToHTML() {
     replaceDuplicatesListHTML();
     replaceMissingPrefixListHTML();
@@ -313,8 +312,8 @@ function mergeAll() {
 }
 
 /**
- * This is called when one entry in the dpulicates list is selected. A submenu is opened showing
- * the potential result of the merge. Butons are created to apply or cancel the merge 
+ * This is called when an entry in the duplicates list is selected. A submenu is opened showing
+ * the potential result of the merge. Buttons are created to apply or cancel the merge
  */
 function mergeContactSelected(event) {
     try {
@@ -363,7 +362,7 @@ function mergeContactSelected(event) {
 /**
  * correct the prefix in all phonenumbers of the given contact 'c' with the given 'prefix'
  * The contact is than hidden from the missing prefix list
- */ 
+ */
 function correctPrefix(c, prefix) {
     log("correctPrefix " + c.key() + " " + prefix);
     contactList.correctPrefix(c.key(), prefix);
@@ -428,7 +427,7 @@ function addPrefixContactSelected(event) {
 $(document)
     .on(
         'pagecreate',
-        '#' + pages.INTRO,
+        '#' + pages.START,
         function() {
             try {
                 initApp();

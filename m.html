@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 	<link rel="stylesheet" href="lib/jquery.mobile-1.4.0.css" />
 	<script type="text/javascript" src="lib/jquery.min.js"></script>
-	<script type="text/javascript" src="lib/i18next-1.7.1.min.js"></script>
+	<script type="text/javascript" src="lib/i18next.min.js"></script>
 	<script type="text/javascript" src="lib/jquery.mobile-1.4.0.js"></script>
 	<script type="text/javascript" src="js/ContactFox.min.js"></script>
 </head>
 <body>
-	<div data-role="page" id="pIntro" data-theme="b" data-position="fixed">
+	<div data-role="page" id="pStart" data-theme="b" data-position="fixed">
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="app.name"></h1>
 		</div>
@@ -28,7 +28,7 @@
 	            </div>
 		</div>
 	</div>
-	<div data-role="page" id="pStart" data-theme="b" data-position="fixed">
+	<div data-role="page" id="pHome" data-theme="b" data-position="fixed">
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="app.name"></h1>
 		</div>
@@ -46,7 +46,7 @@
 	<div data-role="page" id="pDuplicates" data-theme="b" data-scroll='true'>
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="duplicates.title"></h1>
-			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">
@@ -58,7 +58,7 @@
 	<div data-role="page" id="pFunnyCharacters" data-theme="b">
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="funchar.title"></h1>
-			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">
@@ -73,8 +73,7 @@
                 </div>
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="missingplus.title"></h1>
- 			<a class="i18n" href="#" data-role="button" data-i18n="debug.showintroagain"></a> 
-			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">
@@ -113,7 +112,7 @@
 	<div data-role="page" id="pAbout" data-theme="b">
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="about.title"></h1>
-			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home"data-i18n="nav.home" ></a>
 		</div>
 		<div data-role="content" data-theme="b">
@@ -124,7 +123,7 @@
 	<div data-role="page" id="pDebug" data-theme="b">
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="debug.title"></h1>
-			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">
@@ -140,11 +139,11 @@
                 <div data-role="panel" data-position="right" data-display="push" 
                      id="RESTOREBACKUPPANEL">
                     <div id="RESTOREBACKUPCONTENT" ></div>
-                    <div><a href="#" data-role="button" id="ButtonRestoreBackup" data-i18n="restorebackup.restore"></a> <a href="#" data-role="button" id="RestoreBackupClose" data-i18n="restorebackup.close"></a></div>
+                    <div><a href="#" data-role="button" id="BUTTONRESTOREBACKUP" data-i18n="restorebackup.restore"></a> <a href="#" data-role="button" id="RESTOREBACKUPCLOSE" data-i18n="restorebackup.close"></a></div>
                 </div>
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="restorebackup.title"></h1>
-			<a href="#pStart" class="i18n" data-role="button" data-icon="back"
+			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
 		<div data-role="content" data-theme="b">

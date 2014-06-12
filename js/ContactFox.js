@@ -92,8 +92,8 @@ function initApp() {
         loadContacts();
     });
     // exit
-    $('#'+ids.BEXIT).click(function(e) {
-    	window.close();
+    $('#' + ids.BEXIT).click(function(e) {
+        window.close();
     });
     // some functions for the buttons on other pages
     try {

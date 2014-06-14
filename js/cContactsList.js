@@ -1,4 +1,3 @@
-
 cContactList = function() {};
 
 cContactList.prototype = {

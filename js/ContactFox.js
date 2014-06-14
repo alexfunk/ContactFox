@@ -2,7 +2,7 @@
 
 // the app is distributed among some pages that can be addressed by this IDs
 var pages = {
-    START: "pStart",
+    HELP: "pHelp",
     HOME: "pHome",
     DUPLICATES: "pDuplicates",
     CHANGECONTACT: "pChangeContact",
@@ -20,7 +20,7 @@ var ids = {
     CONTACTCHANGE: "CONTACTCHANGE",
     TEXTAREA: "TEXTAREA",
     CONTACTSREAD: "CONTACTSREAD",
-    CBINTRONOTAGAIN: "CBINTRONOTAGAIN",
+    CBHELPNOTAGAIN: "CBHELPNOTAGAIN",
     MISSINGPREFIXPANEL: "MISSINGPREFIXPANEL",
     MISSINGPREFIXCONTENT: "MISSINGPREFIXCONTENT",
     INPUTPREFIX: "INPUTPREFIX",
@@ -107,7 +107,7 @@ function initApp() {
         log(ex);
     }
 
-    //    $('#' + ids.CBINTRONOTAGAIN).on("click", function(e) {
+    //    $('#' + ids.CBHELPNOTAGAIN).on("click", function(e) {
     //        try {
     //            e.preventDefault();
     //            var $checkbox = $(this).find(':checkbox');
@@ -123,29 +123,30 @@ function initApp() {
         $(".i18n").i18n();
     });
     try {
-        // check if the intro was disabled by the user, and proceed to the start page
-        var intronotagain = window.localStorage.getItem("ContactFox." + ids.CBINTRONOTAGAIN);
-        log("intronotagain was selected: " + intronotagain);
-        if (intronotagain == 'true') {
+        // check if the help was disabled by the user, and proceed to the home page
+        var helpnotagain = window.localStorage.getItem("ContactFox." + ids.CBHELPNOTAGAIN);
+        log("helpnotagain was selected: " + helpnotagain);
+        if (helpnotagain == 'true') {
             loadContacts();
             $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.HOME);
         }
     } catch (ex) {
         log(ex);
     }
-    // The intro explains the purpose of the app and ask the user to confirm 
+    // The help explains the purpose of the app and ask the user to confirm 
     // the access to the contact list. 
-    // By a checkbox the user can control if he wants to see the intro again
+    // By a checkbox the user can control if he wants to see the help again
     // on program start. 
-    // It is initialized to not show the intro again. This setting is stored in local
+    // It is initialized to not show the help again. This setting is stored in local
     // storage so it is there on program start 
-    var cb = $('#' + ids.CBINTRONOTAGAIN).find(':checkbox');
+    var cb = $('.checkbox-help');
+    log("setting checkbox-help to true");
     cb.prop('checked', true).checkboxradio("refresh");
-    window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, true);
+    window.localStorage.setItem("ContactFox." + ids.CBHELPNOTAGAIN, true);
     cb.bind('change', function(e) {
         var wasChecked = $(this).prop('checked');
         log("wasChecked " + wasChecked);
-        window.localStorage.setItem("ContactFox." + ids.CBINTRONOTAGAIN, wasChecked);
+        window.localStorage.setItem("ContactFox." + ids.CBHELPNOTAGAIN, wasChecked);
     });
     // For debugging log all events that are bound to the checkbox and look if the state changed  
     //log("EventList: " + getEventsList(cb[0]));
@@ -441,11 +442,11 @@ function addPrefixContactSelected(event) {
     }
 }
 
-// Init the start page
+// Init the help page
 $(document)
     .on(
         'pagecreate',
-        '#' + pages.START,
+        '#' + pages.HELP,
         function() {
             try {
                 initApp();
@@ -467,18 +468,6 @@ $(document)
                         log(ex);
                     }
                 });
-                $('[data-i18n = "debug.showintroagain"]').click(function(e) {
-                    try {
-                        log("showintroagain clicked");
-                        var cb = $('#' + ids.CBINTRONOTAGAIN).find(':checkbox');
-                        cb.prop('checked', false).checkboxradio("refresh");
-                        cb.trigger("change");
-                        var intronotagain = window.localStorage.getItem("ContactFox." + ids.CBINTRONOTAGAIN);
-                        log("intronotagain was selected: " + intronotagain);
-                    } catch (ex) {
-                        log(ex);
-                    }
-                });
                 //TODO: Add click function for backup restore
             } catch (ex) {
                 log(ex);
@@ -489,14 +478,14 @@ $(document)
  * Open an URl from the app in the browser, like showing the online help function
  * This is described in https://developer.mozilla.org/en-US/docs/WebAPI/Web_Activities
  * But instead of "share" as described there we used "view"
- * 
+ *
  * @param url the url to open
  * @returns nothing
  */
 function openLinkInBrowser(url) {
-	/**
-	 * 	 
-	 */ 
+    /**
+     *
+     */
     var activity = new MozActivity({
         // Ask for the "view" activity
         name: "view",

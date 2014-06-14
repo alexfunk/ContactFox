@@ -10,25 +10,25 @@
 	<script type="text/javascript" src="js/ContactFox.min.js"></script>
 </head>
 <body>
-	<div data-role="page" id="pStart" data-theme="b" data-position="fixed">
+	<div data-role="page" id="pHelp" data-theme="b" data-position="fixed">
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="app.name"></h1>
 		</div>
 		<div data-role="content" data-theme="b">
 			<img src="images/ContactFox.png" 
 				style="float:left; margin-right: 5px;"></img>
-			<div class="i18n" data-i18n="app.introduction"></div>
-			<div data-role="fieldcontain" id="CBINTRONOTAGAIN">
+			<div class="i18n" data-i18n="app.help"></div>
+			<div data-role="fieldcontain" id="CBHELPNOTAGAIN">
 				<fieldset data-role="controlgroup">
-					<input type="checkbox" name="checkbox-1"  class="custom" 
-							id="checkbox-1"></input>
+					<input type="checkbox" id="checkbox-1"
+							class="checkbox-help custom"></input>
 					<label class="i18n" for="checkbox-1" 
-							data-i18n="app.intronotagain"></label>
+							data-i18n="app.helpnotagain"></label>
 				</fieldset>
 			</div>
 			<div>
 				<a href="#" data-role="button" data-nav="nav.home" class="i18n"
-					data-i18n="nav.home"></a> 
+					data-i18n="nav.continue"></a> 
 			</div>
 		</div>
 	</div>
@@ -41,7 +41,7 @@
 		</div>
 		<div data-role="content" data-theme="b">
 			<div>	<span id="CONTACTSREAD"> </span>
-					<span class="i18n" data-i18n="start.contactsread"></span>
+					<span class="i18n" data-i18n="home.contactsread"></span>
 			</div>
 			<div>
 				<a href="#" data-role="button" data-nav="nav.pDuplicates">
@@ -163,9 +163,9 @@
 		</div>
 		<div data-role="content" data-theme="b">
 			<a class="i18n" href="#" data-role="button" 
-				data-i18n="debug.addtestdata"></a> 
-			<a class="i18n" href="#" data-role="button" 
-				data-i18n="debug.showintroagain"></a> 
+				data-i18n="debug.addtestdata"></a>
+			<a href="#pHelp" class="i18n" data-role="button" 
+					data-i18n="debug.showhelpagain"></a> 
 			<a class="i18n" href="#" data-role="button" 
 				data-i18n="debug.restorebackup"></a> 
 			<div class="i18n" data-i18n="debug.log"></div>

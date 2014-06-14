@@ -1,16 +1,16 @@
 {
     "app": {
         "name": "Contact Fox",
-        "introduction": "Duplicate Contacts or contacts with missing information are recognized in your contactlist and you may fix these problemes here. So you will  be asked to allow access to your contact list. Then your contact list will be analysed and possible improvements ordered by categories. Each Category has a list where improvements can be applied individualy or in one go by a single fingertip. Further more there is an filter that let you handle groups of contacts that match one pattern in the same way.",
-        "intronotagain": "Do not show again"
+        "help": "Duplicate contacts or contacts with missing information are recognized in your contactlist and you may fix these problems here. So you will  be asked to allow access to your contact list. Then your contact list will be analysed and possible improvements ordered by categories. Each category has a list where improvements can be applied individualy or in one go by a single fingertip. Further more there is a filter that let you handle groups of contacts that match one pattern in the same way.",
+        "helpnotagain": "Do not show again on start"
     },
-    "start": {
+    "home": {
         "contactsread": "contacts read",
         "ready": "ready"
     },
     "nav": {
+        "continue": "Continue",
         "home": "Home",
-        "pStart": "Start",
         "pDuplicates": "Duplicates",
         "pDebug": "Debug",
         "pFunnyCharacters": "Funny Characters",
@@ -74,7 +74,7 @@
     "debug": {
         "title": "Debug Console",
         "addtestdata": "Add test data",
-        "showintroagain": "Show Intro again",
+        "showhelpagain": "Show help...",
         "restorebackup": "Restore back up copy",
         "log": "Logbook for debugging"
     },

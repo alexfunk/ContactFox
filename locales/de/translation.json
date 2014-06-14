@@ -1,16 +1,16 @@
 {
     "app": {
         "name": "Contact Fox",
-        "introduction": "Doppelte Kontakte oder Kontakte mit fehlenden Infos werden in Ihrer Kontaktliste erkannt und Sie können die Fehler einfach korrigieren.Deshalb werden sie gleich gebeten, einen Zugriff auf Ihre Kontakte zuzulassen. Anschließend wird ihre Kontaktliste analysiert und Verbesserungsvorschläge in Kategorien eingeordnet. Hinter jeder Kategorie wird eine Liste erreicht. Hier können die Verbesserugnsvorschläge einzelnd bearbeitet werden, oder auch mit einem Fingertip automatisch. Zusätzlich kann nach einem Muster gefiltert werden, um alle Kontakte dieses Musters gleich zu verarbeiten.",
-        "intronotagain": "Nicht nochmal anzeigen"
+        "help": "Doppelte Kontakte oder Kontakte mit fehlenden Infos werden in Ihrer Kontaktliste erkannt und Sie können die Fehler einfach korrigieren. Deshalb werden Sie zu Beginn gebeten, der app den Zugriff auf Ihre Kontakte zu erlauben. Anschließend wird ihre Kontaktliste analysiert und Verbesserungsvorschläge in Kategorien eingeordnet. Hinter jeder Kategorie wird eine Liste erreicht. Hier können die Verbesserugnsvorschläge einzeln bearbeitet werden, oder auch mit einem Fingertip automatisch. Zusätzlich kann nach einem Muster gefiltert werden, um alle Kontakte dieses Musters gleich zu verarbeiten.",
+        "helpnotagain": "Beim Start nicht mehr anzeigen"
     },
-    "start": {
+    "home": {
         "contactsread": "Kontakte gelesen",
         "ready": "Fertig"
     },
     "nav": {
+        "continue": "Weiter",
         "home": "Start",
-        "pStart": "Start",
         "pDuplicates": "Doppelte",
         "pDebug": "Debug",
         "pFunnyCharacters": "Seltsame Zeichen",
@@ -73,7 +73,7 @@
     "debug": {
         "title": "Debug Console",
         "addtestdata": "Testdaten hinzufügen",
-        "showintroagain": "Intro wieder anzeigen",
+        "showhelpagain": "Hilfe anzeigen...",
         "restorebackup": "Wiederherstellung",
         "log": "Ausgaben zur Fehlersuche"
     },

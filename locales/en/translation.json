@@ -76,7 +76,8 @@
         "addtestdata": "Add test data",
         "showhelpagain": "Show help...",
         "restorebackup": "Restore back up copy",
-        "log": "Logbook for debugging"
+        "log": "Logbook for debugging",
+        "sendToSupport" : "Send logbook to support"
     },
     "restorebackup": {
         "title": "Restore",

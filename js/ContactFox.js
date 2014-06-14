@@ -178,6 +178,13 @@ function initApp() {
         log("Url clicked: " + url);
         openLinkInBrowser(url);
     });
+    $('[data-i18n = "debug.sendToSupport"]').click(function(e) {
+        try {
+           sendEMailToSupport($('#' + ids.TEXTAREA).text());
+        } catch (ex) {
+           log(ex);
+        }
+    });
 }
 
 /**
@@ -483,9 +490,6 @@ $(document)
  * @returns nothing
  */
 function openLinkInBrowser(url) {
-    /**
-     *
-     */
     var activity = new MozActivity({
         // Ask for the "view" activity
         name: "view",
@@ -504,4 +508,24 @@ function openLinkInBrowser(url) {
     activity.onerror = function() {
         log(this.error);
     };
+}
+
+function sendEMailToSupport(content) {
+var body = encodeURIComponent(JSON.stringify(content));
+var activity = new MozActivity({
+  name: "new",
+  data: {
+    type : "mail",
+    url: "mailto:ContactFoxSupport@alexfunk.de?subject=ContactFox%20Debug%20Log&body=" + body,
+ }
+});
+  activity.onsuccess = function() {
+     log("the mail was created");
+    };
+
+    activity.onerror = function() {
+        log(this.error);
+    };
+
+
 }

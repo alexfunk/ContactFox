@@ -75,7 +75,8 @@
         "addtestdata": "Testdaten hinzufügen",
         "showhelpagain": "Hilfe anzeigen...",
         "restorebackup": "Wiederherstellung",
-        "log": "Ausgaben zur Fehlersuche"
+        "log": "Ausgaben zur Fehlersuche",
+        "sendToSupport" : "Ausgaben an Support senden"
     },
     "restorebackup": {
         "title": "Wiederherstellung",

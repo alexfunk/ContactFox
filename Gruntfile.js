@@ -140,8 +140,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-prettify');
     grunt.loadNpmTasks('grunt-contrib-compress');
 
-    // Default task(s).
+    // Default task: compress the sources to create a distributable
     grunt.registerTask('default', ['uglify', 'copy', 'firefoxManifest', 'compress']);
-    grunt.registerTask('debug', ['jsbeautifier', 'jshint', 'nodeunit', 'concat', 'copy', 'firefoxManifest', 'compress']);
+    // for development: checkt the source, create a uncompressed version and copy it to the dist 
+    grunt.registerTask('debug', [ 'jshint', 'nodeunit', 'concat', 'copy', 'firefoxManifest', 'compress']);
+    // on demand w can automatically format the source from grunt
+    grunt.registerTask('beutify' [ 'jsbeautifier','prettyfy']);
 
 };

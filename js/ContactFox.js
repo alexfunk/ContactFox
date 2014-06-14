@@ -170,6 +170,13 @@ function initApp() {
         }).prop('selected', true);
         $('#' + ids.SELECTPREFIX).selectmenu('refresh', true);
     });
+    // All links that should open in browser shall have the ".open-inbrowser" class and the "data-url"
+    // Attribute with the url to open. So they use this function, when clicked.
+    $(".open-in-browser").click(function(e) {
+        var url = $(this).data("url");
+        log("Url clicked: " + url);
+        openLinkInBrowser(url);
+    });
 }
 
 /**
@@ -477,3 +484,35 @@ $(document)
                 log(ex);
             }
         });
+
+/**
+ * Open an URl from the app in the browser, like showing the online help function
+ * This is described in https://developer.mozilla.org/en-US/docs/WebAPI/Web_Activities
+ * But instead of "share" as described there we used "view"
+ * 
+ * @param url the url to open
+ * @returns nothing
+ */
+function openLinkInBrowser(url) {
+	/**
+	 * 	 
+	 */ 
+    var activity = new MozActivity({
+        // Ask for the "view" activity
+        name: "view",
+
+        // Provide the data required by the filters of the activity
+        data: {
+            type: "url",
+            url: url
+        }
+    });
+
+    activity.onsuccess = function() {
+        log("the url was opened");
+    };
+
+    activity.onerror = function() {
+        log(this.error);
+    };
+}

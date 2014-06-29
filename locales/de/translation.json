@@ -20,20 +20,20 @@
     },
     "duplicates": {
         "title": "Doppelte",
-        "mergeall": "Alle zusammenführen"
+        "mergeall": "Alle Zusammenführen"
     },
     "missingplus": {
         "title": "Fehlende +XX Vorwahl",
         "close": "Schließen",
         "correct": "Korrigieren",
-        "selectprefix": "Vorwahl wählen",
-        "correctall": "Alle korrigieren"
+        "selectprefix": "Vorwahl Wählen",
+        "correctall": "Alle Korrigieren"
     },
     "funchars": {
-        "title": "Komische Zeichen"
+        "title": "Undefinierbare Zeichen"
     },
     "changecontact": {
-        "title": "Kontakt ändern"
+        "title": "Kontakt Ändern"
     },
     "contact": {
         "merge": "Zusammenführen",
@@ -72,8 +72,8 @@
     },
     "debug": {
         "title": "Debug Console",
-        "addtestdata": "Testdaten hinzufügen",
-        "showhelpagain": "Hilfe anzeigen...",
+        "addtestdata": "Testdaten Hinzufügen",
+        "showhelpagain": "Hilfe Anzeigen...",
         "restorebackup": "Wiederherstellung",
         "log": "Ausgaben zur Fehlersuche",
         "sendToSupport" : "Ausgaben an Support senden"
@@ -81,8 +81,8 @@
     "restorebackup": {
         "title": "Wiederherstellung",
         "close": "Schließen",
-        "correct": "Wiederherstellen",
-        "correctall": "Alle Wiederherstellen"
+        "restore": "Wiederherstellen",
+        "restoreall": "Alle Wiederherstellen"
     }
 
 }

@@ -1,3 +1,24 @@
+cDefectList = function() {};
+
+cDefectList.prototype = {
+    _defects: [],
+    hasDefects: function() {
+        return this._defects.length !== 0;
+    },
+    numDefects: function() {
+        return this._defects.length;
+    }
+
+};
+
+cDuplicates = function() {};
+
+cDuplicates.prototype = {
+    //__proto__: new cDefectList(),
+    addToUI: function(ul) {},
+    correctDefects: function() {}
+};
+
 cContactList = function() {};
 
 cContactList.prototype = {

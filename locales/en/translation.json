@@ -20,14 +20,14 @@
     },
     "duplicates": {
         "title": "Duplicates",
-        "mergeall": "merge all"
+        "mergeall": "Merge All"
     },
     "missingplus": {
         "title": "Missing +XX Prefix",
-        "close": "close",
-        "correct": "correct",
-        "selectprefix": "select prefix",
-        "correctall": "correct all"
+        "close": "Close",
+        "correct": "Correct",
+        "selectprefix": "Select Prefix",
+        "correctall": "Correct All"
     },
     "funchars": {
         "title": "Funny Characters"
@@ -37,7 +37,7 @@
         "title": "Change Contact"
     },
     "contact": {
-        "merge": "merge",
+        "merge": "Merge",
         "id": "ID",
         "published": "Published",
         "updated": "Updated",
@@ -50,7 +50,7 @@
         "nickname": "Nickname",
         "email": "EMail",
         "photo": "Photo",
-        "url": "Web-Adrress",
+        "url": "Web-Address",
         "category": "Category",
         "adr": "Address",
         "tel": "Phone",
@@ -69,21 +69,21 @@
     },
     "about": {
         "title": "About ContacFox",
-        "text": "Alex Funk (c) 2014, Version 0.5. Further Informations can be found here: "
+        "text": "Alex Funk (c) 2014, Version 0.5. Further information can be found here: "
     },
     "debug": {
         "title": "Debug Console",
-        "addtestdata": "Add test data",
-        "showhelpagain": "Show help...",
-        "restorebackup": "Restore back up copy",
+        "addtestdata": "Add Test Data",
+        "showhelpagain": "Show Help...",
+        "restorebackup": "Restore Backup Copy",
         "log": "Logbook for debugging",
-        "sendToSupport" : "Send logbook to support"
+        "sendToSupport" : "Send Logbook To Support"
     },
     "restorebackup": {
         "title": "Restore",
         "close": "Close",
-        "correct": "Restore",
-        "correctall": "Restore All"
+        "restore": "Restore",
+        "restoreall": "Restore all"
     }
 
 }

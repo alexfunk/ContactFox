@@ -31,6 +31,7 @@ var ids = {
     NUMMESSAGES: "NUMMESSAGES",
     RESTOREBACKUPPANEL: "RESTOREBACKUPPANEL",
     RESTOREBACKUPCONTENT: "RESTOREBACKUPCONTENT",
+    RESTOREBACKUPLIST: "RESTOREBACKUPLIST",
     BUTTONRESTOREBACKUP: "BUTTONRESTOREBACKUP",
     BUTTONRESTOREBACKUPLOSE: "RESTOREBACKUPCLOSE",
     BEXIT: "BEXIT"
@@ -46,6 +47,7 @@ function log(e) {
 
 // all contacts are kept in this object during application runtime
 var contactList = new cContactList();
+
 
 /**
  * This function is usefull for debugging
@@ -81,6 +83,10 @@ function initApp() {
     buttons[pages.FUNNYCHARS] = $('[data-nav="nav.pFunnyCharacters"]');
     buttons[pages.MISSINGPLUS] = $('[data-nav="nav.pMissingPlus"]');
     buttons[pages.ABOUT] = $('[data-nav="nav.pAbout"]');
+    //byGarf
+    buttons[pages.HELP] = $('[data-nav="nav.pHelp"]');
+    buttons[pages.RESTOREBACKUP] = $('[data-nav="nav.pRestoreBackup"]');
+    ///byGarf
     $.each(buttons, function(key, value) {
         value.click(function(e) {
             $(':mobile-pagecontainer').pagecontainer("change", '#' + key);
@@ -476,6 +482,30 @@ $(document)
                     }
                 });
                 //TODO: Add click function for backup restore
+                
+                //byAlex: 
+                $('[data-i18n = "debug.restorebackup"]').click(function(e) {
+                    try {
+                        log("debug.restorebackup clicked");
+                        // fill the backup list on the backup page
+                        var ul = $('#' + ids.RESTOREBACKUPLIST);
+                        //not sure if this will work, access a 
+                        //static variable from the contact class to display 
+                        // the backups
+                        cContact._backup.appendBackupListToUL(ul);
+                     } catch (ex) {
+                        log(ex);
+                     }
+                });
+                //byGarf
+                $('[data-i18n = "restorebackup.restoreall"]').click(function(e) {
+                    try {
+                        log("restorebackup.restoreall clicked");
+                     } catch (ex) {
+                        log(ex);
+                     }
+                });
+                ///byGarf
             } catch (ex) {
                 log(ex);
             }

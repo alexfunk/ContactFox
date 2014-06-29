@@ -15,23 +15,39 @@ if (typeof String.prototype.startsWith != 'function') {
  */
 cContact = function(c) {
     this.c = c;
-    this._backup = new cContactBackup();
 };
 
-//TODO: is this a bug? is everything still loged to the debug window?
+//TODO: is this a bug? is everything still logged to the debug window?
 function log(e) {
     console.log(e);
 }
 
+/**
+ * a private static variable that manages a backup of all contacts that
+ * are modified b this module
+ */
+cContact._backup = new cContactBackup();
 
 /**
  * start of the class
  */
 cContact.prototype = {
+    /**
+     * allow access to the backup list 
+     * @returns the backup list
+     */
+    getBackup : function() {return cContact._backup;},
+    /**
+     * find a unique key of this contact object that cn be used as an id in
+     * the gui
+     * @returns a string with the id
+     */
     key: function() {
         var result;
+        // in general the firefox os provides an id for the contact
         if (this.c.id) result = this.c.id;
         else {
+            // if not we generate one from the content of the contact
             var givenName = "";
             if (($.isArray(this.c.givenName)) && (this.c.givenName.length > 0)) {
                 givenName = this.c.givenName[0];
@@ -105,7 +121,7 @@ cContact.prototype = {
         return this.displayName() == contact.displayName();
     },
     /**
-     * Checks if this contact has a nummber without an international dial prefix
+     * Checks if this contact has a number without an international dial prefix
      */
     hasMissingPrefix: function() {
         var result = false;
@@ -120,7 +136,7 @@ cContact.prototype = {
         return result;
     },
     /** 
-     * insert the given prefix to all phone numbers that dont start with 00 or +
+     * insert the given prefix to all phone numbers that don't start with 00 or +
      */
     insertPrefix: function(prefix) {
         if ($.isArray(this.c.tel)) {
@@ -132,8 +148,8 @@ cContact.prototype = {
                     }
                 }
             });
-            // ok, the prefix is added now, but maybe there is a second number in the contact
-            // that has already the given prefix. So we check for duplicate phonenumber 
+            // OK, the prefix is added now, but maybe there is a second number in the contact
+            // that has already the given prefix. So we check for duplicate phone-number 
             // entries and remove them in this contact here 
             this.clearDuplicateNumbers();
         }
@@ -199,7 +215,7 @@ cContact.prototype = {
         return result;
     },
     /** 
-     * checks if two street adresses are equal
+     * checks if two street addresses are equal
      */
     //TODO: this should be a static function. Not related to the contact object
     addressEqual: function(adr1, adr2) {
@@ -219,7 +235,7 @@ cContact.prototype = {
      * converts one given member like 'adr' or 'tel' of the contact to an array of
      * human readable string.
      * Some members are arrays others objects of different types. This tries to deal with
-     * all situations. If the member is not set or cant be converted to string, an empty array is returned.
+     * all situations. If the member is not set or can't be converted to string, an empty array is returned.
      */
     contactMemberToString: function(member) {
         // define a map of functions to convert one entry of a contact-member to a string.
@@ -236,8 +252,8 @@ cContact.prototype = {
                 return "photo";
             }
         };
-        // helper function to convert a memeber that contains a string
-        // each entry in the arry is maped with the function above. 
+        // helper function to convert a member that contains a string
+        // each entry in the array is mapped with the function above. 
         var handleArray = function(a, f) {
             var result = [];
             $.each(a, function(i, e) {
@@ -265,7 +281,7 @@ cContact.prototype = {
         }
     },
     /**
-     * converts a street adress from a contact to a string that can be displayed to the user
+     * converts a street address from a contact to a string that can be displayed to the user
      */
     //TODO: this should be a static function. Not related to the contact object
     addressToString: function(adr1) {
@@ -280,12 +296,12 @@ cContact.prototype = {
         return result;
     },
     /**
-     * adds a html string representation of this contact to a given div-element in the dom
-     * each non-empty member is added with a label. if one memeber has more than one entry it is
+     * adds a HTML string representation of this contact to a given div-element in the dom
+     * each non-empty member is added with a label. if one member has more than one entries it is
      * added with numbers at the label.
-     * Labels for each entry can be found in each locale catalog under the keyword 'contact'.
-     * TODO: Maybe should be moved to another place, so that model and ui is not intermxed
-     * param div the div to add the string representation
+     * Labels for each entry can be found in each locale catalogue under the keyword 'contact'.
+     * TODO: Maybe should be moved to another place, so that model and ui is not intermixed
+     * param div: the div to add the string representation
      */
     appendAsString: function(div, filter) {
         var t = this;
@@ -310,7 +326,7 @@ cContact.prototype = {
         });
     },
     /**
-     * checks if this contact contains an adress
+     * checks if this contact contains an address
      */
     containsAddress: function(adress) {
         var t = this;
@@ -330,10 +346,10 @@ cContact.prototype = {
      * the information is already there
      */
     unify: function(contact) {
-        this._backup.backup(this);
+        cContact._backup.backup(this);
         // some member of a contact can be unified easily, since it is just
-        // an array of string. For other mebers there should be a special function
-        // in the unifymember map.
+        // an array of string. For other members there should be a special 
+        // function in the unify-member map.
         var unifymember = {
             "tel": function(t, contact) {
                 // an entry is an object with type and value
@@ -352,7 +368,7 @@ cContact.prototype = {
                 }
             },
             "adr": function(t, contact) {
-                // checking that two adresses are equal is not trivial
+                // checking that two addresses are equal is not trivial
                 if (!t.c.adr) {
                     t.c.adr = [];
                 }
@@ -381,7 +397,7 @@ cContact.prototype = {
             }
         };
         var t = this;
-        // we know all valid memebers in a contact record and its expected type
+        // we know all valid members in a contact record and its expected type
         // so we unify each member one by one
         $.each(this.members, function(key, value) {
             if (typeof unifymember[key] !== "undefined") {
@@ -400,7 +416,8 @@ cContact.prototype = {
                     }
                 }
                 // if it is not an arrayString or an member handled special
-                // we still check if the master has no value but the contact to merge has 
+                // we still check if the master has no value but the contact 
+                // to merge has 
                 else if (!t.c[key]) {
                     t.c[key] = contact.c[key];
                 }
@@ -413,7 +430,7 @@ cContact.prototype = {
      * to the address book of the phone.
      */
     save: function() {
-        //TODO: Dont show personal data in the log file of the final product
+        //TODO: Don't show personal data in the log file of the final product
         log("save: " + JSON.stringify(this.c));
         var saveResult = navigator.mozContacts.save(this.c);
         //TODO: Display Error message to the user if an operation fails.
@@ -426,13 +443,13 @@ cContact.prototype = {
 
     },
     /**
-     * removes this contact from the phones adress book
+     * removes this contact from the phones address book
      */
     remove: function() {
         var name = this.displayName();
         // before a contact is removed, it is backed up in local storage, 
         // so it could be restored later on
-        this._backup.backup(this);
+        cContact._backup.backup(this);
         var removeResult = navigator.mozContacts.remove(this.c);
         removeResult.onerror = function() {
             log("Error: Could not remove " + name);
@@ -443,8 +460,9 @@ cContact.prototype = {
     },
     /**
      * Adds this contact to the unify list.
-     * The unify list is the sarting point of the unify opration.
-     * The UnifyList is an array or arrays of contacts. Each sublist contains unifiable contacts
+     * The unify list is the starting point of the unify operation.
+     * The UnifyList is an array or arrays of contacts. Each sublist contains 
+     * unify-able contacts
      */
     addToUnifyList: function(unifyList) {
         var added = false;

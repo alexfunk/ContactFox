@@ -1,6 +1,8 @@
 var fs = require('fs');
-require('../js/cContacts.js');
+// include the java script to test in the order of dependency from 
+// the one without dependencies to the oe that builds on the others
 require('../js/cContactBackup.js');
+require('../js/cContacts.js');
 require('../js/cContactUtils.js');
 require('../js/cContactsList.js');
 jqFactory = require('../node_modules/jquery/dist/jquery.js');

@@ -1,44 +1,126 @@
-cDefectList = function() {};
+/*
+ * Some Utility to have inheritance in javascript classes
+ * Extends the Function prototype by an inhereitsFrom function 
+ * @param parentClassOrObject
+ * @returns {Function}
+ */
+Function.prototype.inheritsFrom = function(parentClassOrObject) {
+    if (parentClassOrObject.constructor == Function) {
+        // Normal Inheritance
+        this.prototype = new parentClassOrObject();
+        this.prototype.constructor = this;
+        this.prototype.parent = parentClassOrObject.prototype;
+    } else {
+        // Pure Virtual Inheritance
+        this.prototype = parentClassOrObject;
+        this.prototype.constructor = this;
+        this.prototype.parent = parentClassOrObject;
+    }
+    return this;
+};
+
+// ------------------------------------------------------
+// Base class for all defects, like dupplicate contacts,
+// missing prefix and
+cDefectList = function() {
+};
 
 cDefectList.prototype = {
-    _defects: [],
-    hasDefects: function() {
+    _defects : [],
+    hasDefects : function() {
         return this._defects.length !== 0;
     },
-    numDefects: function() {
+    numDefects : function() {
         return this._defects.length;
+    },
+    _hasDefect : function(contact) {
+        return false;
+    },
+    checkContactForDefect : function(contact) {
+        if (this._hasDefect(contact))
+            this._defects.push(contact);
     }
 
 };
+// -------------------------------------------------------
 
-cDuplicates = function() {};
+cDuplicates = function() {
+};
+cDuplicates.inheritsFrom(cDefectList);
 
-cDuplicates.prototype = {
-    //__proto__: new cDefectList(),
-    addToUI: function(ul) {},
-    correctDefects: function() {}
+cDuplicates.prototype.addToUI = function(ul) {
+    contactUtils.appendUnifyListToUL(this._defects, ul);
+};
+cDuplicates.prototype.correctDefect = function() {
+};
+/**
+ * @Override the duplicates defect is handled different
+ * @param contact
+ */
+cDuplicates.prototype.checkContactForDefect = function(contact) {
+    contact.addToUnifyList(this._defects);
+};
+// -------------------------------------------------------
+
+cMissingPrefix = function() {
 };
 
-cContactList = function() {};
+cMissingPrefix.inheritsFrom(cDefectList);
+
+cMissingPrefix.prototype.addToUI = function(ul) {
+    contactUtils.appendMissingPrefixListToUL(this._defects, ul);
+};
+cMissingPrefix.prototype.correctDefect = function(key, prefix) {
+    var c = this.getById(key);
+    c.insertPrefix(prefix);
+    c.save();
+    var mpListIndex = this._missingPrefixList.indexOf(c);
+    if (mpListIndex != -1) {
+        this._missingPrefixList.splice(mpListIndex, 1);
+    }
+    this._notifyChange(this);
+};
+
+// -------------------------------------------------------
+
+cFunnyCharacters = function() {
+};
+cFunnyCharacters.inheritsFrom(cDefectList);
+
+cFunnyCharacters.prototype.addToUI = function(ul) {
+};
+cFunnyCharacters.prototype.correctDefect = function() {
+};
+
+cContactList = function() {
+};
 
 cContactList.prototype = {
-    _list: [],
-    _unifyList: [],
-    _funnyCharacters: [],
-    _missingPrefixList: [],
-    _listeners: [],
-    add: function(c) {
+    _list : [],
+    _unifyList : [],
+    _funnyCharacters : [],
+    _missingPrefixList : [],
+    _defects : {
+        duplicates : new cDuplicates(),
+        missingPrefix : new cMissingPrefix(),
+        funnyCharacters : new cFunnyCharacters()
+    },
+    _listeners : [],
+    add : function(c) {
         this._list.push(c);
+        this._defects.duplicates.checkContactForDefect(c);
+        this._defects.missingPrefix.checkContactForDefect(c);
+        this._defects.funnyCharacters.checkContactForDefect(c);
         c.addToUnifyList(this._unifyList);
         if (c.hasMissingPrefix()) {
             this._missingPrefixList.push(c);
         }
         this._notifyChange(this);
     },
-    size: function() {
+    size : function() {
         return this._list.length;
     },
-    getById: function(id) {
+    getById : function(id) {
         var result = null;
         $.each(this._list, function(i, e) {
             if (e.key() == id) {
@@ -48,13 +130,13 @@ cContactList.prototype = {
         });
         return result;
     },
-    appendUnifyListToUL: function(ul) {
-        return contactUtils.appendUnifyListToUL(this._unifyList, ul);
+    appendUnifyListToUL : function(ul) {
+        contactUtils.appendUnifyListToUL(this._unifyList, ul);
     },
-    appendMissingPrefixListToUL: function(ul) {
-        return contactUtils.appendMissingPrefixListToUL(this._missingPrefixList, ul);
+    appendMissingPrefixListToUL : function(ul) {
+        contactUtils.appendMissingPrefixListToUL(this._missingPrefixList, ul);
     },
-    hasDuplicates: function() {
+    hasDuplicates : function() {
         var result = false;
         $.each(this._unifyList, function(i, e) {
             if ($.isArray(e) && e.length > 1) {
@@ -65,7 +147,7 @@ cContactList.prototype = {
         });
         return result;
     },
-    numDuplicates: function() {
+    numDuplicates : function() {
         var result = 0;
         $.each(this._unifyList, function(i, e) {
             if ($.isArray(e) && e.length > 1) {
@@ -74,26 +156,26 @@ cContactList.prototype = {
         });
         return result;
     },
-    hasFunnyCharacters: function() {
+    hasFunnyCharacters : function() {
         return this._funnyCharacters.length !== 0;
     },
-    numFunnyCharacters: function() {
+    numFunnyCharacters : function() {
         return this._funnyCharacters.length;
     },
-    hasMissingPrefix: function() {
+    hasMissingPrefix : function() {
         return this._missingPrefixList.length !== 0;
     },
-    numMissingPrefix: function() {
+    numMissingPrefix : function() {
         return this._missingPrefixList.length;
     },
-    merge: function(key) {
+    merge : function(key) {
         var t = this;
         $.each(t._unifyList, function(i, e) {
             if ($.isArray(e) && e.length > 1) {
                 var entry = e[0];
                 if (entry.key() == key) {
                     entry.save();
-                    for (var j = 1; j < e.length; j++) {
+                    for ( var j = 1; j < e.length; j++) {
                         var removeEntry = e[j];
                         var mainListIndex = t._list.indexOf(e[j]);
                         if (mainListIndex != -1) {
@@ -113,7 +195,7 @@ cContactList.prototype = {
             }
         });
     },
-    correctPrefix: function(key, prefix) {
+    correctPrefix : function(key, prefix) {
         var c = this.getById(key);
         c.insertPrefix(prefix);
         c.save();
@@ -123,14 +205,15 @@ cContactList.prototype = {
         }
         this._notifyChange(this);
     },
-    addChangeListener: function(f) {
+    addChangeListener : function(f) {
         this._listeners.push(f);
     },
-    removeChangeListener: function(f) {
+    removeChangeListener : function(f) {
         var index = this._listeners.indexOf(f);
-        if (index !== -1) this._listeners.splice(index, 1);
+        if (index !== -1)
+            this._listeners.splice(index, 1);
     },
-    _notifyChange: function() {
+    _notifyChange : function() {
         $.each(this._listeners, function(i, e) {
             try {
                 e(this);

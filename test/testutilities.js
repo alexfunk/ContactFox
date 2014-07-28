@@ -5,6 +5,7 @@ require('../js/cContactBackup.js');
 require('../js/cContacts.js');
 require('../js/cContactUtils.js');
 require('../js/cContactsList.js');
+
 jqFactory = require('../node_modules/jquery/dist/jquery.js');
 jsdom = require("jsdom").jsdom;
 document = jsdom(fs.readFileSync("m.html", {

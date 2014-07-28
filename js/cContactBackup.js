@@ -60,7 +60,57 @@ cContactBackup.prototype = {
             ul.append(html);
             ul.children().last().data("contact", contact);
         });
+        // End move this to cContactUtis
+    },
+    /**
+     * get one contact from the backup list in local storage
+     * 
+     * @param id
+     *                the id of the 
+     */
+    getBackupContactById : function(id) {
+        try {
+               var backup = this._loadFromLocalStorage();
+               log("Get from Backup: " + id);
+               if (backup !== null) {
+                  return new cContact(backup[id]);
+               } 
+            } catch (ex) {
+               log(ex);
+            }   
+    },
+    /**
+     * restore one contact from the backup list in local storage and  
+     * delete it from the local storage
+     * 
+     * @param id
+     *                the id oft the contact to restore
+     */
+    restoreContact : function(id) {
+        try {
+            log("Restore Contact: " + id);
+            var backup = this._loadFromLocalStorage();
+            var contact2restore = backup[id]; // contact record
+            var cContact2restore = new cContact(contact2restore); // class envelope
+            try {
+                cContact2restore.save();
+            } catch (ex) {
+                log(ex);
+            }  
+            // really restored?
+            var newContactList = contactUtils.getNewContactList();
+//            log("Contact restored succesfully?");
+            if ((newContactList.getById(id) !== null) && (newContactList.getById(id) !== false)) {
+                // delete the contact from backup
+                delete backup[id];
+                log("Delete Contact from local storage: " + id);
+                window.localStorage.setItem(this._lsBackup, JSON.stringify(backup));
+            } else {
+                log("Contact " + id + " could not be restored");
+            };
+        } catch (ex) {
+            log(ex);
+        }  
     }
-
 };
 // exports.cContact = cContact;

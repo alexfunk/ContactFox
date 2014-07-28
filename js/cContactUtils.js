@@ -38,7 +38,7 @@ cContactUtils.prototype = {
                 }
             });
         } catch (ex) {
-            log(ex);
+            log(ex); 
         }
     },
     appendMissingPrefixListToUL: function(list, ul) {
@@ -154,7 +154,34 @@ cContactUtils.prototype = {
         request.onerror = function() {
             $('#' + ids.TEXTAREA).append("removing testContact failed");
         };
+    },
+    // by Garf
+    getNewContactList: function()  {
+        var newContactList = new cContactList();
+        try {
+             var allContacts = navigator.mozContacts.getAll();
+             allContacts.onsuccess = function(event) {
+                 try {
+                     var cursor = event.target;
+                     if (cursor.result) {
+                         // the cursor contains a result: Another contact was found, 
+                         //so we add it to the contactList
+                         var contact = new cContact(cursor.result);
+                         newContactList.add(contact);
+                         // find the next contact. This is marked as an error because 
+                         // the FirefoxOS API uses a reserved word as a function name 
+                         cursor.continue();
+                         };
+                    } catch (ex) {
+                        log(ex);
+                    };
+                };
+        } catch (exception) {
+            log(exception);
+        };
+        return newContactList;
     }
+    /// by Garf
 };
 
 contactUtils = new cContactUtils();

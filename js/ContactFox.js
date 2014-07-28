@@ -19,10 +19,12 @@ var ids = {
     MISSINGPREFIXLIST: "MISSINGPREFIXLIST",
     CONTACTCHANGE: "CONTACTCHANGE",
     TEXTAREA: "TEXTAREA",
-    CONTACTSREAD: "CONTACTSREAD",
+    NUMCONTACTSREAD: "NUMCONTACTSREAD",
     CBHELPNOTAGAIN: "CBHELPNOTAGAIN",
     MISSINGPREFIXPANEL: "MISSINGPREFIXPANEL",
     MISSINGPREFIXCONTENT: "MISSINGPREFIXCONTENT",
+    BUTTONMISSINGPREFIXCORRECT : "BUTTONMISSINGPREFIXCORRECT",
+    BUTTONMISSINGPREFIXCLOSE : "BUTTONMISSINGPREFIXCLOSE",
     INPUTPREFIX: "INPUTPREFIX",
     SELECTPREFIX: "SELECTPREFIX",
     NUMDUPLICATES: "NUMDUPLICATES",
@@ -244,7 +246,7 @@ function loadContacts() {
                         var contact = new cContact(cursor.result);
                         contactList.add(contact);
                         try {
-                            $('#' + ids.CONTACTSREAD).text(" " + contactList.size());
+                            $('#' + ids.NUMCONTACTSREAD).text(" " + contactList.size());
                             // updateButtons();
                         } catch (ex) {
                             log(ex);
@@ -275,8 +277,8 @@ function loadContacts() {
 }
 
 /**
- * when all lists for the problems are available or they are changes, they are entered into the
- * application document
+ * when all lists for the problems are available or they are changes,
+ * they are entered into the application document
  */
 function addListsToHTML() {
     replaceDuplicatesListHTML();
@@ -311,7 +313,7 @@ function replaceMissingPrefixListHTML() {
     $(mls).append('<ul data-filter="true"></ul>');
     contactList.appendMissingPrefixListToUL($(mls + ' ul'));
     $(mls + ' ul li').click(function(event) {
-        addPrefixContactSelected(event);
+        showPrefixContactSelected(event);
     });
     $(mls + " ul").listview()
         .listview('refresh');
@@ -425,26 +427,54 @@ function correctAll() {
  * This is called when an item in the missing prefix list is selected.
  * it opens a submenu, letting the user decide if he wants to correct this entry.
  */
-function addPrefixContactSelected(event) {
+function showPrefixContactSelected(event) {
     try {
-        var prefix = $("#" + ids.INPUTPREFIX).val();
         var li = $(event.target).parent();
-        var id = li.attr("id");
-        var c = contactList.getById(id.substring('prefix'.length));
+        var id = li.attr("id").substring('prefix'.length);
+        
+        var c = contactList.getById(id);
         var panel = $('#' + ids.MISSINGPREFIXPANEL);
         var content = $('#' + ids.MISSINGPREFIXCONTENT);
         content.empty();
+        // save the current selected id in a content data attribute
+        content.data("contactid", id);
         c.appendAsString(content);
         panel.i18n();
         panel.trigger("updatelayout");
-        $('#close').click(function(e) {
+        panel.panel("open");
+    } catch (exception) {
+        log(exception);
+    }
+}
+
+/**
+ * This is called when an item in the restore backup list is selected.
+ * it opens a submenu, letting the user decide if he wants to correct this 
+ * entry.
+ */
+function showBackupContactSelected(event) {
+    try {
+        var li = $(event.target).parent();
+        var id = li.attr("id").substring('Backup'.length);
+//        var c = cContact._backup.getBackupContactById(id.substring('Backup'.length));
+        var c = cContact._backup.getBackupContactById(id);
+        var panel = $('#' + ids.RESTOREBACKUPPANEL);
+        var content = $('#' + ids.RESTOREBACKUPCONTENT);
+        content.empty();
+        c.appendAsString(content);
+        panel.i18n();
+        panel.trigger("updatelayout"); 
+        $('#' + ids.RESTOREBACKUPCLOSE).click(function(e) {
             panel.panel("close");
         });
-        $('#correct').click(function(e) {
+        $('#' + ids.BUTTONRESTOREBACKUP).click(function(e) {
             try {
-                log("correct clicked");
+                log("BUTTONRESTOREBACKUP clicked");
                 panel.panel("close");
-                correctPrefix(c, prefix);
+                cContact._backup.restoreContact(id);
+                // 2DO remove
+                log("cContact._backup.restoreContact(id) called");
+                /// remove
             } catch (ex) {
                 log(ex);
             }
@@ -481,23 +511,14 @@ $(document)
                         log(ex);
                     }
                 });
-                //TODO: Add click function for backup restore
-                
-                //byAlex: 
                 $('[data-i18n = "debug.restorebackup"]').click(function(e) {
                     try {
                         log("debug.restorebackup clicked");
-                        // fill the backup list on the backup page
-                        var ul = $('#' + ids.RESTOREBACKUPLIST);
-                        //not sure if this will work, access a 
-                        //static variable from the contact class to display 
-                        // the backups
-                        cContact._backup.appendBackupListToUL(ul);
+                        replaceBackupListHTML();
                      } catch (ex) {
                         log(ex);
                      }
                 });
-                //byGarf
                 $('[data-i18n = "restorebackup.restoreall"]').click(function(e) {
                     try {
                         log("restorebackup.restoreall clicked");
@@ -505,11 +526,50 @@ $(document)
                         log(ex);
                      }
                 });
-                ///byGarf
             } catch (ex) {
                 log(ex);
             }
         });
+
+/**
+ * Define the event handlers for the missing plus page and its panel
+ * this hast to be done only once on page create. 
+ */
+$(document)
+.on(
+    'pagecreate',
+    '#' + pages.MISSINGPLUS,
+    function() {
+        try {
+            var panel = $('#' + ids.MISSINGPREFIXPANEL);
+            // if the close button is pressed, the panle is closed and 
+            // the list is shown again.
+            $('#' + ids.BUTTONMISSINGPREFIXCLOSE).click(function(e) {
+                panel.panel("close");
+            });
+            $('#' + ids.BUTTONMISSINGPREFIXCORRECT).click(function(e) {
+                try {
+                    // what prefix ins to be added to the current contact
+                    var prefix = $("#" + ids.INPUTPREFIX).val();
+                    // find the content object to extract the current id
+                    var content = $('#' + ids.MISSINGPREFIXCONTENT);
+                    // get the saved current selected id from the content data attribute
+                    var id = content.data("contactid");
+                    // get the contact for this id
+                    var c = contactList.getById(id);
+                    log("correct clicked: " + id);
+                    panel.panel("close");
+                    // and finally perform the requested operation
+                    correctPrefix(c, prefix);
+                } catch (ex) {
+                    log(ex);
+                }
+            });
+        } catch (e) {
+            log(e);
+        }
+    });
+
 
 /**
  * Open an URl from the app in the browser, like showing the online help function

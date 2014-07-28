@@ -24,7 +24,7 @@ function log(e) {
 
 /**
  * a private static variable that manages a backup of all contacts that
- * are modified b this module
+ * are modified by this module 
  */
 cContact._backup = new cContactBackup();
 
@@ -432,7 +432,12 @@ cContact.prototype = {
     save: function() {
         //TODO: Don't show personal data in the log file of the final product
         log("save: " + JSON.stringify(this.c));
-        var saveResult = navigator.mozContacts.save(this.c);
+        var saveResult;
+        try {
+            saveResult = navigator.mozContacts.save(this.c);
+        } catch (ex) {
+            log("save contact exception: "+ ex);
+        }
         //TODO: Display Error message to the user if an operation fails.
         saveResult.onerror = function() {
             log("saveError");

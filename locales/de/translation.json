@@ -78,7 +78,7 @@
         "log": "Ausgaben zur Fehlersuche",
         "sendToSupport" : "Ausgaben an Support senden"
     },
-    "restorebackup": {
+    "restorebackup":  {
         "title": "Wiederherstellung",
         "close": "Schließen",
         "restore": "Wiederherstellen",

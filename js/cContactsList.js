@@ -181,7 +181,7 @@ cContactList.prototype = {
                         log("error while merging id " + key,
                                 ids.TEXTAREA_DUPLICATES);
                     });
-                    for (var j = 1; j < e.length; j++) {
+                    for ( var j = 1; j < e.length; j++) {
                         var removeEntry = e[j];
                         var mainListIndex = t._list.indexOf(e[j]);
                         if (mainListIndex != -1) {

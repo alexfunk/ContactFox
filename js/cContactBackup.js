@@ -32,7 +32,7 @@ cContactBackup.prototype = {
      * save one contact to the backup list in local storage
      * 
      * @param contact
-     *            an object of class cContact
+     *                an object of class cContact
      */
     backup : function(contact) {
         log("Backup: " + contact.displayName());
@@ -44,7 +44,7 @@ cContactBackup.prototype = {
      * append a user representation of the backup to a given list element
      * 
      * @param ul
-     *            the list element
+     *                the list element
      */
     appendBackupListToUL : function(ul) {
         var backup = window.localStorage.getItem(this._lsBackup);
@@ -68,7 +68,7 @@ cContactBackup.prototype = {
      * get one contact from the backup list in local storage
      * 
      * @param id
-     *            the id of the
+     *                the id of the
      */
     getBackupContactById : function(id) {
         try {
@@ -86,7 +86,7 @@ cContactBackup.prototype = {
      * from the local storage
      * 
      * @param id
-     *            the id oft the contact to restore
+     *                the id oft the contact to restore
      */
     /*
      * @param id

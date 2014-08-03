@@ -122,15 +122,15 @@ function initApp() {
         log(ex);
     }
 
-    //    $('#' + ids.CBHELPNOTAGAIN).on("click", function(e) {
-    //        try {
-    //            e.preventDefault();
-    //            var $checkbox = $(this).find(':checkbox');
-    //            $checkbox.trigger("checked");
-    //        } catch (ex) {
-    //            log(ex);
-    //        }
-    //    });
+    // $('#' + ids.CBHELPNOTAGAIN).on("click", function(e) {
+    // try {
+    // e.preventDefault();
+    // var $checkbox = $(this).find(':checkbox');
+    // $checkbox.trigger("checked");
+    // } catch (ex) {
+    // log(ex);
+    // }
+    // });
 
     // Init i18n and replace text on objects in the class="i18n"
     i18n.init(function(t) {
@@ -208,8 +208,8 @@ function initApp() {
 
 /**
  * depending on the content of the contact some functions are available or not.
- * If there is nothing to do the button for this function is disabled
- * This is done in this function
+ * If there is nothing to do the button for this function is disabled This is
+ * done in this function
  */
 function updateButtons() {
     if (contactList.hasDuplicates()) {
@@ -270,7 +270,8 @@ function loadContacts() {
                         cursor.
                         continue();
                     } else {
-                        // no more contacts were found: the contactList is added to the 
+                        // no more contacts were found: the contactList is added
+                        // to the
                         // user interface
                         addListsToHTML();
                     };
@@ -280,7 +281,7 @@ function loadContacts() {
             };
 
             allContacts.onerror = function() {
-                //TODO: better error handling and i18n
+                // TODO: better error handling and i18n
                 alert("Can not read your contacts. Did you give permissions?");
                 log("Something went terribly wrong! :(");
             };
@@ -291,8 +292,8 @@ function loadContacts() {
 }
 
 /**
- * when all lists for the problems are available or they are changes,
- * they are entered into the application document
+ * when all lists for the problems are available or they are changes, they are
+ * entered into the application document
  */
 function addListsToHTML() {
     replaceDuplicatesListHTML();
@@ -300,7 +301,8 @@ function addListsToHTML() {
 }
 
 /**
- * create the HTML-Code for the duplicates list and replace it at the prepared ID in the DOM
+ * create the HTML-Code for the duplicates list and replace it at the prepared
+ * ID in the DOM
  */
 function replaceDuplicatesListHTML() {
     // duplicates
@@ -334,7 +336,7 @@ function replaceBackupListHTML() {
  * prepared ID in the DOM
  */
 function replaceMissingPrefixListHTML() {
-    //missingprefix
+    // missingprefix
     // let jquery mobile make this list filterable
     var mls = '#' + ids.MISSINGPREFIXLIST;
     $(mls).empty();
@@ -607,7 +609,7 @@ $(document)
  * "share" as described there we used "view"
  * 
  * @param url
- *            the url to open
+ *                the url to open
  * @returns nothing
  */
 function openLinkInBrowser(url) {

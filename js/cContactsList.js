@@ -174,8 +174,14 @@ cContactList.prototype = {
             if ($.isArray(e) && e.length > 1) {
                 var entry = e[0];
                 if (entry.key() == key) {
-                    entry.save();
-                    for ( var j = 1; j < e.length; j++) {
+                    entry.save(function() {
+                        log("merge successfull for id :" + key,
+                                ids.TEXTAREA_DUPLICATES);
+                    }, function() {
+                        log("error while merging id " + key,
+                                ids.TEXTAREA_DUPLICATES);
+                    });
+                    for (var j = 1; j < e.length; j++) {
                         var removeEntry = e[j];
                         var mainListIndex = t._list.indexOf(e[j]);
                         if (mainListIndex != -1) {
@@ -198,7 +204,13 @@ cContactList.prototype = {
     correctPrefix : function(key, prefix) {
         var c = this.getById(key);
         c.insertPrefix(prefix);
-        c.save();
+        c.save(function() {
+            log("prefix successfully saved for id :" + key,
+                    ids.TEXTAREA_MISSINGPREFIX);
+        }, function() {
+            log("error while saving prefix for id " + key,
+                    ids.TEXTAREA_MISSINGPREFIX);
+        });
         var mpListIndex = this._missingPrefixList.indexOf(c);
         if (mpListIndex != -1) {
             this._missingPrefixList.splice(mpListIndex, 1);

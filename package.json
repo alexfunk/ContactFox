@@ -51,7 +51,7 @@
     "default_locale": "en",
     "permissions": {
 	"contacts": {
-	    "description": "to read, corect and merge your contacts",
+	    "description": "to read, correct and merge your contacts",
 	    "access": "readwrite"
     	}
     }

@@ -2,8 +2,8 @@ cContactUtils = function() {};
 
 cContactUtils.prototype = {
     /**
-     * insert all members in a unify list to an ul jquery result
-     * this is done in order of the length of contacts to be unified
+     * insert all members in a unify list to an ul jquery result this is done in
+     * order of the length of contacts to be unified
      */
     appendUnifyListToUL: function(list, ul) {
         try {
@@ -69,10 +69,10 @@ cContactUtils.prototype = {
         return primary;
     },
 
-    /** 
-     * adds some testdate to the phones adressbook to test the functions, even if the adressbook
-     * is optherwise clean. It also adds them to the contactlist, so the testdata is
-     * reflected in the app right away.
+    /**
+     * adds some testndata to the phones adressbook to test the functions, even
+     * if the adressbook is otherwise clean. It also adds them to the
+     * contactlist, so the testdata is reflected in the app right away.
      */
     createDuplicateContactForTesting: function(contactList) {
         var contacts = [{
@@ -107,7 +107,7 @@ cContactUtils.prototype = {
         ];
         $.each(contacts, function(i, e) {
             try {
-                //this should work for b2g 1.2 and b2g 1.3 
+                // this should work for b2g 1.2 and b2g 1.3
                 var contact = new mozContact(e);
                 if ("init" in contact)
                     contact.init(e);
@@ -164,12 +164,15 @@ cContactUtils.prototype = {
                  try {
                      var cursor = event.target;
                      if (cursor.result) {
-                         // the cursor contains a result: Another contact was found, 
-                         //so we add it to the contactList
+                         // the cursor contains a result: Another contact was
+                            // found,
+                         // so we add it to the contactList
                          var contact = new cContact(cursor.result);
                          newContactList.add(contact);
-                         // find the next contact. This is marked as an error because 
-                         // the FirefoxOS API uses a reserved word as a function name 
+                         // find the next contact. This is marked as an error
+                            // because
+                         // the FirefoxOS API uses a reserved word as a
+                            // function name
                          cursor.continue();
                          };
                     } catch (ex) {
@@ -180,10 +183,17 @@ cContactUtils.prototype = {
             log(exception);
         };
         return newContactList;
+    },
+    // returns whether a function-parameter is neither null nor undefined
+    paramExists : function(param) {
+        if ((param === null) && (param === undefined)) {
+            return false;
+        }
+        return true;
     }
-    /// by Garf
+    // / by Garf
 };
 
 contactUtils = new cContactUtils();
 
-//exports.cContact = cContact;
+// exports.cContact = cContact;

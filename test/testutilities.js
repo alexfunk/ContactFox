@@ -1,6 +1,6 @@
 var fs = require('fs');
 // include the java script to test in the order of dependency from 
-// the one without dependencies to the oe that builds on the others
+// the one without dependencies to the one that builds on the others
 require('../js/cContactBackup.js');
 require('../js/cContacts.js');
 require('../js/cContactUtils.js');
@@ -43,4 +43,8 @@ navigator = {
         }
     }
 };
+// b2g 1.3 requires the mozContact class to encapsulate all contact objects
+// before they are passed to navigator.mozContacts.save and other functions.
+// this class mocks the mozContact class for the unit tests
+mozContact = function() {};
 $ = jqFactory(window);

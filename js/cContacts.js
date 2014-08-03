@@ -9,7 +9,6 @@ if (typeof String.prototype.startsWith != 'function') {
     };
 }
 
-
 /**
  * constructor of a contact object
  */
@@ -17,14 +16,14 @@ cContact = function(c) {
     this.c = c;
 };
 
-//TODO: is this a bug? is everything still logged to the debug window?
+// TODO: is this a bug? is everything still logged to the debug window?
 function log(e) {
     console.log(e);
 }
 
 /**
- * a private static variable that manages a backup of all contacts that
- * are modified by this module 
+ * a private static variable that manages a backup of all contacts that are
+ * modified by this module
  */
 cContact._backup = new cContactBackup();
 
@@ -33,19 +32,24 @@ cContact._backup = new cContactBackup();
  */
 cContact.prototype = {
     /**
-     * allow access to the backup list 
+     * allow access to the backup list
+     * 
      * @returns the backup list
      */
-    getBackup : function() {return cContact._backup;},
+    getBackup : function() {
+        return cContact._backup;
+    },
     /**
-     * find a unique key of this contact object that cn be used as an id in
-     * the gui
+     * find a unique key of this contact object that can be used as an id in the
+     * gui
+     * 
      * @returns a string with the id
      */
-    key: function() {
+    key : function() {
         var result;
         // in general the firefox os provides an id for the contact
-        if (this.c.id) result = this.c.id;
+        if (this.c.id)
+            result = this.c.id;
         else {
             // if not we generate one from the content of the contact
             var givenName = "";
@@ -53,7 +57,8 @@ cContact.prototype = {
                 givenName = this.c.givenName[0];
             }
             var familyName = "";
-            if (($.isArray(this.c.familyName)) && (this.c.familyName.length > 0)) {
+            if (($.isArray(this.c.familyName))
+                    && (this.c.familyName.length > 0)) {
                 familyName = this.c.familyName[0];
             }
             result = familyName + "_" + givenName;
@@ -62,28 +67,29 @@ cContact.prototype = {
     },
 
     /**
-     * Converts a user supplied String into one that can be displayed in HTML without problems.
-     * For example the String '<&' is converted to '&lt;&amp;'
+     * Converts a user supplied String into one that can be displayed in HTML
+     * without problems. For example the String '<&' is converted to
+     * '&lt;&amp;'
      */
-    escapeHTML: function(string) {
+    escapeHTML : function(string) {
         var entityMap = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': '&quot;',
-            "'": '&#39;',
-            "/": '&#x2F;'
+            "&" : "&amp;",
+            "<" : "&lt;",
+            ">" : "&gt;",
+            '"' : '&quot;',
+            "'" : '&#39;',
+            "/" : '&#x2F;'
         };
         return String(string).replace('/[&<>"\'\/]/g', function(s) {
             return entityMap[s];
         });
     },
     /**
-     * to show a contact in a list a short string is needed. This is in most cases the
-     * name of the contact, but if the name is not set it is composed from Given Name
-     * and Family Name or the organisation of the contact.
+     * to show a contact in a list a short string is needed. This is in most
+     * cases the name of the contact, but if the name is not set it is composed
+     * from Given Name and Family Name or the organisation of the contact.
      */
-    displayName: function() {
+    displayName : function() {
         var lResult;
         var lName = "";
         if (($.isArray(this.c.name)) && (this.c.name.length > 0)) {
@@ -96,7 +102,8 @@ cContact.prototype = {
                 lGivenName = this.c.givenName[0];
             }
             var lFamilyName = "";
-            if (($.isArray(this.c.familyName)) && (this.c.familyName.length > 0)) {
+            if (($.isArray(this.c.familyName))
+                    && (this.c.familyName.length > 0)) {
                 lFamilyName = this.c.familyName[0];
             }
             if ((lFamilyName.length !== 0) && (lGivenName.length !== 0))
@@ -113,21 +120,23 @@ cContact.prototype = {
 
     },
     /**
-     * Checks if this contact can be unified with the contact given as parameter.
+     * Checks if this contact can be unified with the contact given as
+     * parameter.
      */
-    isUnifiyable: function(contact) {
-        //TODO this compares first and last name, but
+    isUnifiyable : function(contact) {
+        // TODO this compares first and last name, but
         // what is about first + last = last + first
         return this.displayName() == contact.displayName();
     },
     /**
      * Checks if this contact has a number without an international dial prefix
      */
-    hasMissingPrefix: function() {
+    hasMissingPrefix : function() {
         var result = false;
         if ($.isArray(this.c.tel)) {
             $.each(this.c.tel, function(i, e) {
-                if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
+                if (typeof e.value === 'string' && !e.value.startsWith("+")
+                        && !e.value.startsWith("00")) {
                     result = true;
                     return false;
                 }
@@ -135,33 +144,36 @@ cContact.prototype = {
         }
         return result;
     },
-    /** 
+    /**
      * insert the given prefix to all phone numbers that don't start with 00 or +
      */
-    insertPrefix: function(prefix) {
+    insertPrefix : function(prefix) {
         if ($.isArray(this.c.tel)) {
             $.each(this.c.tel, function(i, e) {
-                if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
+                if (typeof e.value === 'string' && !e.value.startsWith("+")
+                        && !e.value.startsWith("00")) {
                     if (e.value.startsWith("0")) {
                         var oldValue = e.value;
                         e.value = prefix + e.value.substring(1);
                     }
                 }
             });
-            // OK, the prefix is added now, but maybe there is a second number in the contact
-            // that has already the given prefix. So we check for duplicate phone-number 
-            // entries and remove them in this contact here 
+            // OK, the prefix is added now, but maybe there is a second number
+            // in the contact
+            // that has already the given prefix. So we check for duplicate
+            // phone-number
+            // entries and remove them in this contact here
             this.clearDuplicateNumbers();
         }
     },
-    /** 
-     * after applying a change to a contact, numbers may be duplicated in the same contact
-     * if this is the case, the duplicates are removed here.
+    /**
+     * after applying a change to a contact, numbers may be duplicated in the
+     * same contact if this is the case, the duplicates are removed here.
      */
-    clearDuplicateNumbers: function() {
+    clearDuplicateNumbers : function() {
         if ($.isArray(this.c.tel)) {
             var tel = this.c.tel;
-            // put all indexes of telephone numbers the toDelete array 
+            // put all indexes of telephone numbers the toDelete array
             var toDelete = [];
             for (var i = 0; i < tel.length; i++) {
                 var currentNumber = tel[i].value;
@@ -178,7 +190,8 @@ cContact.prototype = {
                     toDelete.push(i);
                 }
             }
-            // iterate backwards, so the indices in the toDelete Array will not be invalidated
+            // iterate backwards, so the indices in the toDelete Array will not
+            // be invalidated
             for (i = toDelete.length; i > 0; i--) {
                 this.c.tel.splice(toDelete[i], 1);
             }
@@ -187,7 +200,7 @@ cContact.prototype = {
     /**
      * checks if a contact contains a given number
      */
-    containsNumber: function(number) {
+    containsNumber : function(number) {
         var result = false;
         if ($.isArray(this.c.tel)) {
             $.each(this.c.tel, function(i, e) {
@@ -202,7 +215,7 @@ cContact.prototype = {
     /**
      * checks if a contact contains a given email address
      */
-    containsEMail: function(mailaddress) {
+    containsEMail : function(mailaddress) {
         var result = false;
         if ($.isArray(this.c.email)) {
             $.each(this.c.email, function(i, e) {
@@ -214,14 +227,17 @@ cContact.prototype = {
         }
         return result;
     },
-    /** 
+    /**
      * checks if two street addresses are equal
      */
-    //TODO: this should be a static function. Not related to the contact object
-    addressEqual: function(adr1, adr2) {
-        if (adr1 == adr2) return true;
-        if ((adr1 === null) || (adr2 === null)) return false;
-        var keys = ['streetAddress', 'locality', 'region', 'postalCode', 'countryName'];
+    // TODO: this should be a static function. Not related to the contact object
+    addressEqual : function(adr1, adr2) {
+        if (adr1 == adr2)
+            return true;
+        if ((adr1 === null) || (adr2 === null))
+            return false;
+        var keys = [ 'streetAddress', 'locality', 'region', 'postalCode',
+                'countryName' ];
         var result = true;
         $.each(keys, function(i, e) {
             if (adr1[e] != adr2[e]) {
@@ -232,47 +248,52 @@ cContact.prototype = {
         return result;
     },
     /**
-     * converts one given member like 'adr' or 'tel' of the contact to an array of
-     * human readable string.
-     * Some members are arrays others objects of different types. This tries to deal with
-     * all situations. If the member is not set or can't be converted to string, an empty array is returned.
+     * converts one given member like 'adr' or 'tel' of the contact to an array
+     * of human readable string. Some members are arrays others objects of
+     * different types. This tries to deal with all situations. If the member is
+     * not set or can't be converted to string, an empty array is returned.
      */
-    contactMemberToString: function(member) {
-        // define a map of functions to convert one entry of a contact-member to a string.
+    contactMemberToString : function(member) {
+        // define a map of functions to convert one entry of a contact-member to
+        // a string.
         // if some member should not be displayed, null is returned.
         var memberfunction = {
-            'adr': this.addressToString,
-            'email': function(e) {
+            'adr' : this.addressToString,
+            'email' : function(e) {
                 return e.value;
             },
-            'tel': function(e) {
+            'tel' : function(e) {
                 return e.value;
             },
-            'photo': function(e) {
+            'photo' : function(e) {
                 return "photo";
             }
         };
         // helper function to convert a member that contains a string
-        // each entry in the array is mapped with the function above. 
+        // each entry in the array is mapped with the function above.
         var handleArray = function(a, f) {
             var result = [];
             $.each(a, function(i, e) {
                 // if f(e) returns null, we try JSON to convert to string
                 var val = f(e) || JSON.stringify(e);
-                if (val !== null) result.push(val);
+                if (val !== null)
+                    result.push(val);
             });
             return result;
         };
-        // define a function that converts this member to a string. If there is no 
-        // explicit function defined we use JSON.stringify. 
+        // define a function that converts this member to a string. If there is
+        // no
+        // explicit function defined we use JSON.stringify.
         var convertFunction = memberfunction[member] || JSON.stringify;
         if ($.isArray(this.c[member])) {
             return handleArray(this.c[member], convertFunction);
         } else {
-            if (typeof this.c[member] !== "undefined" && this.c[member] !== null) {
+            if (typeof this.c[member] !== "undefined"
+                    && this.c[member] !== null) {
                 var value = this.c[member];
                 var result = convertFunction(value);
-                if (result !== null) return [result];
+                if (result !== null)
+                    return [ result ];
                 else
                     return [];
             } else {
@@ -281,54 +302,76 @@ cContact.prototype = {
         }
     },
     /**
-     * converts a street address from a contact to a string that can be displayed to the user
+     * converts a street address from a contact to a string that can be
+     * displayed to the user
      */
-    //TODO: this should be a static function. Not related to the contact object
-    addressToString: function(adr1) {
-        var keys = ['streetAddress', 'postalCode', 'locality', 'region', 'countryName'];
+    // TODO: this should be a static function. Not related to the contact object
+    addressToString : function(adr1) {
+        var keys = [ 'streetAddress', 'postalCode', 'locality', 'region',
+                'countryName' ];
         var result = "";
         $.each(keys, function(i, e) {
             if (typeof adr1[e] !== "undefined") {
-                if (result.length !== 0) result += ',';
+                if (result.length !== 0)
+                    result += ',';
                 result += adr1[e];
             }
         });
         return result;
     },
     /**
-     * adds a HTML string representation of this contact to a given div-element in the dom
-     * each non-empty member is added with a label. if one member has more than one entries it is
-     * added with numbers at the label.
-     * Labels for each entry can be found in each locale catalogue under the keyword 'contact'.
-     * TODO: Maybe should be moved to another place, so that model and ui is not intermixed
-     * param div: the div to add the string representation
+     * adds a HTML string representation of this contact to a given div-element
+     * in the dom each non-empty member is added with a label. if one member has
+     * more than one entries it is added with numbers at the label. Labels for
+     * each entry can be found in each locale catalogue under the keyword
+     * 'contact'. TODO: Maybe should be moved to another place, so that model
+     * and ui is not intermixed param div: the div to add the string
+     * representation
      */
-    appendAsString: function(div, filter) {
+    appendAsString : function(div, filter) {
         var t = this;
         // if the caller sets no filter, a default is used
         if (filter === undefined) {
             filter = function(member) {
-                return ['name', 'id', 'updated', 'published'].indexOf(member) == -1;
+                return [ 'name', 'id', 'updated', 'published' ].indexOf(member) == -1;
             };
         }
-        $.each(this.members, function(i, e) {
-            if (filter(i)) {
-                // i is the key of the entry like addr or phone
-                var stringArray = t.contactMemberToString(i);
-                if (stringArray.length == 1) {
-                    div.append('<div><span data-i18n="contact.' + i + '"></span><span> : </span><span class="contactcontent" >' + stringArray[0] + '</span></div>');
-                } else if (stringArray.length > 1) {
-                    $.each(stringArray, function(j, string) {
-                        div.append('<div><span data-i18n="contact.' + i + '"></span><span> ' + (j + 1) + ': </span><span class="contactcontent" >' + string + '</span></div>');
-                    });
-                }
-            }
-        });
+        $
+                .each(
+                        this.members,
+                        function(i, e) {
+                            if (filter(i)) {
+                                // i is the key of the entry like addr or phone
+                                var stringArray = t.contactMemberToString(i);
+                                if (stringArray.length == 1) {
+                                    div
+                                            .append('<div><span data-i18n="contact.'
+                                                    + i
+                                                    + '"></span><span> : </span><span class="contactcontent" >'
+                                                    + stringArray[0]
+                                                    + '</span></div>');
+                                } else if (stringArray.length > 1) {
+                                    $
+                                            .each(
+                                                    stringArray,
+                                                    function(j, string) {
+                                                        div
+                                                                .append('<div><span data-i18n="contact.'
+                                                                        + i
+                                                                        + '"></span><span> '
+                                                                        + (j + 1)
+                                                                        + ': </span><span class="contactcontent" >'
+                                                                        + string
+                                                                        + '</span></div>');
+                                                    });
+                                }
+                            }
+                        });
     },
     /**
      * checks if this contact contains an address
      */
-    containsAddress: function(adress) {
+    containsAddress : function(adress) {
         var t = this;
         var result = false;
         if ($.isArray(this.c.adr)) {
@@ -342,16 +385,16 @@ cContact.prototype = {
         return result;
     },
     /**
-     * copies all informations from the given contact to this contact unless
-     * the information is already there
+     * copies all informations from the given contact to this contact unless the
+     * information is already there
      */
-    unify: function(contact) {
+    unify : function(contact) {
         cContact._backup.backup(this);
         // some member of a contact can be unified easily, since it is just
-        // an array of string. For other members there should be a special 
+        // an array of string. For other members there should be a special
         // function in the unify-member map.
         var unifymember = {
-            "tel": function(t, contact) {
+            "tel" : function(t, contact) {
                 // an entry is an object with type and value
                 // we look only at the value at the merge
                 // so if there are two numbers with the same value but different
@@ -367,7 +410,7 @@ cContact.prototype = {
                     });
                 }
             },
-            "adr": function(t, contact) {
+            "adr" : function(t, contact) {
                 // checking that two addresses are equal is not trivial
                 if (!t.c.adr) {
                     t.c.adr = [];
@@ -380,7 +423,7 @@ cContact.prototype = {
                     });
                 }
             },
-            "email": function(t, contact) {
+            "email" : function(t, contact) {
                 // like phone numbers emails have a type,
                 // if there are two same email.adresses with different type
                 // they are considered equal and one is lost during unification
@@ -416,8 +459,8 @@ cContact.prototype = {
                     }
                 }
                 // if it is not an arrayString or an member handled special
-                // we still check if the master has no value but the contact 
-                // to merge has 
+                // we still check if the master has no value but the contact
+                // to merge has
                 else if (!t.c[key]) {
                     t.c[key] = contact.c[key];
                 }
@@ -426,33 +469,37 @@ cContact.prototype = {
         });
     },
     /**
-     * this transfers the contact object from the application memory
-     * to the address book of the phone.
+     * this transfers the contact object from the application memory to the
+     * address book of the phone.
      */
-    save: function() {
-        //TODO: Don't show personal data in the log file of the final product
-        log("save: " + JSON.stringify(this.c));
+    save : function(onSuccess, onError) {
+        // TODO: Don't show personal data in the log file of the final product
+        log("cContacts.save: " + JSON.stringify(this.c));
+        // in b2g 1.3 a contact must implement an special interface
+        // this should work for b2g 1.2 and b2g 1.3
+        var contact = new mozContact(this.c);
+        if ("init" in contact)
+            contact.init(this.c);
+
         var saveResult;
         try {
-            saveResult = navigator.mozContacts.save(this.c);
+            saveResult = navigator.mozContacts.save(contact);
         } catch (ex) {
-            log("save contact exception: "+ ex);
+            log("save contact exception: " + ex);
         }
-        //TODO: Display Error message to the user if an operation fails.
-        saveResult.onerror = function() {
-            log("saveError");
-        };
-        saveResult.onsuccess = function() {
-            log("saveSuccess");
-        };
-
+        if (contactUtils.paramExists(onSuccess)) {
+            saveResult.onsuccess = onSuccess;
+        }
+        if (contactUtils.paramExists(onError)) {
+            saveResult.onerror = onError;
+        }
     },
     /**
      * removes this contact from the phones address book
      */
-    remove: function() {
+    remove : function() {
         var name = this.displayName();
-        // before a contact is removed, it is backed up in local storage, 
+        // before a contact is removed, it is backed up in local storage,
         // so it could be restored later on
         cContact._backup.backup(this);
         var removeResult = navigator.mozContacts.remove(this.c);
@@ -464,12 +511,11 @@ cContact.prototype = {
         };
     },
     /**
-     * Adds this contact to the unify list.
-     * The unify list is the starting point of the unify operation.
-     * The UnifyList is an array or arrays of contacts. Each sublist contains 
-     * unify-able contacts
+     * Adds this contact to the unify list. The unify list is the starting point
+     * of the unify operation. The UnifyList is an array or arrays of contacts.
+     * Each sublist contains unify-able contacts
      */
-    addToUnifyList: function(unifyList) {
+    addToUnifyList : function(unifyList) {
         var added = false;
         var current = this;
         $.each(unifyList, function(i, e) {
@@ -479,58 +525,88 @@ cContact.prototype = {
                 added = true;
             }
         });
-        // if this contact is not unifiable with any of the contacts in the list,
+        // if this contact is not unifiable with any of the contacts in the
+        // list,
         // this contact is added as its own array
         if (!added) {
-            unifyList.push([this]);
+            unifyList.push([ this ]);
         }
         return unifyList;
     },
-    // this is form the firefox os specification, describing the exact structure of a contact record.
-    members: {
-        id: 'string', // Read only The unique id of the contact in the device's contact database.
-        published: 'date', // Read only A Date object giving the first time the contact was stored.
-        updated: 'date', // Read only A Date object giving the last time the contact was updated.
-        name: 'arrayString', // An array of string representing the different general names of the contact.
-        honorificPrefix: 'arrayString', // An array of string representing the different honorific prefixes of the contact.
-        givenName: 'arrayString', // An array of string representing the different given names of the contact.
-        additionalName: 'arrayString', // An array of string representing any additional names of the contact.
-        familyName: 'arrayString', // An array of string representing the different family names of the contact.
-        honorificSuffix: 'arrayString', // An array of string representing the different honorific suffixes of the contact.
-        nickname: 'arrayString', // An array of string representing the different nicknames of the contact.
-        email: 'arrayObject', // An array of object, each representing an e-mail with a few extra metadata.
-        photo: 'arrayBlob', // An array of Blob, which are photos for the contact.
-        url: 'arrayObject', //  An array of object, each representing a URL with a few extra metadata.
-        category: 'arrayString', // An array of string representing the different categories the contact is associated with.
-        adr: 'arrayObject', // An array of object, each representing an address.
-        tel: 'arrayObject', // An array of object, each representing a phone number with a few extra metadata.
-        org: 'arrayString', // An array of string representing the different organizations the contact is associated with.
-        jobTitle: 'arrayString', // An array of string representing the different job titles of the contact.
-        bday: 'date', // A Date object representing the birthday date of the contact.
-        note: 'arrayString', // An array of string representing notes about the contact.
-        impp: 'arrayString', // An array of object, each representing an Instant Messaging address with a few extra metadata.
-        anniversary: 'date', // A Date object representing the anniversary date of the contact.
-        sex: 'String', // A string representing the sex of the contact.
-        genderIdentity: 'String', // A string representing the gender identity of the contact.
-        key: 'arrayString' // A array of string representing the public encryption key associated with the contact.
+    // this is form the firefox os specification, describing the exact structure
+    // of a contact record.
+    members : {
+        id : 'string', // Read only The unique id of the contact in the
+        // device's contact database.
+        published : 'date', // Read only A Date object giving the first time the
+        // contact was stored.
+        updated : 'date', // Read only A Date object giving the last time the
+        // contact was updated.
+        name : 'arrayString', // An array of string representing the different
+        // general names of the contact.
+        honorificPrefix : 'arrayString', // An array of string representing
+        // the different honorific prefixes
+        // of the contact.
+        givenName : 'arrayString', // An array of string representing the
+        // different given names of the contact.
+        additionalName : 'arrayString', // An array of string representing any
+        // additional names of the contact.
+        familyName : 'arrayString', // An array of string representing the
+        // different family names of the contact.
+        honorificSuffix : 'arrayString', // An array of string representing
+        // the different honorific suffixes
+        // of the contact.
+        nickname : 'arrayString', // An array of string representing the
+        // different nicknames of the contact.
+        email : 'arrayObject', // An array of object, each representing an
+        // e-mail with a few extra metadata.
+        photo : 'arrayBlob', // An array of Blob, which are photos for the
+        // contact.
+        url : 'arrayObject', // An array of object, each representing a URL
+        // with a few extra metadata.
+        category : 'arrayString', // An array of string representing the
+        // different categories the contact is
+        // associated with.
+        adr : 'arrayObject', // An array of object, each representing an
+        // address.
+        tel : 'arrayObject', // An array of object, each representing a phone
+        // number with a few extra metadata.
+        org : 'arrayString', // An array of string representing the different
+        // organizations the contact is associated with.
+        jobTitle : 'arrayString', // An array of string representing the
+        // different job titles of the contact.
+        bday : 'date', // A Date object representing the birthday date of the
+        // contact.
+        note : 'arrayString', // An array of string representing notes about
+        // the contact.
+        impp : 'arrayString', // An array of object, each representing an
+        // Instant Messaging address with a few extra
+        // metadata.
+        anniversary : 'date', // A Date object representing the anniversary
+        // date of the contact.
+        sex : 'String', // A string representing the sex of the contact.
+        genderIdentity : 'String', // A string representing the gender identity
+        // of the contact.
+        key : 'arrayString' // A array of string representing the public
+    // encryption key associated with the contact.
 
     }
-    //members of an address
+// members of an address
 
-    //type
-    //    A string representing the type for that address (e.g., "home", "work").
-    //pref
-    //    A boolean indicating if it is the preferred address (true) or not (false).
-    //streetAddress
-    //    A string representing the street name, number, etc. of the address.
-    //locality
-    //    A string representing the city of the address.
-    //region
-    //    A string representing the geographical region of the address.
-    //postalCode
-    //    A string representing the postal code for the address.
-    //countryName
-    //    A string representing the name of the country for the address.
+// type
+// A string representing the type for that address (e.g., "home", "work").
+// pref
+// A boolean indicating if it is the preferred address (true) or not (false).
+// streetAddress
+// A string representing the street name, number, etc. of the address.
+// locality
+// A string representing the city of the address.
+// region
+// A string representing the geographical region of the address.
+// postalCode
+// A string representing the postal code for the address.
+// countryName
+// A string representing the name of the country for the address.
 
 };
-//exports.cContact = cContact;
+// exports.cContact = cContact;

@@ -19,6 +19,10 @@ var ids = {
     MISSINGPREFIXLIST: "MISSINGPREFIXLIST",
     CONTACTCHANGE: "CONTACTCHANGE",
     TEXTAREA: "TEXTAREA",
+    TEXTAREA_DUPLICATES: "TEXTAREA_DUPLICATES",
+    TEXTAREA_FUNNYCHARACTERS: "TEXTAREA_FUNNYCHARACTERS",
+    TEXTAREA_MISSINGPREFIX: "TEXTAREA_MISSINGPREFIX",
+    TEXTAREA_RESTOREBACKUP:  "TEXTAREA_RESTOREBACKUP",
     NUMCONTACTSREAD: "NUMCONTACTSREAD",
     CBHELPNOTAGAIN: "CBHELPNOTAGAIN",
     MISSINGPREFIXPANEL: "MISSINGPREFIXPANEL",
@@ -39,12 +43,16 @@ var ids = {
     BEXIT: "BEXIT"
 };
 
-// error messages are not only written to the console, but to an text-area on the debug page
-// so that we can trace problems even on an actual device.
+// error messages are not only written to the console, but to an text-area on
+// the debug page so that we can trace problems even on an actual device.
 // TODO: Add a Send Debug as email to developer function
-function log(e) {
+function log(e, target) {
     console.log(e);
-    $('#' + ids.TEXTAREA).append(e + "\n");
+    // $('#' + ids.TEXTAREA).append(e + "\n");
+    $('#' + ids.TEXTAREA).prepend(e + "\n");
+    if (contactUtils.paramExists(target)) {
+        $('#' + target).prepend(e + "\n");
+    }
 }
 
 // all contacts are kept in this object during application runtime
@@ -52,8 +60,7 @@ var contactList = new cContactList();
 
 
 /**
- * This function is usefull for debugging
- * TODO: Remove from the final product
+ * This function is use-full for debugging TODO: Remove from the final product
  */
 function getEventsList($obj) {
     var ev = [],
@@ -85,10 +92,10 @@ function initApp() {
     buttons[pages.FUNNYCHARS] = $('[data-nav="nav.pFunnyCharacters"]');
     buttons[pages.MISSINGPLUS] = $('[data-nav="nav.pMissingPlus"]');
     buttons[pages.ABOUT] = $('[data-nav="nav.pAbout"]');
-    //byGarf
+    // byGarf
     buttons[pages.HELP] = $('[data-nav="nav.pHelp"]');
     buttons[pages.RESTOREBACKUP] = $('[data-nav="nav.pRestoreBackup"]');
-    ///byGarf
+    // /byGarf
     $.each(buttons, function(key, value) {
         value.click(function(e) {
             $(':mobile-pagecontainer').pagecontainer("change", '#' + key);
@@ -125,13 +132,14 @@ function initApp() {
     //        }
     //    });
 
-    //Init i18n and replace text on objects in the class="i18n"
+    // Init i18n and replace text on objects in the class="i18n"
     i18n.init(function(t) {
         // translate app
         $(".i18n").i18n();
     });
     try {
-        // check if the help was disabled by the user, and proceed to the home page
+        // check if the help was disabled by the user, and proceed to the home
+        // page
         var helpnotagain = window.localStorage.getItem("ContactFox." + ids.CBHELPNOTAGAIN);
         log("helpnotagain was selected: " + helpnotagain);
         if (helpnotagain == 'true') {
@@ -141,12 +149,13 @@ function initApp() {
     } catch (ex) {
         log(ex);
     }
-    // The help explains the purpose of the app and ask the user to confirm 
-    // the access to the contact list. 
+    // The help explains the purpose of the app and ask the user to confirm
+    // the access to the contact list.
     // By a checkbox the user can control if he wants to see the help again
-    // on program start. 
-    // It is initialized to not show the help again. This setting is stored in local
-    // storage so it is there on program start 
+    // on program start.
+    // It is initialized to not show the help again. This setting is stored in
+    // local
+    // storage so it is there on program start
     var cb = $('.checkbox-help');
     log("setting checkbox-help to true");
     cb.prop('checked', true).checkboxradio("refresh");
@@ -156,17 +165,18 @@ function initApp() {
         log("wasChecked " + wasChecked);
         window.localStorage.setItem("ContactFox." + ids.CBHELPNOTAGAIN, wasChecked);
     });
-    // For debugging log all events that are bound to the checkbox and look if the state changed  
-    //log("EventList: " + getEventsList(cb[0]));
-    //cb.on(getEventsList(cb[0]), function(e) {
-    //    try {
-    //        log("checkbox event: " + e.type);
-    //        var wasChecked = $(this).prop('checked');
-    //        log("Checkbox was checked " + wasChecked);
-    //    } catch (ex) {
-    //        log(ex);
-    //    }
-    //});
+    // For debugging log all events that are bound to the checkbox and look if
+    // the state changed
+    // log("EventList: " + getEventsList(cb[0]));
+    // cb.on(getEventsList(cb[0]), function(e) {
+    // try {
+    // log("checkbox event: " + e.type);
+    // var wasChecked = $(this).prop('checked');
+    // log("Checkbox was checked " + wasChecked);
+    // } catch (ex) {
+    // log(ex);
+    // }
+    // });
     $('#' + ids.SELECTPREFIX).bind('change', function(e) {
         var value = $('#' + ids.SELECTPREFIX).val();
         log("selectedPrefix: " + value);
@@ -179,7 +189,8 @@ function initApp() {
         }).prop('selected', true);
         $('#' + ids.SELECTPREFIX).selectmenu('refresh', true);
     });
-    // All links that should open in browser shall have the ".open-inbrowser" class and the "data-url"
+    // All links that should open in browser shall have the ".open-inbrowser"
+    // class and the "data-url"
     // Attribute with the url to open. So they use this function, when clicked.
     $(".open-in-browser").click(function(e) {
         var url = $(this).data("url");
@@ -241,8 +252,9 @@ function loadContacts() {
                 try {
                     var cursor = event.target;
                     if (cursor.result) {
-                        // the cursor contains a result: Another contact was found, 
-                        //so we add it to the contactList
+                        // the cursor contains a result: Another contact was
+                        // found,
+                        // so we add it to the contactList
                         var contact = new cContact(cursor.result);
                         contactList.add(contact);
                         try {
@@ -251,8 +263,10 @@ function loadContacts() {
                         } catch (ex) {
                             log(ex);
                         }
-                        // find the next contact. This is marked as an error because 
-                        // the FirefoxOS API uses a reserved word as a function name 
+                        // find the next contact. This is marked as an error
+                        // because
+                        // the FirefoxOS API uses a reserved word as a function
+                        // name
                         cursor.
                         continue();
                     } else {
@@ -302,8 +316,22 @@ function replaceDuplicatesListHTML() {
         .listview('refresh');
 }
 
+// fill the backup list on the backup page
+function replaceBackupListHTML() {
+    var buls = '#' + ids.RESTOREBACKUPLIST;
+    $(buls).empty();
+    $(buls).append('<ul data-filter="true"></ul>');
+    cContact._backup.appendBackupListToUL($(buls + ' ul'));
+    $(buls + ' ul li').click(function(event) {
+        showBackupContactSelected(event);
+    });
+    $(buls + " ul").listview()
+        .listview('refresh');
+}
+
 /**
- * create the HTML-Code for the missing prefix list and replace it at the prepared ID in the DOM
+ * create the HTML-Code for the missing prefix list and replace it at the
+ * prepared ID in the DOM
  */
 function replaceMissingPrefixListHTML() {
     //missingprefix
@@ -320,8 +348,8 @@ function replaceMissingPrefixListHTML() {
 }
 
 /**
- * this merges all contacts in one entry of the duplicates list.
- * It is also hidden from the list view after that.
+ * this merges all contacts in one entry of the duplicates list. It is also
+ * hidden from the list view after that.
  */
 function merge(id) {
     $('#' + id).css("display", "none");
@@ -346,8 +374,9 @@ function mergeAll() {
 }
 
 /**
- * This is called when an entry in the duplicates list is selected. A submenu is opened showing
- * the potential result of the merge. Buttons are created to apply or cancel the merge
+ * This is called when an entry in the duplicates list is selected. A submenu is
+ * opened showing the potential result of the merge. Buttons are created to
+ * apply or cancel the merge
  */
 function mergeContactSelected(event) {
     try {
@@ -394,8 +423,8 @@ function mergeContactSelected(event) {
 }
 
 /**
- * correct the prefix in all phonenumbers of the given contact 'c' with the given 'prefix'
- * The contact is than hidden from the missing prefix list
+ * correct the prefix in all phonenumbers of the given contact 'c' with the
+ * given 'prefix' The contact is than hidden from the missing prefix list
  */
 function correctPrefix(c, prefix) {
     log("correctPrefix " + c.key() + " " + prefix);
@@ -424,8 +453,8 @@ function correctAll() {
 }
 
 /**
- * This is called when an item in the missing prefix list is selected.
- * it opens a submenu, letting the user decide if he wants to correct this entry.
+ * This is called when an item in the missing prefix list is selected. it opens
+ * a submenu, letting the user decide if he wants to correct this entry.
  */
 function showPrefixContactSelected(event) {
     try {
@@ -448,15 +477,14 @@ function showPrefixContactSelected(event) {
 }
 
 /**
- * This is called when an item in the restore backup list is selected.
- * it opens a submenu, letting the user decide if he wants to correct this 
- * entry.
+ * This is called when an item in the restore backup list is selected. it opens
+ * a submenu, letting the user decide if he wants to correct this entry.
  */
 function showBackupContactSelected(event) {
     try {
         var li = $(event.target).parent();
         var id = li.attr("id").substring('Backup'.length);
-//        var c = cContact._backup.getBackupContactById(id.substring('Backup'.length));
+// var c = cContact._backup.getBackupContactById(id.substring('Backup'.length));
         var c = cContact._backup.getBackupContactById(id);
         var panel = $('#' + ids.RESTOREBACKUPPANEL);
         var content = $('#' + ids.RESTOREBACKUPCONTENT);
@@ -474,7 +502,7 @@ function showBackupContactSelected(event) {
                 cContact._backup.restoreContact(id);
                 // 2DO remove
                 log("cContact._backup.restoreContact(id) called");
-                /// remove
+                // / remove
             } catch (ex) {
                 log(ex);
             }
@@ -532,8 +560,8 @@ $(document)
         });
 
 /**
- * Define the event handlers for the missing plus page and its panel
- * this hast to be done only once on page create. 
+ * Define the event handlers for the missing plus page and its panel this hast
+ * to be done only once on page create.
  */
 $(document)
 .on(
@@ -542,7 +570,7 @@ $(document)
     function() {
         try {
             var panel = $('#' + ids.MISSINGPREFIXPANEL);
-            // if the close button is pressed, the panle is closed and 
+            // if the close button is pressed, the panle is closed and
             // the list is shown again.
             $('#' + ids.BUTTONMISSINGPREFIXCLOSE).click(function(e) {
                 panel.panel("close");
@@ -553,7 +581,8 @@ $(document)
                     var prefix = $("#" + ids.INPUTPREFIX).val();
                     // find the content object to extract the current id
                     var content = $('#' + ids.MISSINGPREFIXCONTENT);
-                    // get the saved current selected id from the content data attribute
+                    // get the saved current selected id from the content data
+                    // attribute
                     var id = content.data("contactid");
                     // get the contact for this id
                     var c = contactList.getById(id);
@@ -572,11 +601,13 @@ $(document)
 
 
 /**
- * Open an URl from the app in the browser, like showing the online help function
- * This is described in https://developer.mozilla.org/en-US/docs/WebAPI/Web_Activities
- * But instead of "share" as described there we used "view"
- *
- * @param url the url to open
+ * Open an URl from the app in the browser, like showing the online help
+ * function This is described in
+ * https://developer.mozilla.org/en-US/docs/WebAPI/Web_Activities But instead of
+ * "share" as described there we used "view"
+ * 
+ * @param url
+ *            the url to open
  * @returns nothing
  */
 function openLinkInBrowser(url) {

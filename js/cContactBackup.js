@@ -29,10 +29,10 @@ cContactBackup.prototype = {
         return Object.keys(this._loadFromLocalStorage()).length;
     },
     /**
-     * save one contact to the backup list in local sstorage
+     * save one contact to the backup list in local storage
      * 
      * @param contact
-     *                an object of class cContact
+     *            an object of class cContact
      */
     backup : function(contact) {
         log("Backup: " + contact.displayName());
@@ -44,7 +44,7 @@ cContactBackup.prototype = {
      * append a user representation of the backup to a given list element
      * 
      * @param ul
-     *                the list element
+     *            the list element
      */
     appendBackupListToUL : function(ul) {
         var backup = window.localStorage.getItem(this._lsBackup);
@@ -53,10 +53,12 @@ cContactBackup.prototype = {
         } else {
             backup = JSON.parse(backup);
         }
+        // Start move this to cContactUtils into new function
+        // appendUlToHTML see cContactUtils
         $.each(backup, function(k, v) {
             var contact = new cContact(v);
-            var html = '<li id="Backup' + contact.key() + '">'
-                    + contact.displayName() + '</li>';
+            var html = '<li id="Backup' + contact.key() + '"><a>'
+                    + contact.displayName() + '</a></li>';
             ul.append(html);
             ul.children().last().data("contact", contact);
         });
@@ -66,51 +68,62 @@ cContactBackup.prototype = {
      * get one contact from the backup list in local storage
      * 
      * @param id
-     *                the id of the 
+     *            the id of the
      */
     getBackupContactById : function(id) {
         try {
-               var backup = this._loadFromLocalStorage();
-               log("Get from Backup: " + id);
-               if (backup !== null) {
-                  return new cContact(backup[id]);
-               } 
-            } catch (ex) {
-               log(ex);
-            }   
+            var backup = this._loadFromLocalStorage();
+            log("Get from Backup: " + id);
+            if (backup !== null) {
+                return new cContact(backup[id]);
+            }
+        } catch (ex) {
+            log(ex);
+        }
     },
     /**
-     * restore one contact from the backup list in local storage and  
-     * delete it from the local storage
+     * restore one contact from the backup list in local storage and delete it
+     * from the local storage
      * 
      * @param id
-     *                the id oft the contact to restore
+     *            the id oft the contact to restore
+     */
+    /*
+     * @param id
+     *//*
+         * deleteContactFromLocalStorage : function(backup, id) { log("Contact
+         * successfully restored"); // delete the contact from backup delete
+         * backup[id]; },
+         */
+    /*
+     * @param id
      */
     restoreContact : function(id) {
         try {
             log("Restore Contact: " + id);
             var backup = this._loadFromLocalStorage();
             var contact2restore = backup[id]; // contact record
-            var cContact2restore = new cContact(contact2restore); // class envelope
-            try {
-                cContact2restore.save();
-            } catch (ex) {
-                log(ex);
-            }  
-            // really restored?
-            var newContactList = contactUtils.getNewContactList();
-//            log("Contact restored succesfully?");
-            if ((newContactList.getById(id) !== null) && (newContactList.getById(id) !== false)) {
-                // delete the contact from backup
-                delete backup[id];
-                log("Delete Contact from local storage: " + id);
-                window.localStorage.setItem(this._lsBackup, JSON.stringify(backup));
-            } else {
-                log("Contact " + id + " could not be restored");
+            var cContact2restore = new cContact(contact2restore); // class
+            // envelope
+            var onSuccess = function() {
+                try {
+                    delete backup[id];
+                    $('#Backup' + id).hide();
+                    window.localStorage.setItem(this._lsBackup, JSON
+                            .stringify(backup));
+                    log("backup successfully restored: " + id,
+                            ids.TEXTAREA_RESTOREBACKUP);
+                } catch (ex) {
+                    log(ex);
+                }
             };
+            cContact2restore.save(onSuccess, function() {
+                log("save error while restoring backup for id: " + id,
+                        ids.TEXTAREA_RESTOREBACKUP);
+            });
         } catch (ex) {
             log(ex);
-        }  
+        }
     }
 };
 // exports.cContact = cContact;

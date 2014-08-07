@@ -89,8 +89,60 @@ cFunnyCharacters.inheritsFrom(cDefectList);
 
 cFunnyCharacters.prototype.addToUI = function(ul) {
 };
-cFunnyCharacters.prototype.correctDefect = function() {
+cFunnyCharacters.prototype.correctDefect = function(c) {
+    var filter = function(s) {
+        $.each(cFunnyCharacters.patterntocorrect, function(key, value) {
+            s = s.replace(cFunnyCharacters.patterntocorrect[key],
+                    cFunnyCharacters.patterncorrected[key]);
+        });
+        return s;
+    };
+    c.filterAllStrings(filter);
 };
+// convert öäüÖÄÜß
+// \u00C3\u00B6\u00C3\u20AC\u00C3\u0152\u00C3\u0096\u00C3\u0084\u00C3\u009C\u00C3\u009F
+cFunnyCharacters.patterntocorrect = {
+    ouml : "\u00C3\u00B6",
+    auml : "\u00C3\u20AC",
+    uuml : "\u00C3\u0152",
+    Ouml : "\u00C3\u0096",
+    Auml : "\u00C3\u0084",
+    Uuml : "\u00C3\u009C",
+    sz : "\u00C3\u009F",
+    quote : "\\\"",
+    comma : "\\,"
+};
+// \u00F6\u00E4\u00FC\u00D6\u00C4\u00DC\u00DF
+cFunnyCharacters.patterncorrected = {
+    ouml : "\u00F6",
+    auml : "\u00E4",
+    uuml : "\u00FC",
+    Ouml : "\u00D6",
+    Auml : "\u00C4",
+    Uuml : "\u00DC",
+    sz : "\u00DF",
+    quote : "\\\"",
+    comma : ","
+};
+cFunnyCharacters.prototype._hasDefect = function(contact) {
+    var checkString = function(stringToCheck) {
+        var hasPattern = false;
+        $
+                .each(
+                        cFunnyCharacters.patterntocorrect,
+                        function(key, value) {
+                            if (stringToCheck
+                                    .indexOf(cFunnyCharacters.patterntocorrect[key]) != -1) {
+                                hasPattern = true;
+                                return false;
+                            }
+                        });
+        return hasPattern;
+    };
+    return contact.checkAllStrings(checkString);
+};
+
+// --------------------------------------------------------------
 
 cContactList = function() {
 };

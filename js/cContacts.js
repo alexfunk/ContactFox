@@ -175,11 +175,11 @@ cContact.prototype = {
             var tel = this.c.tel;
             // put all indexes of telephone numbers the toDelete array
             var toDelete = [];
-            for (var i = 0; i < tel.length; i++) {
+            for ( var i = 0; i < tel.length; i++) {
                 var currentNumber = tel[i].value;
                 // check if 'currentNumber' exist in the following numbers
                 var numberExists = false;
-                for (var j = i + 1; j < tel.length; j++) {
+                for ( var j = i + 1; j < tel.length; j++) {
                     if (currentNumber == tel[j].value) {
                         numberExists = true;
                         break;
@@ -196,6 +196,44 @@ cContact.prototype = {
                 this.c.tel.splice(toDelete[i], 1);
             }
         }
+    },
+    checkAllStrings : function(checkStringFunction) {
+        var result = false;
+        var t = this;
+        $.each(this.members, function(i, e) {
+            // i is the key of the entry like addr or phone
+            var stringArray = t.contactMemberToString(i);
+            $.each(stringArray, function(j, item) {
+                if (checkStringFunction(item)) {
+                    result = true;
+                    return false; // <- Break the loop
+                }
+            });
+            if (result)
+                return false; // <- Break the loop
+
+        });
+        return result;
+    },
+    filterMember : function(member, filterStringFunction) {
+        var memberValue = this.c[member];
+        if ($.isArray(memberValue)) {
+            var result = [];
+            $.each(memberValue, function(i, e) {
+                if (typeof e === 'string')
+                    result.push(filterStringFunction(e));
+                else
+                    result.push(e);
+            });
+            this.c[member] = result;
+        }
+    },
+    filterAllStrings : function(filterStringFunction) {
+        var t = this;
+        $.each(this.members, function(key, e) {
+            // key is the key of the entry like addr or phone
+            t.filterMember(key, filterStringFunction);
+        });
     },
     /**
      * checks if a contact contains a given number

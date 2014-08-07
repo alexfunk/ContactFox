@@ -165,6 +165,18 @@ var fixture = [ {
         type : 'mobile',
         value : '0421 5551234-1'
     } ]
+}, {
+    // 15 with incorrect converted german characters
+    givenName : [ 'J\u00C3\u00B6hn' ],
+    familyName : [ 'D\u00C3\u00B6' ],
+    name : [ 'Jöhn Dö' ],
+    tel : [ {
+        type : 'mobile',
+        value : '+49421 5551234-1'
+    }, {
+        type : 'mobile',
+        value : '0421 5551234-1'
+    } ]
 } ];
 var c = [];
 $.each(fixture, function(i, e) {
@@ -217,6 +229,28 @@ exports.cContacts = {
         test.equal(c[13].c.tel.length, 1);
         c[14].clearDuplicateNumbers();
         test.equal(c[14].c.tel.length, 2);
+        test.done();
+    },
+    'checkAllStrings' : function(test) {
+        test.expect(2);
+        var testOe = function(s) {
+            return s.indexOf("\u00C3\u00B6") != -1;
+        };
+        test.equal(c[14].checkAllStrings(testOe), false);
+        test.equal(c[15].checkAllStrings(testOe), true);
+        test.done();
+    },
+    'filterAllStrings' : function(test) {
+        test.expect(2);
+        var filter = function(s) {
+            if (s == "John")
+                return "Jack";
+            return s;
+        };
+        c[14].filterAllStrings(filter);
+        console.log("Result filterAllStrings: " + JSON.stringify(c[14]));
+        test.equals(c[14].c.givenName[0], "Jack");
+        test.equals(c[14].c.familyName[0], "Doe");
         test.done();
     },
     'insertPrefix' : function(test) {

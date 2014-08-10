@@ -554,10 +554,13 @@ cContact.prototype = {
      * Each sublist contains unify-able contacts
      */
     addToUnifyList : function(unifyList) {
+        // console.log("unify List : " + JSON.stringify(unifyList));
         var added = false;
         var current = this;
         $.each(unifyList, function(i, e) {
             var entry = e[0];
+            // console.log("unify entry[" + i + "] = " + JSON.stringify(entry)
+            // + " with " + JSON.stringify(current));
             if (current.isUnifiyable(entry)) {
                 e.push(current);
                 added = true;

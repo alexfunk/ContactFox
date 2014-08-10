@@ -23,10 +23,10 @@ Function.prototype.inheritsFrom = function(parentClassOrObject) {
 // Base class for all defects, like dupplicate contacts,
 // missing prefix and
 cDefectList = function() {
+    this._defects = [];
 };
 
 cDefectList.prototype = {
-    _defects : [],
     hasDefects : function() {
         return this._defects.length !== 0;
     },
@@ -37,8 +37,9 @@ cDefectList.prototype = {
         return false;
     },
     checkContactForDefect : function(contact) {
-        if (this._hasDefect(contact))
+        if (this._hasDefect(contact)) {
             this._defects.push(contact);
+        }
     }
 
 };
@@ -51,14 +52,14 @@ cDuplicates.inheritsFrom(cDefectList);
 cDuplicates.prototype.addToUI = function(ul) {
     contactUtils.appendUnifyListToUL(this._defects, ul);
 };
-cDuplicates.prototype.correctDefect = function() {
-};
 /**
  * @Override the duplicates defect is handled different
  * @param contact
  */
 cDuplicates.prototype.checkContactForDefect = function(contact) {
     contact.addToUnifyList(this._defects);
+};
+cDuplicates.prototype.correctDefect = function() {
 };
 // -------------------------------------------------------
 
@@ -89,16 +90,6 @@ cFunnyCharacters.inheritsFrom(cDefectList);
 
 cFunnyCharacters.prototype.addToUI = function(ul) {
 };
-cFunnyCharacters.prototype.correctDefect = function(c) {
-    var filter = function(s) {
-        $.each(cFunnyCharacters.patterntocorrect, function(key, value) {
-            s = s.replace(cFunnyCharacters.patterntocorrect[key],
-                    cFunnyCharacters.patterncorrected[key]);
-        });
-        return s;
-    };
-    c.filterAllStrings(filter);
-};
 // convert öäüÖÄÜß
 // \u00C3\u00B6\u00C3\u20AC\u00C3\u0152\u00C3\u0096\u00C3\u0084\u00C3\u009C\u00C3\u009F
 cFunnyCharacters.patterntocorrect = {
@@ -121,25 +112,31 @@ cFunnyCharacters.patterncorrected = {
     Auml : "\u00C4",
     Uuml : "\u00DC",
     sz : "\u00DF",
-    quote : "\\\"",
+    quote : "",
     comma : ","
 };
 cFunnyCharacters.prototype._hasDefect = function(contact) {
-    var checkString = function(stringToCheck) {
-        var hasPattern = false;
-        $
-                .each(
-                        cFunnyCharacters.patterntocorrect,
-                        function(key, value) {
-                            if (stringToCheck
-                                    .indexOf(cFunnyCharacters.patterntocorrect[key]) != -1) {
-                                hasPattern = true;
-                                return false;
-                            }
-                        });
-        return hasPattern;
+    var checkStringForFunnyCharacters = function(stringToCheck) {
+        var hasFunnyCharacter = false;
+        $.each(cFunnyCharacters.patterntocorrect, function(key, value) {
+            if (stringToCheck.indexOf(value) != -1) {
+                hasFunnyCharacter = true;
+                return false; // break the each loop
+            }
+        });
+        return hasFunnyCharacter;
     };
-    return contact.checkAllStrings(checkString);
+    return contact.checkAllStrings(checkStringForFunnyCharacters);
+};
+cFunnyCharacters.prototype.correctDefect = function(c) {
+    var correctFunnyCharactersFilterFunction = function(s) {
+        $.each(cFunnyCharacters.patterntocorrect, function(key, value) {
+            s = s.replace(cFunnyCharacters.patterntocorrect[key],
+                    cFunnyCharacters.patterncorrected[key]);
+        });
+        return s;
+    };
+    c.filterAllStrings(correctFunnyCharactersFilterFunction);
 };
 
 // --------------------------------------------------------------

@@ -511,8 +511,6 @@ cContact.prototype = {
      * address book of the phone.
      */
     save : function(onSuccess, onError) {
-        // TODO: Don't show personal data in the log file of the final product
-        log("cContacts.save: " + JSON.stringify(this.c));
         // in b2g 1.3 a contact must implement an special interface
         // this should work for b2g 1.2 and b2g 1.3
         var contact = new mozContact(this.c);

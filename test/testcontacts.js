@@ -248,7 +248,6 @@ exports.cContacts = {
             return s;
         };
         c[14].filterAllStrings(filter);
-        console.log("Result filterAllStrings: " + JSON.stringify(c[14]));
         test.equals(c[14].c.givenName[0], "Jack");
         test.equals(c[14].c.familyName[0], "Doe");
         test.done();

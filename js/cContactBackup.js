@@ -35,7 +35,6 @@ cContactBackup.prototype = {
      *                an object of class cContact
      */
     backup : function(contact) {
-        log("Backup: " + contact.displayName());
         var backup = this._loadFromLocalStorage();
         backup[contact.key()] = contact.c;
         window.localStorage.setItem(this._lsBackup, JSON.stringify(backup));

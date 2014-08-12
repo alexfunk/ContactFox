@@ -224,13 +224,15 @@ function updateButtons() {
     } else {
         $('[data-nav="nav.pFunnyCharacters"]').addClass('ui-disabled');
     }
-    $('#' + ids.NUMFUNNYCHARACTERS).html(contactList.numFunnyCharacters());
+    var nfc = contactList.numFunnyCharacters();
+    $('#' + ids.NUMFUNNYCHAR).html(nfc);
     if (contactList.hasMissingPrefix()) {
         $('[data-nav="nav.pMissingPlus"]').removeClass('ui-disabled');
     } else {
         $('[data-nav="nav.pMissingPlus"]').addClass('ui-disabled');
     }
-    $('#' + ids.NUMMISSINGPREFIX).html(contactList.numMissingPrefix());
+    var nmp = contactList.numMissingPrefix();
+    $('#' + ids.NUMMISSINGPREFIX).html(nmp);
     // if the list changed, also replace the html lists on the pages
     replaceMissingPrefixListHTML();
 }
@@ -298,6 +300,7 @@ function loadContacts() {
 function addListsToHTML() {
     replaceDuplicatesListHTML();
     replaceMissingPrefixListHTML();
+    // TODO FunnyCharacters
 }
 
 /**
@@ -318,19 +321,6 @@ function replaceDuplicatesListHTML() {
         .listview('refresh');
 }
 
-// fill the backup list on the backup page
-function replaceBackupListHTML() {
-    var buls = '#' + ids.RESTOREBACKUPLIST;
-    $(buls).empty();
-    $(buls).append('<ul data-filter="true"></ul>');
-    cContact._backup.appendBackupListToUL($(buls + ' ul'));
-    $(buls + ' ul li').click(function(event) {
-        showBackupContactSelected(event);
-    });
-    $(buls + " ul").listview()
-        .listview('refresh');
-}
-
 /**
  * create the HTML-Code for the missing prefix list and replace it at the
  * prepared ID in the DOM
@@ -346,6 +336,19 @@ function replaceMissingPrefixListHTML() {
         showPrefixContactSelected(event);
     });
     $(mls + " ul").listview()
+        .listview('refresh');
+}
+
+// fill the backup list on the backup page
+function replaceBackupListHTML() {
+    var buls = '#' + ids.RESTOREBACKUPLIST;
+    $(buls).empty();
+    $(buls).append('<ul data-filter="true"></ul>');
+    cContact._backup.appendBackupListToUL($(buls + ' ul'));
+    $(buls + ' ul li').click(function(event) {
+        showBackupContactSelected(event);
+    });
+    $(buls + " ul").listview()
         .listview('refresh');
 }
 
@@ -383,7 +386,6 @@ function mergeAll() {
 function mergeContactSelected(event) {
     try {
         var li = $(event.target).parent();
-        var id = li.attr("id");
         var data = li.data("list");
         if (data.length > 0) {
             var contact = contactUtils.unifyContactList(data);

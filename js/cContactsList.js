@@ -233,13 +233,17 @@ cDuplicates.prototype.hasDefects = function() {
 };
 
 cDuplicates.prototype.numDefects = function() {
-    var result = 0;
-    $.each(this._defects, function(i, e) {
-        if ($.isArray(e) && e.length > 1) {
-            result += 1;
-        }
-    });
-    return result;
+    try {
+        var result = 0;
+        $.each(this._defects, function(i, e) {
+            if ($.isArray(e) && e.length > 1) {
+                result += 1;
+            }
+        });
+        return result;
+    } catch (ex) {
+        log(ex);
+    }
 };
 
 cDuplicates.prototype.correctDefect = function(key) {
@@ -338,7 +342,7 @@ cContactList.prototype = {
         return this._defects.duplicates.hasDefects();
     },
     numDuplicates : function() {
-        this._defects.duplicates.numDefects();
+        return this._defects.duplicates.numDefects();
     },
     merge : function(key) {
         this._defects.duplicates.correctDefect(key);

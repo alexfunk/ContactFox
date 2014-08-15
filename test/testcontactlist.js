@@ -38,7 +38,7 @@ exports.cContacts = {
         contactList.add(c1);
         test.equal(contactList.size(), 2);
         test.equal(contactList.hasDuplicates(), true);
-        contactList.merge(c0.key());
+        contactList.correctDuplicates(c0.key());
         test.equal(contactList.hasDuplicates(), false);
         test.equal(contactList.size(), 1);
         test.done();

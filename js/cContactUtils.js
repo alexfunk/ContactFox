@@ -60,8 +60,15 @@ cContactUtils.prototype = {
             log(ex);
         }
     },
-    unifyContactList: function(list) {
-        var primary = list[0];
+    /**
+     * create a preview contact that would be created if this list of duplicate
+     * contacts are merged
+     * 
+     * @param list
+     *                of duplicate contacts
+     */
+    previewUnifiedContactList: function(list) {
+        var primary = list[0]; // TODO Clone!!
         for (var i = 1; i < list.length; i++) {
             var secondary = list[i];
             primary.unify(secondary);

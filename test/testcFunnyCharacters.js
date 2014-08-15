@@ -37,6 +37,10 @@ $.each(fixture, function(i, e) {
     c1.push(new cContact(e));
 });
 var funnyCharacters = new cFunnyCharacters();
+funnyCharacters.setParent({
+    changeEntry : function(contact) {
+    }
+});
 
 exports.cContacts = {
     'correctDefect' : function(test) {

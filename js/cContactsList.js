@@ -1,6 +1,6 @@
 /*
  * Some Utility to have inheritance in javascript classes
- * Extends the Function prototype by an inhereitsFrom function 
+ * Extends the Function prototype by an inheritsFrom function 
  * @param parentClassOrObject
  * @returns {Function}
  */
@@ -21,7 +21,7 @@ Function.prototype.inheritsFrom = function(parentClassOrObject) {
 
 // ------------------------------------------------------
 // Base class for all defects, like duplicate contacts,
-// missing prefix and funncy characters
+// missing prefix and funny characters
 cDefectList = function() {
     this._defects = [];
 };
@@ -93,13 +93,19 @@ cDefectList.prototype = {
     /**
      * notify the parent that one contact has to be removed from the list
      * 
-     * @param key
+     * @param contact
      */
     _remove : function(contact) {
         this._parent.removeEntry(contact, this);
     },
     /**
-     * being notified that somonelse removed a contact, so that this class is
+     * notify the parent that one contact has changed
+     */
+    _change : function(contact) {
+        this._parent.changeEntry(contact, this);
+    },
+    /**
+     * being notified that someone else removed a contact, so that this class is
      * updated
      */
     notifyRemove : function(contact) {
@@ -107,6 +113,25 @@ cDefectList.prototype = {
         if (listIndex != -1) {
             this._defects.splice(listIndex, 1);
         }
+    },
+    /**
+     * Someone else has changed one contact. The changed contact is passed as
+     * parameter. The change might cause one contact to be affected by this
+     * defect, so it must be entered in this list, or it may now be unaffected
+     * so it can be removed from this list,
+     */
+    notifyChange : function(contact) {
+        var hasDefect = this._hasDefect(contact);
+        var listIndex = this._defects.indexOf(contact);
+        if (hasDefect && listIndex === -1) {
+            // it has the defect but is not in the list
+            this._defects.push(contact);
+        }
+        if (!hasDefect && listIndex !== -1) {
+            // is doesn't have the defect but is in the list
+            this._defects.splice(listIndex, 1);
+        }
+
     }
 };
 // -------------------------------------------------------
@@ -125,6 +150,7 @@ cMissingPrefix.prototype._hasDefect = function(contact) {
 cMissingPrefix.prototype.correctDefect = function(key, prefix) {
     var contact = this.getById(key);
     contact.insertPrefix(prefix);
+    this._change(contact);
     contact.save(function() {
         log("prefix successfully saved for id :" + key,
                 ids.TEXTAREA_MISSINGPREFIX);
@@ -136,7 +162,6 @@ cMissingPrefix.prototype.correctDefect = function(key, prefix) {
     if (mpListIndex != -1) {
         this._defects.splice(mpListIndex, 1);
     }
-    // this._notifyChange(this);
 };
 
 // -------------------------------------------------------
@@ -196,6 +221,7 @@ cFunnyCharacters.prototype.correctDefect = function(contact) {
         return s;
     };
     contact.filterAllStrings(correctFunnyCharactersFilterFunction);
+    this._change(contact);
     contact.save(function() {
         log("funny character successfully corrected for id :" + key,
                 ids.TEXTAREA_MISSINGPREFIX);
@@ -205,7 +231,13 @@ cFunnyCharacters.prototype.correctDefect = function(contact) {
     });
 };
 // -------------------------------------------------------
-
+/**
+ * The defect list for duplicates are a bit different. It is an array of arrays
+ * each array contains all contacts that can be merged. If there is no matching
+ * contact it is just that entry. For example if c3a and c3b are the only
+ * contacts that can be unified, the list looks like this: _defects = [[c1],
+ * [c2], [c3a, c3b]], [c4]]
+ */
 cDuplicates = function() {
 };
 cDuplicates.inheritsFrom(cDefectList);
@@ -216,10 +248,14 @@ cDuplicates.prototype.addToUI = function(ul) {
 /**
  * @Override the duplicates defect is handled different
  * @param contact
+ *                the contact that might be duplicate
  */
 cDuplicates.prototype.checkContactForDefect = function(contact) {
     contact.addToUnifyList(this._defects);
 };
+/**
+ * @Override the duplicates defect is handled different
+ */
 cDuplicates.prototype.hasDefects = function() {
     var result = false;
     $.each(this._defects, function(i, e) {
@@ -231,7 +267,9 @@ cDuplicates.prototype.hasDefects = function() {
     });
     return result;
 };
-
+/**
+ * @Override the duplicates defect is handled different
+ */
 cDuplicates.prototype.numDefects = function() {
     try {
         var result = 0;
@@ -250,8 +288,14 @@ cDuplicates.prototype.correctDefect = function(key) {
     var t = this;
     $.each(t._defects, function(i, e) {
         if ($.isArray(e) && e.length > 1) {
+            // this entry is a defect. Keep the first contact in e
             var entry = e[0];
             if (entry.key() == key) {
+                for ( var j = 1; j < e.length; j++) {
+                    var secondary = e[j];
+                    entry.unify(secondary);
+                }
+                t._change(entry);
                 entry.save(function() {
                     log("merge successfull for id :" + key,
                             ids.TEXTAREA_DUPLICATES);
@@ -259,11 +303,11 @@ cDuplicates.prototype.correctDefect = function(key) {
                     log("error while merging id " + key,
                             ids.TEXTAREA_DUPLICATES);
                 });
-                for ( var j = 1; j < e.length; j++) {
-                    var removeEntry = e[j];
+                for ( var k = 1; k < e.length; k++) {
+                    var removeEntry = e[k];
                     // Notify other list about removed entry
                     t._remove(removeEntry);
-                    e[j].remove();
+                    e[k].remove();
                 }
                 t._defects.splice(i, 1);
                 // break jquery each loop:
@@ -272,6 +316,12 @@ cDuplicates.prototype.correctDefect = function(key) {
         }
     });
 };
+/**
+ * a contact was removed from somone else remove it from the defect list
+ * 
+ * @param contact
+ *                the contact to be removed
+ */
 cDuplicates.prototype.notifyRemove = function(contact) {
     var t = this;
     $.each(t._defects, function(i, e) {
@@ -320,6 +370,15 @@ cContactList.prototype = {
                 value.notifyRemove(contact);
             }
         });
+        this._notifyChange(this);
+    },
+    changeEntry : function(contact, sourceDefectList) {
+        $.each(this._defects, function(name, value) {
+            if (value !== sourceDefectList) {
+                value.notifyChange(contact);
+            }
+        });
+        this._notifyChange(this);
     },
     size : function() {
         return this._list.length;
@@ -344,7 +403,7 @@ cContactList.prototype = {
     numDuplicates : function() {
         return this._defects.duplicates.numDefects();
     },
-    merge : function(key) {
+    correctDuplicates : function(key) {
         this._defects.duplicates.correctDefect(key);
     },
     // -------- Missing Prefix -----------------------

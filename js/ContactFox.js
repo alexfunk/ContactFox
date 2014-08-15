@@ -235,6 +235,7 @@ function updateButtons() {
     $('#' + ids.NUMMISSINGPREFIX).html(nmp);
     // if the list changed, also replace the html lists on the pages
     replaceMissingPrefixListHTML();
+    // TODO: what about the other lists?
 }
 
 /**
@@ -358,7 +359,7 @@ function replaceBackupListHTML() {
  */
 function merge(id) {
     $('#' + id).css("display", "none");
-    contactList.merge(id);
+    contactList.correctDuplicates(id);
 }
 
 /**
@@ -370,7 +371,7 @@ function mergeAll() {
         $(cls + ' ul li').each(function(i, e) {
             if (!$(e).hasClass('ui-screen-hidden')) {
                 var id = $(e).attr("id");
-                merge(id);
+                correctDuplicates(id);
             }
         });
     } catch (ex) {
@@ -388,7 +389,7 @@ function mergeContactSelected(event) {
         var li = $(event.target).parent();
         var data = li.data("list");
         if (data.length > 0) {
-            var contact = contactUtils.unifyContactList(data);
+            var contact = contactUtils.previewUnifiedContactList(data);
             var cname = contact.displayName();
             // TODO use a template
             var n = $('#' + ids.CONTACTCHANGE);

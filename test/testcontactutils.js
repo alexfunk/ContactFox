@@ -29,9 +29,9 @@ var c0 = new cContact(fixture[0]), c1 = new cContact(fixture[1]), c2 = new cCont
         fixture[2]);
 var contactList = new cContactList();
 exports.cContacts = {
-    'unifyContactList' : function(test) {
+    'previewUnifiedContactList' : function(test) {
         test.expect(3);
-        var contact = contactUtils.unifyContactList([ c0, c1 ]);
+        var contact = contactUtils.previewUnifiedContactList([ c0, c1 ]);
 
         test.equal(typeof contact === undefined, false);
         test.equal(contact.containsNumber('0421 5554321'), true);

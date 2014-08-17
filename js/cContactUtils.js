@@ -41,11 +41,11 @@ cContactUtils.prototype = {
             log(ex); 
         }
     },
-    appendMissingPrefixListToUL: function(list, ul) {
+    appendListToUL: function(list, ul, id) {
         try {
             $.each(list, function(i, e) {
                 try {
-                    var html = '<li id="prefix' +
+                    var html = '<li id="' + id +
                         e.key() +
                         '"><a>' +
                         e.displayName() +
@@ -77,8 +77,8 @@ cContactUtils.prototype = {
     },
 
     /**
-     * adds some testndata to the phones adressbook to test the functions, even
-     * if the adressbook is otherwise clean. It also adds them to the
+     * adds some testdata to the phones adressbook to test the functions, even
+     * if the addressbook is otherwise clean. It also adds them to the
      * contactlist, so the testdata is reflected in the app right away.
      */
     createDuplicateContactForTesting: function(contactList) {
@@ -95,6 +95,15 @@ cContactUtils.prototype = {
                 givenName: ['John'],
                 familyName: ['Doe'],
                 name: ['John Doe'],
+                tel: [{
+                    type: ['voice'],
+                    value: '0421 5554321'
+                }],
+                note: ['testContact'] // to clean up test contacts
+            },{
+                givenName: ['John'],
+                familyName: ['D\u00C3\u00B6'],
+                name: ['John D\u00C3\u00B6'],
                 tel: [{
                     type: ['voice'],
                     value: '0421 5554321'

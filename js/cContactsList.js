@@ -67,7 +67,12 @@ cDefectList.prototype = {
     /**
      * returns a contact in the defectlist, by its id, if it is there
      * 
-     * @param key
+     * @param keyhtml = '<li id="' +
+                            entry.key() +
+                            '"><a>' +
+                            entry.displayName() +
+                            '<span class="ui-li-count">' + e.length + '</span>' +
+                            '</a></li>';
      *                the key of the contact
      * @returns the contact or null if not there
      */
@@ -82,7 +87,7 @@ cDefectList.prototype = {
         return result;
     },
     /**
-     * set the contact list as the parrent of the defect list, so that we can
+     * set the contact list as the parent of the defect list, so that we can
      * notify the parent about changes
      * 
      * @param parent
@@ -142,7 +147,7 @@ cMissingPrefix = function() {
 cMissingPrefix.inheritsFrom(cDefectList);
 
 cMissingPrefix.prototype.addToUI = function(ul) {
-    contactUtils.appendMissingPrefixListToUL(this._defects, ul);
+    contactUtils.appendListToUL(this._defects, ul, 'prefix');
 };
 cMissingPrefix.prototype._hasDefect = function(contact) {
     return contact.hasMissingPrefix();
@@ -171,12 +176,12 @@ cFunnyCharacters = function() {
 cFunnyCharacters.inheritsFrom(cDefectList);
 
 cFunnyCharacters.prototype.addToUI = function(ul) {
-    // TODO: simmilar to addMissingPrefixToUL. Try to unify both functions
+    contactUtils.appendListToUL(this._defects, ul, 'funnyChars');
 };
 // convert öäüÖÄÜß
 // \u00C3\u00B6\u00C3\u20AC\u00C3\u0152\u00C3\u0096\u00C3\u0084\u00C3\u009C\u00C3\u009F
 // TODO: Extend by other non-german accented characters
-cFunnyCharacters.patterntocorrect = {
+cFunnyCharacters.patternToCorrect = {
     ouml : "\u00C3\u00B6",
     auml : "\u00C3\u20AC",
     uuml : "\u00C3\u0152",
@@ -188,7 +193,7 @@ cFunnyCharacters.patterntocorrect = {
     comma : "\\,"
 };
 // \u00F6\u00E4\u00FC\u00D6\u00C4\u00DC\u00DF
-cFunnyCharacters.patterncorrected = {
+cFunnyCharacters.patternCorrected = {
     ouml : "\u00F6",
     auml : "\u00E4",
     uuml : "\u00FC",
@@ -202,7 +207,7 @@ cFunnyCharacters.patterncorrected = {
 cFunnyCharacters.prototype._hasDefect = function(contact) {
     var checkStringForFunnyCharacters = function(stringToCheck) {
         var hasFunnyCharacter = false;
-        $.each(cFunnyCharacters.patterntocorrect, function(key, value) {
+        $.each(cFunnyCharacters.patternToCorrect, function(key, value) {
             if (stringToCheck.indexOf(value) != -1) {
                 hasFunnyCharacter = true;
                 return false; // break the each loop
@@ -214,9 +219,9 @@ cFunnyCharacters.prototype._hasDefect = function(contact) {
 };
 cFunnyCharacters.prototype.correctDefect = function(contact) {
     var correctFunnyCharactersFilterFunction = function(s) {
-        $.each(cFunnyCharacters.patterntocorrect, function(key, value) {
-            s = s.replace(cFunnyCharacters.patterntocorrect[key],
-                    cFunnyCharacters.patterncorrected[key]);
+        $.each(cFunnyCharacters.patternToCorrect, function(key, value) {
+            s = s.replace(cFunnyCharacters.patternToCorrect[key],
+                    cFunnyCharacters.patternCorrected[key]);
         });
         return s;
     };
@@ -229,10 +234,11 @@ cFunnyCharacters.prototype.correctDefect = function(contact) {
         log("error while saving funny character correction for id " + key,
                 ids.TEXTAREA_MISSINGPREFIX);
     });
+    // remove from _defectlist
 };
 // -------------------------------------------------------
 /**
- * The defect list for duplicates are a bit different. It is an array of arrays
+ * The defect lists for duplicates are a bit different. It is an array of arrays
  * each array contains all contacts that can be merged. If there is no matching
  * contact it is just that entry. For example if c3a and c3b are the only
  * contacts that can be unified, the list looks like this: _defects = [[c1],
@@ -317,7 +323,7 @@ cDuplicates.prototype.correctDefect = function(key) {
     });
 };
 /**
- * a contact was removed from somone else remove it from the defect list
+ * a contact was removed from someone else, so remove it from the defect list
  * 
  * @param contact
  *                the contact to be removed

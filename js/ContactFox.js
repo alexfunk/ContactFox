@@ -40,7 +40,12 @@ var ids = {
     RESTOREBACKUPLIST: "RESTOREBACKUPLIST",
     BUTTONRESTOREBACKUP: "BUTTONRESTOREBACKUP",
     BUTTONRESTOREBACKUPLOSE: "RESTOREBACKUPCLOSE",
-    BEXIT: "BEXIT"
+    BEXIT: "BEXIT",
+    FUNNYCHARSPANEL: "FUNNYCHARSPANEL",
+    FUNNYCHARSCONTENT: "FUNNYCHARSCONTENT",
+    FUNCHARLIST: "FUNCHARLIST",
+    BUTTONFUNCHAR: "BUTTONFUNCHAR",
+    BUTTONFUNCHARCLOSED: "BUTTONFUNCHARCLOSED"
 };
 
 // error messages are not only written to the console, but to an text-area on
@@ -101,8 +106,9 @@ function initApp() {
             $(':mobile-pagecontainer').pagecontainer("change", '#' + key);
         });
     });
-    // if the start button is called, an extra function is called: loadContacts
-    // to init the contactList from the contacts stored in the device.
+    // if the home button is pressed the first time, an extra function is
+    // called: loadContacts() to init the contactList from the contacts stored
+    // in the device.
     buttons[pages.HOME].click(function(e) {
         loadContacts();
     });
@@ -140,11 +146,13 @@ function initApp() {
     try {
         // check if the help was disabled by the user, and proceed to the home
         // page
-        var helpnotagain = window.localStorage.getItem("ContactFox." + ids.CBHELPNOTAGAIN);
+        var helpnotagain = window.localStorage.getItem("ContactFox." + 
+                ids.CBHELPNOTAGAIN);
         log("helpnotagain was selected: " + helpnotagain);
         if (helpnotagain == 'true') {
             loadContacts();
-            $(':mobile-pagecontainer').pagecontainer("change", '#' + pages.HOME);
+            $(':mobile-pagecontainer').pagecontainer("change", '#' + 
+                    pages.HOME);
         }
     } catch (ex) {
         log(ex);
@@ -212,34 +220,44 @@ function initApp() {
  * done in this function
  */
 function updateButtons() {
+    // duplicates: update enabled and number of defects -----------------------
+    var bDuplicates = $('[data-nav="nav.pDuplicates"]');
     if (contactList.hasDuplicates()) {
-        $('[data-nav="nav.pDuplicates"]').removeClass('ui-disabled');
+        bDuplicates.removeClass('ui-disabled');
     } else {
-        $('[data-nav="nav.pDuplicates"]').addClass('ui-disabled');
+        bDuplicates.addClass('ui-disabled');
     }
     var nd = contactList.numDuplicates();
     $('#' + ids.NUMDUPLICATES).html(nd);
+    // funnyCharacters: update enabled and number of defects ------------------
+    var bFunnyCharacters = $('[data-nav="nav.pFunnyCharacters"]');
     if (contactList.hasFunnyCharacters()) {
-        $('[data-nav="nav.pFunnyCharacters"]').removeClass('ui-disabled');
+        bFunnyCharacters.removeClass('ui-disabled');
     } else {
-        $('[data-nav="nav.pFunnyCharacters"]').addClass('ui-disabled');
+        bFunnyCharacters.addClass('ui-disabled');
     }
     var nfc = contactList.numFunnyCharacters();
     $('#' + ids.NUMFUNNYCHAR).html(nfc);
+    // missingPrefix: update enabled and number of defects --------------------
+    var bMissingPrefix = $('[data-nav="nav.pMissingPlus"]');
     if (contactList.hasMissingPrefix()) {
-        $('[data-nav="nav.pMissingPlus"]').removeClass('ui-disabled');
+        bMissingPrefix.removeClass('ui-disabled');
     } else {
-        $('[data-nav="nav.pMissingPlus"]').addClass('ui-disabled');
+        bMissingPrefix.addClass('ui-disabled');
     }
     var nmp = contactList.numMissingPrefix();
     $('#' + ids.NUMMISSINGPREFIX).html(nmp);
+    // -----------------------------------------------------------------------
     // if the list changed, also replace the html lists on the pages
-    replaceMissingPrefixListHTML();
-    // TODO: what about the other lists?
+    replaceAllListsInHTML();
+    // update the number of contacts read at all------------------------------
+    $('#' + ids.NUMCONTACTSREAD).text(" " + contactList.size());
+
 }
 
 /**
- * Read the contacts from the firefox OS device using its api.
+ * Read the contacts from the firefox OS device using its api. Called by
+ * buttonHome and pHelp
  */
 function loadContacts() {
     try {
@@ -256,16 +274,12 @@ function loadContacts() {
                     var cursor = event.target;
                     if (cursor.result) {
                         // the cursor contains a result: Another contact was
-                        // found,
-                        // so we add it to the contactList
+                        // found, so we add it to the contactList
                         var contact = new cContact(cursor.result);
+                        // The contactlist is a smart list which is aware of
+                        // all defects at any time. So the contact is not only
+                        // added but also tested for defects.
                         contactList.add(contact);
-                        try {
-                            $('#' + ids.NUMCONTACTSREAD).text(" " + contactList.size());
-                            // updateButtons();
-                        } catch (ex) {
-                            log(ex);
-                        }
                         // find the next contact. This is marked as an error
                         // because
                         // the FirefoxOS API uses a reserved word as a function
@@ -273,10 +287,9 @@ function loadContacts() {
                         cursor.
                         continue();
                     } else {
-                        // no more contacts were found: the contactList is added
-                        // to the
-                        // user interface
-                        addListsToHTML();
+                        // no more contacts were found:
+                        // TODO: Show the user, tath the processing is complete
+                        log("reading contacts complete");
                     };
                 } catch (ex) {
                     log(ex);
@@ -298,21 +311,22 @@ function loadContacts() {
  * when all lists for the problems are available or they are changes, they are
  * entered into the application document
  */
-function addListsToHTML() {
+function replaceAllListsInHTML() {
     replaceDuplicatesListHTML();
     replaceMissingPrefixListHTML();
-    // TODO FunnyCharacters
+    replaceFunnyCharListHTML();
 }
 
 /**
  * create the HTML-Code for the duplicates list and replace it at the prepared
- * ID in the DOM
+ * ID ids.CONTACTLIST in the DOM
  */
 function replaceDuplicatesListHTML() {
     // duplicates
-    // let jquery mobile make this list filterable
     var cls = '#' + ids.CONTACTLIST;
     $(cls).empty();
+    // let jquery mobile make this list filterable by setting data-filter to
+    // true
     $(cls).append('<ul data-filter="true"></ul>');
     contactList.appendUnifyListToUL($(cls + ' ul'));
     $(cls + ' ul li').click(function(event) {
@@ -328,13 +342,36 @@ function replaceDuplicatesListHTML() {
  */
 function replaceMissingPrefixListHTML() {
     // missingprefix
-    // let jquery mobile make this list filterable
     var mls = '#' + ids.MISSINGPREFIXLIST;
     $(mls).empty();
+    // let jquery mobile make this list filterable by setting data-filter to
+    // true
     $(mls).append('<ul data-filter="true"></ul>');
     contactList.appendMissingPrefixListToUL($(mls + ' ul'));
     $(mls + ' ul li').click(function(event) {
         showPrefixContactSelected(event);
+    });
+    $(mls + " ul").listview()
+        .listview('refresh');
+}
+/**
+ * create the HTML-Code for the list and replace it at the prepared ID in the
+ * DOM
+ */
+function replaceFunnyCharListHTML() {
+    // funny chars
+    var mls = '#' + ids.FUNCHARLIST;
+    $(mls).empty();
+    // let jquery mobile make this list filterable by setting data-filter to
+    // true
+    $(mls).append('<ul data-filter="true"></ul>');
+    contactList.appendFunnyCharacterListToUL($(mls + ' ul'));
+    $(mls + ' ul li').click(function(event) {
+        try {
+           showContactSelected(event, 'funnychars');
+        } catch (ex) {
+            log(ex);
+        }
     });
     $(mls + " ul").listview()
         .listview('refresh');
@@ -344,6 +381,8 @@ function replaceMissingPrefixListHTML() {
 function replaceBackupListHTML() {
     var buls = '#' + ids.RESTOREBACKUPLIST;
     $(buls).empty();
+    // let jquery mobile make this list filterable by setting data-filter to
+    // true
     $(buls).append('<ul data-filter="true"></ul>');
     cContact._backup.appendBackupListToUL($(buls + ' ul'));
     $(buls + ' ul li').click(function(event) {
@@ -452,7 +491,7 @@ function correctAll() {
                 correctPrefix(c, prefix);
             }
         });
-    } catch (ex) {
+    } catch (ex) { 
         log(ex);
     }
 }
@@ -480,6 +519,47 @@ function showPrefixContactSelected(event) {
         log(exception);
     }
 }
+/**
+ * This is called when an item in a list is selected. It opens a submenu in a
+ * panel, that displays the content of the defect contact and how it will be
+ * corrected. The panel lets the user decide if he wants to correct this entry
+ * or to cancel the operation.
+ * 
+ * @param event
+ *                the click event with the source of the click, that contains
+ *                the id of the selected contact
+ * @param listname
+ *                the name of the list, this also determines the Ids of the
+ *                elements to edit
+ */
+function showContactSelected(event, listname) {
+    try {
+        // get the li element that was clicked in this event
+        var li = $(event.target).parent();
+        // the id attribute of the li element always has the from
+        // listname + contactid. so we extract the id of the contact like that:
+        var id = li.attr("id").substring(listname.length);
+        listname = listname.toUpperCase();
+        // get the panel and the content of the panel for the given listname:
+        var panelname = ids[ listname + 'PANEL'];
+        var panel = $('#' + panelname);
+        var contentname = ids[ listname + 'CONTENT'];
+        var content = $('#' + contentname);
+        // remove everything that was in the content of the panel before
+        content.empty();
+        // save the current selected id in a content data attribute
+        content.data("contactid", id);
+        // show an html representation of the contact in the panel
+        // TODO: this should be the corrected version
+        var c = contactList.getById(id);
+        c.appendAsString(content);
+        panel.i18n();
+        panel.trigger("updatelayout");
+        panel.panel("open");
+    } catch (exception) {
+        log(exception);
+    }
+}
 
 /**
  * This is called when an item in the restore backup list is selected. it opens
@@ -489,7 +569,6 @@ function showBackupContactSelected(event) {
     try {
         var li = $(event.target).parent();
         var id = li.attr("id").substring('Backup'.length);
-// var c = cContact._backup.getBackupContactById(id.substring('Backup'.length));
         var c = cContact._backup.getBackupContactById(id);
         var panel = $('#' + ids.RESTOREBACKUPPANEL);
         var content = $('#' + ids.RESTOREBACKUPCONTENT);
@@ -497,21 +576,6 @@ function showBackupContactSelected(event) {
         c.appendAsString(content);
         panel.i18n();
         panel.trigger("updatelayout"); 
-        $('#' + ids.RESTOREBACKUPCLOSE).click(function(e) {
-            panel.panel("close");
-        });
-        $('#' + ids.BUTTONRESTOREBACKUP).click(function(e) {
-            try {
-                log("BUTTONRESTOREBACKUP clicked");
-                panel.panel("close");
-                cContact._backup.restoreContact(id);
-                // 2DO remove
-                log("cContact._backup.restoreContact(id) called");
-                // / remove
-            } catch (ex) {
-                log(ex);
-            }
-        });
         panel.panel("open");
     } catch (exception) {
         log(exception);
@@ -565,7 +629,7 @@ $(document)
         });
 
 /**
- * Define the event handlers for the missing plus page and its panel this hast
+ * Define the event handlers for the missing plus page and its panel. This has
  * to be done only once on page create.
  */
 $(document)
@@ -575,7 +639,7 @@ $(document)
     function() {
         try {
             var panel = $('#' + ids.MISSINGPREFIXPANEL);
-            // if the close button is pressed, the panle is closed and
+            // if the close button is pressed, the panel is closed and
             // the list is shown again.
             $('#' + ids.BUTTONMISSINGPREFIXCLOSE).click(function(e) {
                 panel.panel("close");
@@ -595,6 +659,81 @@ $(document)
                     panel.panel("close");
                     // and finally perform the requested operation
                     correctPrefix(c, prefix);
+                } catch (ex) {
+                    log(ex);
+                }
+            });
+        } catch (e) {
+            log(e);
+        }
+    });
+
+/**
+ * Define the event handlers for the backup restore page and its panel. This has
+ * to be done only once on page create.
+ */
+$(document)
+.on(
+    'pagecreate',
+    '#' + pages.RESTOREBACKUP,
+    function() {
+        try {
+            var panel = $('#' + ids.RESTOREBACKUPPANEL);
+            // if the close button is pressed, the panel is closed and
+            // the list is shown again.
+            $('#' + ids.BUTTONRESTOREBACKUPLOSE).click(function(e) {
+                panel.panel("close");
+            });
+            $('#' + ids.BUTTONRESTOREBACKUP).click(function(e) {
+                try {
+                    // find the content object to extract the current id
+                    var content = $('#' + ids.RESTOREBACKUPCONTENT);
+                    // get the saved current selected id from the content data
+                    // attribute
+                    var id = content.data("contactid");
+                    // get the contact for this id
+                   // var c = contactList.getById(id);
+                    log("cContact._backup.restoreContact(id) called: " + id);
+                    panel.panel("close");
+                    // and finally perform the requested operation
+                    cContact._backup.restoreContact(id);
+                } catch (ex) {
+                    log(ex);
+                }
+            });
+        } catch (e) {
+            log(e);
+        }
+    });
+/**
+ * Define the event handlers for the funny characters page and its panel. This
+ * has to be done only once on page create.
+ */
+$(document)
+.on(
+    'pagecreate',
+    '#' + pages.FUNNYCHARS,
+    function() {
+        try {
+            var panel = $('#' + ids.FUNNYCHARSPANEL);
+            // if the close button is pressed, the panel is closed and
+            // the list is shown again.
+            $('#' + ids.BUTTONFUNCHARCLOSED).click(function(e) {
+                panel.panel("close");
+            });
+            $('#' + ids.BUTTONFUNCHAR).click(function(e) {
+                try {
+                    // find the content object to extract the current id
+                    var content = $('#' + ids.FUNNYCHARSCONTENT);
+                    // get the saved current selected id from the content data
+                    // attribute
+                    var id = content.data("contactid");
+                    // get the contact for this id
+                   // var c = contactList.getById(id);
+                    log("cContact.correctFunnyCharacter(id)");
+                    panel.panel("close");
+                    // and finally perform the requested operation
+                    contactList.correctFunnyCharacter(id);
                 } catch (ex) {
                     log(ex);
                 }

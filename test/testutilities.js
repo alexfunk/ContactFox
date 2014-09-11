@@ -1,4 +1,5 @@
 var fs = require('fs');
+Worker = require('webworker-threads').Worker;
 // include the java script to test in the order of dependency from
 // the one without dependencies to the one that builds on the others
 require('../js/cContactBackup.js');

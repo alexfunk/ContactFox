@@ -36,20 +36,26 @@ var c1 = [];
 $.each(fixture, function(i, e) {
     c1.push(new cContact(e));
 });
-var funnyCharacters = new cFunnyCharacters();
-funnyCharacters.setParent({
-    changeEntry : function(contact) {
-    }
-});
+var funnyCharacters;
+function setup() {
+    funnyCharacters = new cFunnyCharacters();
+    funnyCharacters.setParent({
+        changeEntry : function(contact) {
+        }
+    });
+}
 
-exports.cContacts = {
+exports.cCFunnyCharacters = {
     'correctDefect' : function(test) {
         test.expect(1);
-        funnyCharacters.correctDefect(c1[1]);
+        setup();
+        funnyCharacters.checkContactForDefect(c1[1]);
+        funnyCharacters.correctDefect(c1[1].key());
         test.equal(c1[1].c.givenName[0], "Jöhn");
         test.done();
     },
     'checkContactForDefect' : function(test) {
+        setup();
         test.expect(2);
         funnyCharacters.checkContactForDefect(c1[0]);
         test.equal(funnyCharacters.numDefects(), 0);

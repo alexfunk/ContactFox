@@ -23,10 +23,17 @@ Function.prototype.inheritsFrom = function(parentClassOrObject) {
 // Base class for all defects, like duplicate contacts,
 // missing prefix and funny characters
 cDefectList = function() {
-    this._defects = [];
+    this.init();
 };
 
 cDefectList.prototype = {
+    /**
+     * This must be called from every constructor. otherwise the value of
+     * _defects is shared between instances.
+     */
+    init : function() {
+        this._defects = [];
+    },
     /**
      * returns true if the list contains at least on defect
      * 
@@ -36,7 +43,7 @@ cDefectList.prototype = {
         return this._defects.length !== 0;
     },
     /**
-     * shows the nuber of defects
+     * shows the number of defects
      * 
      * @returns
      */
@@ -54,7 +61,7 @@ cDefectList.prototype = {
         return false;
     },
     /**
-     * if the given contact contains an defect add it to the list
+     * if the given contact contains a defect add it to the list
      * 
      * @param contact
      */
@@ -63,23 +70,36 @@ cDefectList.prototype = {
             this._defects.push(contact);
         }
     },
-
+    correctAll : function(params) {
+        console.log("correctAll");
+        var t = this;
+        $.each(t._defects, function(i, e) {
+            t.correctDefect(e.key(), params);
+        });
+        return _defects;
+    },
+    correctAllWithWorker : function(params) {
+        var worker = new Worker('js/backgroundWorker.js');
+        worker.postMessage({
+            command : "correctAll",
+            object : this,
+            params : params
+        });
+        worker.onMessage = function(e) {
+            _defects = e.data;
+        };
+    },
     /**
      * returns a contact in the defectlist, by its id, if it is there
      * 
-     * @param keyhtml = '<li id="' +
-                            entry.key() +
-                            '"><a>' +
-                            entry.displayName() +
-                            '<span class="ui-li-count">' + e.length + '</span>' +
-                            '</a></li>';
+     * @param key
      *                the key of the contact
      * @returns the contact or null if not there
      */
     getById : function(key) {
         var result = null;
-        $.each(this._list, function(i, e) {
-            if (e.key() == id) {
+        $.each(this._defects, function(i, e) {
+            if (e.key() == key) {
                 result = e;
                 return false;
             }
@@ -142,6 +162,7 @@ cDefectList.prototype = {
 // -------------------------------------------------------
 
 cMissingPrefix = function() {
+    this.init();
 };
 
 cMissingPrefix.inheritsFrom(cDefectList);
@@ -172,6 +193,7 @@ cMissingPrefix.prototype.correctDefect = function(key, prefix) {
 // -------------------------------------------------------
 
 cFunnyCharacters = function() {
+    this.init();
 };
 cFunnyCharacters.inheritsFrom(cDefectList);
 
@@ -217,7 +239,7 @@ cFunnyCharacters.prototype._hasDefect = function(contact) {
     };
     return contact.checkAllStrings(checkStringForFunnyCharacters);
 };
-cFunnyCharacters.prototype.correctDefect = function(contact) {
+cFunnyCharacters.prototype.correctDefect = function(key) {
     var correctFunnyCharactersFilterFunction = function(s) {
         $.each(cFunnyCharacters.patternToCorrect, function(key, value) {
             s = s.replace(cFunnyCharacters.patternToCorrect[key],
@@ -225,6 +247,7 @@ cFunnyCharacters.prototype.correctDefect = function(contact) {
         });
         return s;
     };
+    contact = this.getById(key);
     contact.filterAllStrings(correctFunnyCharactersFilterFunction);
     this._change(contact);
     contact.save(function() {
@@ -245,6 +268,7 @@ cFunnyCharacters.prototype.correctDefect = function(contact) {
  * [c2], [c3a, c3b]], [c4]]
  */
 cDuplicates = function() {
+    this.init();
 };
 cDuplicates.inheritsFrom(cDefectList);
 

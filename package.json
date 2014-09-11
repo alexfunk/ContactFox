@@ -38,7 +38,8 @@
     "jsdom": "~0.2.15",
     "grunt-contrib-concat" : "~0.3.0",
     "grunt-prettify" : "~0.3.4",
-    "grunt-contrib-compress" : "~0.6.0"
+    "grunt-contrib-compress" : "~0.6.0",
+    "webworker-threads" : "0.5.1"
   },
   "firefoxManifest": {
     "type" : "privileged",

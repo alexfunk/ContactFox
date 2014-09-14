@@ -56,7 +56,7 @@ cContactBackup.prototype = {
         // appendUlToHTML see cContactUtils
         $.each(backup, function(k, v) {
             var contact = new cContact(v);
-            var html = '<li id="Backup' + contact.key() + '"><a>'
+            var html = '<li id="RestoreBackup' + contact.key() + '"><a>'
                     + contact.displayName() + '</a></li>';
             ul.append(html);
             ul.children().last().data("contact", contact);
@@ -107,7 +107,7 @@ cContactBackup.prototype = {
             var onSuccess = function() {
                 try {
                     delete backup[id];
-                    $('#Backup' + id).hide();
+                    $('#RestoreBackup' + id).hide();
                     window.localStorage.setItem(this._lsBackup, JSON
                             .stringify(backup));
                     log("backup successfully restored: " + id,

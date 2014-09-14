@@ -168,7 +168,7 @@ cMissingPrefix = function() {
 cMissingPrefix.inheritsFrom(cDefectList);
 
 cMissingPrefix.prototype.addToUI = function(ul) {
-    contactUtils.appendListToUL(this._defects, ul, 'prefix');
+    contactUtils.appendListToUL(this._defects, ul, 'missingPrefix');
 };
 cMissingPrefix.prototype._hasDefect = function(contact) {
     return contact.hasMissingPrefix();
@@ -252,12 +252,16 @@ cFunnyCharacters.prototype.correctDefect = function(key) {
     this._change(contact);
     contact.save(function() {
         log("funny character successfully corrected for id :" + key,
-                ids.TEXTAREA_MISSINGPREFIX);
+                ids.TEXTAREA_FUNNYCHARS);
     }, function() {
         log("error while saving funny character correction for id " + key,
-                ids.TEXTAREA_MISSINGPREFIX);
+                ids.TEXTAREA_FUNNYCHARS);
     });
     // remove from _defectlist
+    var fcListIndex = this._defects.indexOf(contact);
+    if (fcListIndex != -1) {
+        this._defects.splice(fcListIndex, 1);
+    }
 };
 // -------------------------------------------------------
 /**

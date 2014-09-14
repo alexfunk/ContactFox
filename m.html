@@ -50,10 +50,10 @@
 				</a> 
 				<a href="#" data-role="button" data-nav="nav.pFunnyCharacters">
 					<span class="i18n" data-i18n="nav.pFunnyCharacters"></span>
-					<span id="NUMFUNNYCHAR">0</span>
+					<span id="NUMFUNNYCHARS">0</span>
 				</a> 
-				<a href="#" data-role="button" data-nav="nav.pMissingPlus">
-					<span class="i18n" data-i18n="nav.pMissingPlus"></span>
+				<a href="#" data-role="button" data-nav="nav.pMissingPrefix">
+					<span class="i18n" data-i18n="nav.pMissingPrefix"></span>
 					<span id="NUMMISSINGPREFIX">0</span>
 				</a> 
 				<a href="#" data-role="button" data-nav="nav.pAbout">
@@ -67,6 +67,16 @@
 		</div>
 	</div>
 	<div data-role="page" id="pDuplicates" data-theme="b" data-scroll='true'>
+        <div data-role="panel" data-position="right" data-display="push" 
+            id="DUPLICATESPANEL">
+            <div id="DUPLICATESCONTENT" ></div>
+            <div>
+                <a href="#" data-role="button" id="BUTTONDUPLICATESCORRECT" 
+                    data-i18n="Duplicates.correct"></a>
+                <a href="#" data-role="button" id="BUTTONDUPLICATESCLOSE" 
+                    data-i18n="Duplicates.close"></a>
+            </div>
+        </div>
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="duplicates.title"></h1>
 			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
@@ -81,9 +91,20 @@
 			<div id="CONTACTLIST" ></div>
 		</div>
 	</div>
+    <div data-role="page" id="pChangeContact" data-theme="b">
+        <div data-role="header">
+            <h1 class="i18n" data-i18n="changecontact.title"></h1>
+            <a href="#pDuplicates" class="i18n" data-role="button" 
+                data-icon="back" data-nav="nav.pDuplicates" 
+                data-i18n="nav.pDuplicates"></a>
+        </div>
+        <div data-role="content" data-theme="b">
+            <div id="CONTACTCHANGE"></div>
+        </div>
+    </div>	
 	<div data-role="page" id="pFunnyCharacters" data-theme="b">
 		<div data-role="header">
-			<h1 class="i18n" data-i18n="funchar.title"></h1>
+			<h1 class="i18n" data-i18n="funnychars.title"></h1>
 			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
@@ -91,32 +112,32 @@
             id="FUNNYCHARSPANEL">
             <div id="FUNNYCHARSCONTENT" ></div>
             <div>
-                <a href="#" data-role="button" id="BUTTONFUNCHAR" 
-                    data-i18n="restorebackup.restore"></a>
-                <a href="#" data-role="button" id="BUTTONFUNCHARCLOSED" 
-                    data-i18n="restorebackup.close"></a>
+                <a href="#" data-role="button" id="BUTTONFUNNYCHARS" 
+                    data-i18n="funnychars.correct"></a>
+                <a href="#" data-role="button" id="BUTTONFUNNYCHARSCLOSED" 
+                    data-i18n="funnychars.close"></a>
             </div>
         </div>
 		<div data-role="content" data-theme="b">
 			<div class="i18n" data-i18n="funnycharacters.log"></div>
-			<textarea id="TEXTAREA_FUNNYCHARACTERS" cols="40" rows="3" 
+			<textarea id="TEXTAREA_FUNNYCHARS" cols="40" rows="3" 
 			name="textarea-funnycharacters" class="ui-disabled"></textarea>
-			<div id="FUNCHARLIST" ></div>
+			<div id="FUNNYCHARSLIST" ></div>
 		</div>
 	</div>
-	<div data-role="page" id="pMissingPlus" data-theme="b">
+	<div data-role="page" id="pMissingPrefix" data-theme="b">
 		<div data-role="panel" data-position="right" data-display="push" 
 			id="MISSINGPREFIXPANEL">
 			<div id="MISSINGPREFIXCONTENT" ></div>
 			<div>
 				<a href="#" data-role="button" id="BUTTONMISSINGPREFIXCORRECT" 
-					data-i18n="missingplus.correct"></a>
+					data-i18n="MissingPrefix.correct"></a>
 				<a href="#" data-role="button" id="BUTTONMISSINGPREFIXCLOSE" 
-					data-i18n="missingplus.close"></a>
+					data-i18n="MissingPrefix.close"></a>
 			</div>
 		</div>
 		<div data-role="header">
-			<h1 class="i18n" data-i18n="missingplus.title"></h1>
+			<h1 class="i18n" data-i18n="MissingPrefix.title"></h1>
 			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
 				data-nav="nav.home" data-i18n="nav.home"></a>
 		</div>
@@ -125,11 +146,11 @@
 			<textarea id="TEXTAREA_MISSINGPREFIX" cols="40" rows="3" 
 			name="textarea-missingprefix" class="ui-disabled"></textarea>
 			<a class="i18n" data-role="button" data-icon="gear" 
-				data-i18n="missingplus.correctall"></a>
+				data-i18n="MissingPrefix.correctall"></a>
 			<div class="ui-grid-b">
 				<div class="ui-block-b">
 					<label for="INPUTPREFIX" class="i18n" 
-						data-i18n="missingplus.selectprefix"></label>
+						data-i18n="MissingPrefix.selectprefix"></label>
 				</div>
 				<div class="ui-block-b">
 					<input type="tel" id="INPUTPREFIX" value="+49" ></input>
@@ -151,17 +172,7 @@
 			<div id="MISSINGPREFIXLIST" ></div>
 		</div>
 	</div>
-	<div data-role="page" id="pChangeContact" data-theme="b">
-		<div data-role="header">
-			<h1 class="i18n" data-i18n="changecontact.title"></h1>
-			<a href="#pDuplicates" class="i18n" data-role="button" 
-				data-icon="back" data-nav="nav.pDuplicates" 
-				data-i18n="nav.pDuplicates"></a>
-		</div>
-		<div data-role="content" data-theme="b">
-			<div id="CONTACTCHANGE"></div>
-		</div>
-	</div>
+
 	<div data-role="page" id="pAbout" data-theme="b">
 		<div data-role="header">
 			<h1 class="i18n" data-i18n="about.title"></h1>

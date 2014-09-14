@@ -14,7 +14,7 @@
         "pDuplicates": "Duplicates",
         "pDebug": "Debug",
         "pFunnyCharacters": "Funny Characters",
-        "pMissingPlus": "Missing +XX Prefix",
+        "pMissingPrefix": "Missing +XX Prefix",
         "pAbout": "about ContactFox...",
         "bExit": "Close"
     },
@@ -22,15 +22,17 @@
         "title": "Duplicates",
         "mergeall": "Merge All"
     },
-    "missingplus": {
+    "MissingPrefix": {
         "title": "Missing +XX Prefix",
         "close": "Close",
         "correct": "Correct",
         "selectprefix": "Select Prefix",
         "correctall": "Correct All"
     },
-    "funchars": {
-        "title": "Funny Characters"
+    "funnychars": {
+        "title": "Funny Characters",
+        "close": "Close",
+        "correct": "Correct"
     },
 
     "changecontact": {

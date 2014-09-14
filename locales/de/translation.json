@@ -14,7 +14,7 @@
         "pDuplicates": "Doppelte",
         "pDebug": "Debug",
         "pFunnyCharacters": "Seltsame Zeichen",
-        "pMissingPlus": "Fehlende +XX Vorwahl",
+        "pMissingPrefix": "Fehlende +XX Vorwahl",
         "pAbout": "Über ContactFox...",
         "bExit": "Beenden"
     },
@@ -22,15 +22,17 @@
         "title": "Doppelte",
         "mergeall": "Alle Zusammenführen"
     },
-    "missingplus": {
+    "MissingPrefix": {
         "title": "Fehlende +XX Vorwahl",
         "close": "Schließen",
         "correct": "Korrigieren",
         "selectprefix": "Vorwahl Wählen",
         "correctall": "Alle Korrigieren"
     },
-    "funchars": {
-        "title": "Undefinierbare Zeichen"
+    "funnychars": {
+        "title": "Undefinierbare Zeichen",
+        "close": "Schließen",
+        "correct": "Korrigieren"
     },
     "changecontact": {
         "title": "Kontakt Ändern"

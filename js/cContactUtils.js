@@ -2,65 +2,6 @@ cContactUtils = function() {};
 
 cContactUtils.prototype = {
     /**
-     * insert all members in a unify list to an ul jquery result this is done in
-     * order of the length of contacts to be unified
-     */
-    appendUnifyListToUL: function(list, ul) {
-        try {
-            $.each(list, function(i, e) {
-                try {
-                    if (e.length > 1) {
-                        var entry = e[0];
-                        var html = '<li id="' +
-                            entry.key() +
-                            '"><a>' +
-                            entry.displayName() +
-                            '<span class="ui-li-count">' + e.length + '</span>' +
-                            '</a></li>';
-                        var li = ul.find('li');
-                        var inserted = false;
-                        $.each(li, function(i1, e1) {
-                            var list = $(e1).data("list");
-                            if (list.length < e.length) {
-                                $(e1).before(html);
-                                $('#' + entry.key()).data('list', e);
-                                inserted = true;
-                                return false;
-                            }
-                        });
-                        if (!inserted) {
-                            ul.append(html);
-                            ul.children().last().data("list", e);
-                        }
-                    }
-                } catch (ex) {
-                    log(ex);
-                }
-            });
-        } catch (ex) {
-            log(ex); 
-        }
-    },
-    appendListToUL: function(list, ul, id) {
-        try {
-            $.each(list, function(i, e) {
-                try {
-                    var html = '<li id="' + id +
-                        e.key() +
-                        '"><a>' +
-                        e.displayName() +
-                        '</a></li>';
-                    ul.append(html);
-
-                } catch (ex) {
-                    log(ex);
-                }
-            });
-        } catch (ex) {
-            log(ex);
-        }
-    },
-    /**
      * create a preview contact that would be created if this list of duplicate
      * contacts are merged
      * 
@@ -68,7 +9,7 @@ cContactUtils.prototype = {
      *                of duplicate contacts
      */
     previewUnifiedContactList: function(list) {
-        var primary = list[0]; // TODO Clone!!
+        var primary = list[0].clone(); 
         for (var i = 1; i < list.length; i++) {
             var secondary = list[i];
             primary.unify(secondary);

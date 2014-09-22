@@ -190,6 +190,16 @@ exports.cContacts = {
         test.equal(c[0].key(), "Doe_John");
         test.done();
     },
+    'clone' : function(test) {
+        test.expect(2);
+        var cclone = c[0].clone();
+        cclone.c.givenName[0] = "Jack";
+        // the clone is a copy but reflects tha change
+        test.equal(cclone.key(), "Doe_Jack");
+        // the original is unchanged
+        test.equal(c[0].key(), "Doe_John");
+        test.done();
+    },
     'displayName' : function(test) {
         test.expect(4);
         test.equal(c[0].displayName(), "John Doe");
@@ -387,31 +397,32 @@ exports.cContacts = {
         test.equal($('#CONTACTCHANGE div').length, 4);
         test.done();
     },
-    'appendUnifyListToUL' : function(test) {
-        test.expect(11);
-        var list = [];
-        for ( var i = 0; i < 4; i++) {
-            list = c[i].addToUnifyList(list);
-        }
-        list = c[2].addToUnifyList(list);
-
-        test.equal($(document.body).length, 1);
-        $(document.body).append('<ul></ul>');
-        var ul = $('ul');
-        test.equal(ul.length, 1);
-        contactUtils.appendUnifyListToUL(list, ul);
-        // how many list items (li) how many contacts to merge
-        test.equal($('ul li').length, 2);
-        $('ul li').each(function(index) {
-            var id = $(this).attr('id');
-            var data = $(this).data('list');
-            test.equal(typeof id === 'undefined', false);
-            test.equal(typeof data === 'undefined', false);
-            test.equal(data === null, false, "data may not be null");
-            test.equal(data === '', false, "data may not be empty string");
-        });
-        test.done();
-    },
+    // TODO: move this in to the test of the dupplicates list
+    // 'appendUnifyListToUL' : function(test) {
+    // test.expect(11);
+    // var list = [];
+    // for ( var i = 0; i < 4; i++) {
+    // list = c[i].addToUnifyList(list);
+    // }
+    // list = c[2].addToUnifyList(list);
+    //
+    // test.equal($(document.body).length, 1);
+    // $(document.body).append('<ul></ul>');
+    // var ul = $('ul');
+    // test.equal(ul.length, 1);
+    // contactUtils.appendUnifyListToUL(list, ul);
+    // // how many list items (li) how many contacts to merge
+    // test.equal($('ul li').length, 2);
+    // $('ul li').each(function(index) {
+    // var id = $(this).attr('id');
+    // var data = $(this).data('list');
+    // test.equal(typeof id === 'undefined', false);
+    // test.equal(typeof data === 'undefined', false);
+    // test.equal(data === null, false, "data may not be null");
+    // test.equal(data === '', false, "data may not be empty string");
+    // });
+    // test.done();
+    // },
     'appendBackupListToUL' : function(test) {
         var backup = new cContactBackup();
         // one entry was backed up before

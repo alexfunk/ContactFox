@@ -17,9 +17,9 @@ cContact = function(c) {
 };
 
 // TODO: is this a bug? is everything still logged to the debug window?
-function log(e) {
-    console.log(e);
-}
+// function log(e) {
+// console.log(e);
+// }
 
 /**
  * a private static variable that manages a backup of all contacts that are
@@ -38,6 +38,15 @@ cContact.prototype = {
      */
     getBackup : function() {
         return cContact._backup;
+    },
+    /**
+     * create a deep copy of an contact object that can be modified without
+     * changing the original
+     * 
+     * @returns {cContact}
+     */
+    clone : function() {
+        return new cContact(JSON.parse(JSON.stringify(this.c)));
     },
     /**
      * find a unique key of this contact object that can be used as an id in the
@@ -363,8 +372,13 @@ cContact.prototype = {
      * more than one entries it is added with numbers at the label. Labels for
      * each entry can be found in each locale catalogue under the keyword
      * 'contact'. TODO: Maybe should be moved to another place, so that model
-     * and ui is not intermixed param div: the div to add the string
-     * representation
+     * and ui is not intermixed
+     * 
+     * @param div
+     *                the html element to add the string representation to
+     * @param filter
+     *                function that takes a member name and returns true if it
+     *                should be displayed
      */
     appendAsString : function(div, filter) {
         var t = this;

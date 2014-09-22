@@ -61,6 +61,32 @@ cDefectList.prototype = {
         return false;
     },
     /**
+     * appends an html list representation of this list to the given jquery
+     * element
+     * 
+     * @param ul
+     *                the point to insert the html
+     * @param id
+     *                the prefix of the ids in the html list
+     */
+    appendToUL : function(ul, id) {
+        try {
+            $.each(this._defects, function(i, e) {
+                try {
+                    var html = '<li id="' + id + e.key() + '"><a>'
+                            + e.displayName() + '</a></li>';
+                    ul.append(html);
+
+                } catch (ex) {
+                    log(ex);
+                }
+            });
+        } catch (ex) {
+            log(ex);
+        }
+    },
+
+    /**
      * if the given contact contains a defect add it to the list
      * 
      * @param contact
@@ -70,6 +96,14 @@ cDefectList.prototype = {
             this._defects.push(contact);
         }
     },
+    /**
+     * this corrects all mistaces in the defect list. This can be used from the
+     * "correct all"-Buttons on the defect pages. If a lot of contacts are to be
+     * corrected this would block the ui for some times
+     * 
+     * @param params
+     * @returns the corrected defect list
+     */
     correctAll : function(params) {
         console.log("correctAll");
         var t = this;
@@ -78,6 +112,12 @@ cDefectList.prototype = {
         });
         return _defects;
     },
+    /**
+     * trigger the "correct all defects" function with a worker TODO: This does
+     * not work yet
+     * 
+     * @param params
+     */
     correctAllWithWorker : function(params) {
         var worker = new Worker('js/backgroundWorker.js');
         worker.postMessage({
@@ -168,7 +208,7 @@ cMissingPrefix = function() {
 cMissingPrefix.inheritsFrom(cDefectList);
 
 cMissingPrefix.prototype.addToUI = function(ul) {
-    contactUtils.appendListToUL(this._defects, ul, 'missingPrefix');
+    this.appendToUL(ul, 'missingPrefix');
 };
 cMissingPrefix.prototype._hasDefect = function(contact) {
     return contact.hasMissingPrefix();
@@ -176,6 +216,10 @@ cMissingPrefix.prototype._hasDefect = function(contact) {
 cMissingPrefix.prototype.correctDefect = function(key, prefix) {
     var contact = this.getById(key);
     contact.insertPrefix(prefix);
+    var mpListIndex = this._defects.indexOf(contact);
+    if (mpListIndex != -1) {
+        this._defects.splice(mpListIndex, 1);
+    }
     this._change(contact);
     contact.save(function() {
         log("prefix successfully saved for id :" + key,
@@ -184,10 +228,6 @@ cMissingPrefix.prototype.correctDefect = function(key, prefix) {
         log("error while saving prefix for id " + key,
                 ids.TEXTAREA_MISSINGPREFIX);
     });
-    var mpListIndex = this._defects.indexOf(contact);
-    if (mpListIndex != -1) {
-        this._defects.splice(mpListIndex, 1);
-    }
 };
 
 // -------------------------------------------------------
@@ -198,7 +238,7 @@ cFunnyCharacters = function() {
 cFunnyCharacters.inheritsFrom(cDefectList);
 
 cFunnyCharacters.prototype.addToUI = function(ul) {
-    contactUtils.appendListToUL(this._defects, ul, 'funnyChars');
+    this.appendToUL(ul, 'funnyChars');
 };
 // convert öäüÖÄÜß
 // \u00C3\u00B6\u00C3\u20AC\u00C3\u0152\u00C3\u0096\u00C3\u0084\u00C3\u009C\u00C3\u009F
@@ -249,6 +289,11 @@ cFunnyCharacters.prototype.correctDefect = function(key) {
     };
     contact = this.getById(key);
     contact.filterAllStrings(correctFunnyCharactersFilterFunction);
+    // remove from _defectlist
+    var fcListIndex = this._defects.indexOf(contact);
+    if (fcListIndex != -1) {
+        this._defects.splice(fcListIndex, 1);
+    }
     this._change(contact);
     contact.save(function() {
         log("funny character successfully corrected for id :" + key,
@@ -257,11 +302,6 @@ cFunnyCharacters.prototype.correctDefect = function(key) {
         log("error while saving funny character correction for id " + key,
                 ids.TEXTAREA_FUNNYCHARS);
     });
-    // remove from _defectlist
-    var fcListIndex = this._defects.indexOf(contact);
-    if (fcListIndex != -1) {
-        this._defects.splice(fcListIndex, 1);
-    }
 };
 // -------------------------------------------------------
 /**
@@ -276,8 +316,46 @@ cDuplicates = function() {
 };
 cDuplicates.inheritsFrom(cDefectList);
 
+/**
+ * Append the list to the given element in the dom the duplicates list is
+ * handled different: There are a number of duplicates in each list entry. The
+ * insertion is done in order of the length of contacts to be unified
+ * 
+ * @param ul
+ */
 cDuplicates.prototype.addToUI = function(ul) {
-    contactUtils.appendUnifyListToUL(this._defects, ul);
+    try {
+        $.each(this._defects, function(i, e) {
+            try {
+                if (e.length > 1) {
+                    var entry = e[0];
+                    var html = '<li id="' + entry.key() + '"><a>'
+                            + entry.displayName()
+                            + '<span class="ui-li-count">' + e.length
+                            + '</span>' + '</a></li>';
+                    var li = ul.find('li');
+                    var inserted = false;
+                    $.each(li, function(i1, e1) {
+                        var list = $(e1).data("list");
+                        if (list.length < e.length) {
+                            $(e1).before(html);
+                            $('#' + entry.key()).data('list', e);
+                            inserted = true;
+                            return false;
+                        }
+                    });
+                    if (!inserted) {
+                        ul.append(html);
+                        ul.children().last().data("list", e);
+                    }
+                }
+            } catch (ex) {
+                log(ex);
+            }
+        });
+    } catch (ex) {
+        log(ex);
+    }
 };
 /**
  * @Override the duplicates defect is handled different
@@ -329,6 +407,8 @@ cDuplicates.prototype.correctDefect = function(key) {
                     var secondary = e[j];
                     entry.unify(secondary);
                 }
+                // TODO when to send the change event
+                // compare with other correct defects
                 t._change(entry);
                 entry.save(function() {
                     log("merge successfull for id :" + key,

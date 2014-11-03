@@ -61,16 +61,20 @@ var ids = {
 
 };
 
+var numMessages = 0;
 // error messages are not only written to the console, but to an text-area on
 // the debug page so that we can trace problems even on an actual device.
 // TODO: Add a Send Debug as email to developer function
 function log(e, target) {
+    window.navigator.vibrate(100);
     console.log(e);
     // $('#' + ids.TEXTAREA).append(e + "\n");
     $('#' + ids.TEXTAREA).prepend(e + "\n");
     if (contactUtils.paramExists(target)) {
         $('#' + target).prepend(e + "\n");
     }
+    $('#' + ids.NUMMESSAGES).text(" " + numMessages++);
+
 }
 
 // all contacts are kept in this object during application runtime
@@ -342,7 +346,7 @@ function replaceDuplicatesListHTML() {
     $(cls).append('<ul data-filter="true"></ul>');
     contactList.appendUnifyListToUL($(cls + ' ul'));
     $(cls + ' ul li').click(function(event) {
-        mergeContactSelected(event);
+        showMergeContactSelected(event);
     });
     $(cls + " ul").listview()
         .listview('refresh');
@@ -433,9 +437,12 @@ function mergeAll() {
 /**
  * This is called when an entry in the duplicates list is selected. A submenu is
  * opened showing the potential result of the merge. Buttons are created to
- * apply or cancel the merge
+ * apply or cancel the merge This is different from the other defects, that are
+ * implemented in "showContactSelected"
+ * 
+ * @event contains the id of the selected contact
  */
-function mergeContactSelected(event) {
+function showMergeContactSelected(event) {
     try {
         var li = $(event.target).parent();
         var data = li.data("list");
@@ -451,6 +458,10 @@ function mergeContactSelected(event) {
             n.append('<div><span data-i18n="contact.name"></span><span>: </span><span class="contactcontent" >' + cname + '</span></div>');
             contact.appendAsString(n);
             n.append('<div><span  class="contactaction" data-i18n="contact.delete"></span><span>: </span><span class="contactcontent" >' + (data.length - 1) + ' </span> <span data-i18n="contact.copies"></span></div>');
+            // show the ids of all contact objects for debugging
+            // $.each(data, function(i, c) {n.append('<div>' + c.c.id +
+            // '</div>');});
+            
             $('.contactcontent').css('font-weight', 'bold');
             $('.contactaction').css('color', 'blue');
             $('.contactaction').css('font-style', 'italic');
@@ -556,14 +567,19 @@ function showContactSelected(event, listname) {
         content.data("contactid", id);
         // show an html representation of the contact in the panel
         // TODO: this should be the corrected version
-        var c = new cContact(c);
         log("listname.indexOf('BACKUP'): " + listname + " " + listname.indexOf("BACKUP"));
         if (listname.indexOf("BACKUP") != -1) {
             c = cContact._backup.getBackupContactById(id);
+            c.appendAsString(content);
         } else {
-            c = contactList.getById(id);
+            // TODO only if this is the prefix list
+            var params = $("#" + ids.INPUTPREFIX).val();
+            contactList.getDefectList(listname).appendPreviewToContainer(content, id, params);
+            $('.contactcontent').css('font-weight', 'bold');
+            $('.contactcontentadded').css('color', 'green');
+            $('.contactcontentremoved').css('color', 'red');
+            $('.contactaction').css('font-style', 'italic');
         }
-        c.appendAsString(content);
         panel.i18n();
         panel.trigger("updatelayout");
         panel.panel("open");

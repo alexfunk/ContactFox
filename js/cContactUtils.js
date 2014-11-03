@@ -148,7 +148,6 @@ cContactUtils.prototype = {
         }
         return true;
     }
-    // / by Garf
 };
 
 contactUtils = new cContactUtils();

@@ -17,9 +17,9 @@ cContact = function(c) {
 };
 
 // TODO: is this a bug? is everything still logged to the debug window?
-// function log(e) {
-// console.log(e);
-// }
+function log(e) {
+    console.log(e);
+}
 
 /**
  * a private static variable that manages a backup of all contacts that are
@@ -377,48 +377,108 @@ cContact.prototype = {
      * @param div
      *                the html element to add the string representation to
      * @param filter
-     *                function that takes a member name and returns true if it
-     *                should be displayed
+     *                (optional) function that takes a member name and returns
+     *                true if it should be displayed
      */
     appendAsString : function(div, filter) {
         var t = this;
         // if the caller sets no filter, a default is used
         if (filter === undefined) {
             filter = function(member) {
-                return [ 'name', 'id', 'updated', 'published' ].indexOf(member) == -1;
+                return [ 'name', 'updated', 'published', 'id' ].indexOf(member) == -1;
             };
         }
-        $
-                .each(
-                        this.members,
-                        function(i, e) {
-                            if (filter(i)) {
-                                // i is the key of the entry like addr or phone
-                                var stringArray = t.contactMemberToString(i);
-                                if (stringArray.length == 1) {
-                                    div
-                                            .append('<div><span data-i18n="contact.'
-                                                    + i
-                                                    + '"></span><span> : </span><span class="contactcontent" >'
-                                                    + stringArray[0]
-                                                    + '</span></div>');
-                                } else if (stringArray.length > 1) {
-                                    $
-                                            .each(
-                                                    stringArray,
-                                                    function(j, string) {
-                                                        div
-                                                                .append('<div><span data-i18n="contact.'
-                                                                        + i
-                                                                        + '"></span><span> '
-                                                                        + (j + 1)
-                                                                        + ': </span><span class="contactcontent" >'
-                                                                        + string
-                                                                        + '</span></div>');
-                                                    });
-                                }
-                            }
-                        });
+        var appendItem = function(div, member, item, index) {
+            var html = '<div><span data-i18n="contact.' + member + '"></span>';
+            if (index === undefined) {
+                html = html + '<span> : </span>';
+            } else {
+                html = html + '<span> ' + (index + 1) + ': </span>';
+            }
+            html = html + '<span class="contactcontent" >' + item
+                    + '</span></div>';
+            div.append(html);
+        };
+        $.each(this.members, function(i, e) {
+            if (filter(i)) {
+                // i is the key of the entry like addr or phone
+                var stringArray = t.contactMemberToString(i);
+                if (stringArray.length == 1) {
+                    appendItem(div, i, stringArray[0]);
+                } else if (stringArray.length > 1) {
+                    $.each(stringArray, function(j, string) {
+                        appendItem(div, i, string, j);
+                    });
+                }
+            }
+        });
+    },
+    /**
+     * adds a HTML string representation of the diff of this contact and a given
+     * contact to a given div-element in the dom each non-empty member is added
+     * with a label. If one member has more than one entries it is added with
+     * numbers at the label. Labels for each entry can be found in each locale
+     * catalogue under the keyword 'contact'. TODO: Maybe should be moved to
+     * another place, so that model and ui is not intermixed
+     * 
+     * @param div
+     *                the html element to add the string representation to
+     * @param filter
+     *                (optional) function that takes a member name and returns
+     *                true if it should be displayed
+     */
+    appendDiffAsString : function(div, other, filter) {
+        var t = this;
+        // if the caller sets no filter, a default is used
+        if (filter === undefined) {
+            filter = function(member) {
+                return [ 'name', 'updated', 'published', 'id' ].indexOf(member) == -1;
+            };
+        }
+        var appendItem = function(div, member, item, otheritem, index) {
+            var displayText;
+            var style;
+            if (item == otheritem) {
+                displayText = item;
+                style = "contactcontent";
+            } else if (item === undefined) {
+                displayText = otheritem;
+                style = "contactcontentremoved";
+            } else if (otheritem === undefined) {
+                displayText = item;
+                style = "contactcontentadded";
+            } else {
+                // contact changed
+                displayText = 'changed: <span class="contactcontentadded">'
+                        + item
+                        + '</span> from: <span class="contactcontentremoved">'
+                        + otheritem + "</span>";
+                style = "contactcontent";
+            }
+            var html = '<div><span data-i18n="contact.' + member + '"></span>';
+            if (index === undefined) {
+                html = html + '<span> : </span>';
+            } else {
+                html = html + '<span> ' + (index + 1) + ': </span>';
+            }
+            html = html + '<span class="' + style + '" >' + displayText
+                    + '</span></div>';
+            div.append(html);
+        };
+        $.each(this.members, function(i, e) {
+            if (filter(i)) {
+                // i is the key of the entry like addr or phone
+                var stringArray = t.contactMemberToString(i);
+                var otherStringArray = other.contactMemberToString(i);
+                if (stringArray.length == 1) {
+                    appendItem(div, i, stringArray[0], otherStringArray[0]);
+                } else if (stringArray.length > 1) {
+                    $.each(stringArray, function(j, string) {
+                        appendItem(div, i, string, otherStringArray[i], j);
+                    });
+                }
+            }
+        });
     },
     /**
      * checks if this contact contains an address
@@ -525,11 +585,25 @@ cContact.prototype = {
      * address book of the phone.
      */
     save : function(onSuccess, onError) {
-        // in b2g 1.3 a contact must implement an special interface
-        // this should work for b2g 1.2 and b2g 1.3
-        var contact = new mozContact(this.c);
-        if ("init" in contact)
-            contact.init(this.c);
+        var contact;
+        var getClassOf = Function.prototype.call
+                .bind(Object.prototype.toString);
+
+        // if this.c is already a mozContact, transfer it to the
+        // save function because the id is alread set
+        // transfering the id member to a new record does not work
+        if (getClassOf(this.c) === "[object mozContact]") {
+            log("existing contact");
+            contact = this.c;
+        } else {
+            // if it is not a mozContact we convert it to one
+            // in b2g 1.3 a contact must implement the mozContact interface
+            // in b2g 1.2 it must be init by the int function
+            // this should work for b2g 1.2 and b2g 1.3
+            contact = new mozContact(this.c);
+            if ("init" in contact)
+                contact.init(this.c);
+        }
 
         var saveResult;
         try {
@@ -548,7 +622,7 @@ cContact.prototype = {
      * removes this contact from the phones address book
      */
     remove : function() {
-        var name = this.displayName();
+        var name = this.displayName() + "(" + this.key() + ")";
         // before a contact is removed, it is backed up in local storage,
         // so it could be restored later on
         cContact._backup.backup(this);

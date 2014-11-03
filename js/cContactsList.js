@@ -87,6 +87,20 @@ cDefectList.prototype = {
     },
 
     /**
+     * append a preview of a contact that would be corrected to a given
+     * container.
+     * 
+     * @param containter
+     *                the jquery element to append to
+     * @param id
+     *                the id to find the contact
+     */
+    appendPreviewToContainer : function(container, id) {
+        var contact = this.getById(id);
+        contact.appendAsString(container);
+    },
+
+    /**
      * if the given contact contains a defect add it to the list
      * 
      * @param contact
@@ -229,6 +243,23 @@ cMissingPrefix.prototype.correctDefect = function(key, prefix) {
                 ids.TEXTAREA_MISSINGPREFIX);
     });
 };
+/**
+ * append a preview of a contact that would be corrected to a given container.
+ * 
+ * @param containter
+ *                the jquery element to append to
+ * @param id
+ *                the id to find the contact
+ * @param params
+ *                params for the intended change
+ */
+cMissingPrefix.prototype.appendPreviewToContainer = function(container, id,
+        params) {
+    var contact = this.getById(id);
+    var contactCorrected = contact.clone();
+    contactCorrected.insertPrefix(params);
+    contactCorrected.appendDiffAsString(container, contact);
+};
 
 // -------------------------------------------------------
 
@@ -279,16 +310,16 @@ cFunnyCharacters.prototype._hasDefect = function(contact) {
     };
     return contact.checkAllStrings(checkStringForFunnyCharacters);
 };
+cFunnyCharacters.prototype.correctFunnyCharactersFilterFunction = function(s) {
+    $.each(cFunnyCharacters.patternToCorrect, function(key, value) {
+        s = s.replace(cFunnyCharacters.patternToCorrect[key],
+                cFunnyCharacters.patternCorrected[key]);
+    });
+    return s;
+};
 cFunnyCharacters.prototype.correctDefect = function(key) {
-    var correctFunnyCharactersFilterFunction = function(s) {
-        $.each(cFunnyCharacters.patternToCorrect, function(key, value) {
-            s = s.replace(cFunnyCharacters.patternToCorrect[key],
-                    cFunnyCharacters.patternCorrected[key]);
-        });
-        return s;
-    };
     contact = this.getById(key);
-    contact.filterAllStrings(correctFunnyCharactersFilterFunction);
+    contact.filterAllStrings(this.correctFunnyCharactersFilterFunction);
     // remove from _defectlist
     var fcListIndex = this._defects.indexOf(contact);
     if (fcListIndex != -1) {
@@ -303,6 +334,25 @@ cFunnyCharacters.prototype.correctDefect = function(key) {
                 ids.TEXTAREA_FUNNYCHARS);
     });
 };
+/**
+ * append a preview of a contact that would be corrected to a given container.
+ * 
+ * @param containter
+ *                the jquery element to append to
+ * @param id
+ *                the id to find the contact
+ * @param params
+ *                params for the intended change
+ */
+cFunnyCharacters.prototype.appendPreviewToContainer = function(container, id,
+        params) {
+    var contact = this.getById(id);
+    var contactCorrected = contact.clone();
+    contactCorrected
+            .filterAllStrings(this.correctFunnyCharactersFilterFunction);
+    contactCorrected.appendDiffAsString(container, contact);
+};
+
 // -------------------------------------------------------
 /**
  * The defect lists for duplicates are a bit different. It is an array of arrays
@@ -421,7 +471,7 @@ cDuplicates.prototype.correctDefect = function(key) {
                     var removeEntry = e[k];
                     // Notify other list about removed entry
                     t._remove(removeEntry);
-                    e[k].remove();
+                    removeEntry.remove();
                 }
                 t._defects.splice(i, 1);
                 // break jquery each loop:
@@ -462,9 +512,9 @@ cContactList = function() {
 cContactList.prototype = {
     _list : [],
     _defects : {
-        duplicates : new cDuplicates(),
-        missingPrefix : new cMissingPrefix(),
-        funnyCharacters : new cFunnyCharacters()
+        DUPLICATES : new cDuplicates(),
+        MISSINGPREFIX : new cMissingPrefix(),
+        FUNNYCHARS : new cFunnyCharacters()
     },
     _listeners : [],
     add : function(contact) {
@@ -507,44 +557,47 @@ cContactList.prototype = {
         });
         return result;
     },
+    getDefectList : function(key) {
+        return this._defects[key];
+    },
     // ------------ duplicates -------------------------
     appendUnifyListToUL : function(ul) {
-        this._defects.duplicates.addToUI(ul);
+        this._defects.DUPLICATES.addToUI(ul);
     },
     hasDuplicates : function() {
-        return this._defects.duplicates.hasDefects();
+        return this._defects.DUPLICATES.hasDefects();
     },
     numDuplicates : function() {
-        return this._defects.duplicates.numDefects();
+        return this._defects.DUPLICATES.numDefects();
     },
     correctDuplicates : function(key) {
-        this._defects.duplicates.correctDefect(key);
+        this._defects.DUPLICATES.correctDefect(key);
     },
     // -------- Missing Prefix -----------------------
     appendMissingPrefixListToUL : function(ul) {
-        this._defects.missingPrefix.addToUI(ul);
+        this._defects.MISSINGPREFIX.addToUI(ul);
     },
     hasMissingPrefix : function() {
-        return this._defects.missingPrefix.hasDefects();
+        return this._defects.MISSINGPREFIX.hasDefects();
     },
     numMissingPrefix : function() {
-        return this._defects.missingPrefix.numDefects();
+        return this._defects.MISSINGPREFIX.numDefects();
     },
     correctPrefix : function(key, prefix) {
-        this._defects.missingPrefix.correctDefect(key, prefix);
+        this._defects.MISSINGPREFIX.correctDefect(key, prefix);
     },
     // --------- Funny Characters --------------------
     appendFunnyCharacterListToUL : function(ul) {
-        this._defects.funnyCharacters.addToUI(ul);
+        this._defects.FUNNYCHARS.addToUI(ul);
     },
     hasFunnyCharacters : function() {
-        return this._defects.funnyCharacters.hasDefects();
+        return this._defects.FUNNYCHARS.hasDefects();
     },
     numFunnyCharacters : function() {
-        return this._defects.funnyCharacters.numDefects();
+        return this._defects.FUNNYCHARS.numDefects();
     },
     correctFunnyCharacter : function(key) {
-        this._defects.funnyCharacters.correctDefect(key);
+        this._defects.FUNNYCHARS.correctDefect(key);
     },
     // -------------------------------------------------
     addChangeListener : function(f) {

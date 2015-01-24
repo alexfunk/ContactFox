@@ -27,12 +27,15 @@
         "close": "Schließen",
         "correct": "Korrigieren",
         "selectprefix": "Vorwahl Wählen",
-        "correctall": "Alle Korrigieren"
+        "correctall": "Alle Korrigieren",
+        "log" : "Meldungen"
     },
     "funnychars": {
         "title": "Undefinierbare Zeichen",
         "close": "Schließen",
-        "correct": "Korrigieren"
+        "correct": "Korrigieren",
+        "correctall": "Alle Korrigieren",
+        "log" : "Meldungen"
     },
     "changecontact": {
         "title": "Kontakt Ändern"
@@ -66,7 +69,9 @@
         "key": "Öffentlicher Schlüssel",
         "delete": "Löschen",
         "copies": "Kopien",
-        "keep": "Erhalten"
+        "keep": "Erhalten",
+        "changed" : "geändert",
+        "from" : "von"
     },
     "about": {
         "title": "Über ContactFox",

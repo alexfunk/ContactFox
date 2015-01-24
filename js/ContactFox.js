@@ -138,8 +138,11 @@ function initApp() {
         $('[data-i18n = "duplicates.mergeall"]').click(function(e) {
             mergeAll();
         });
-        $('[data-i18n = "missingplus.correctall"]').click(function(e) {
-            correctAll();
+        $('[data-i18n = "MissingPrefix.correctall"]').click(function(e) {
+            correctAllMissingPrefix();
+        });
+        $('[data-i18n = "funnycharacters.correctall"]').click(function(e) {
+            correctAllFunnyChars();
         });
     } catch (ex) {
         log(ex);
@@ -182,12 +185,10 @@ function initApp() {
     // local
     // storage so it is there on program start
     var cb = $('.checkbox-help');
-    log("setting checkbox-help to true");
     cb.prop('checked', true).checkboxradio("refresh");
     window.localStorage.setItem("ContactFox." + ids.CBHELPNOTAGAIN, true);
     cb.bind('change', function(e) {
         var wasChecked = $(this).prop('checked');
-        log("wasChecked " + wasChecked);
         window.localStorage.setItem("ContactFox." + ids.CBHELPNOTAGAIN, wasChecked);
     });
     // For debugging log all events that are bound to the checkbox and look if
@@ -204,7 +205,6 @@ function initApp() {
     // });
     $('#' + ids.SELECTPREFIX).bind('change', function(e) {
         var value = $('#' + ids.SELECTPREFIX).val();
-        log("selectedPrefix: " + value);
         $('#' + ids.INPUTPREFIX).val(value);
     });
     $('#' + ids.INPUTPREFIX).bind('change', function(e) {
@@ -219,7 +219,6 @@ function initApp() {
     // Attribute with the url to open. So they use this function, when clicked.
     $(".open-in-browser").click(function(e) {
         var url = $(this).data("url");
-        log("Url clicked: " + url);
         openLinkInBrowser(url);
     });
     $('[data-i18n = "debug.sendToSupport"]').click(function(e) {
@@ -315,7 +314,7 @@ function loadContacts() {
             allContacts.onerror = function() {
                 // TODO: better error handling and i18n
                 alert("Can not read your contacts. Did you give permissions?");
-                log("Something went terribly wrong! :(");
+                log("Can not read your contacts. Did you give permissions?");
             };
         };
     } catch (exception) {
@@ -413,7 +412,6 @@ function replaceBackupListHTML() {
  * hidden from the list view after that.
  */
 function merge(id) {
-    $('#' + id).css("display", "none");
     contactList.correctDuplicates(id);
 }
 
@@ -496,28 +494,31 @@ function showMergeContactSelected(event) {
 function correctPrefix(c, prefix) {
     log("correctPrefix " + c.key() + " " + prefix);
     contactList.correctPrefix(c.key(), prefix);
-    $('#prefix' + c.key()).hide();
 }
 
 /**
  * correct all contacts in the missing prefix list
  */
-function correctAll() {
+function correctAllMissingPrefix() {
     try {
         var prefix = $("#" + ids.INPUTPREFIX).val();
-        var mpls = '#' + ids.MISSINGPREFIXLIST;
-        $(mpls + ' ul li').each(function(i, e) {
-            if (!$(e).hasClass('ui-screen-hidden')) {
-                var id = $(e).attr("id");
-                id = id.substring("prefix".length);
-                c = contactList.getById(id);
-                correctPrefix(c, prefix);
-            }
-        });
+        contactList.getDefectList("MISSINGPREFIX").correctAll(prefix);
     } catch (ex) { 
         log(ex);
     }
 }
+
+/**
+ * correct all contacts in the funny character list
+ */
+function correctAllFunnyChars() {
+    try {
+        contactList.getDefectList("FUNNYCHARS").correctAll();
+    } catch (ex) { 
+        log(ex);
+    }
+}
+
 
 /**
  * This is called when an item in the missing prefix list is selected. it opens
@@ -554,7 +555,6 @@ function showContactSelected(event, listname) {
         // the id attribute of the li element always has the from
         // listname + contactid. so we extract the id of the contact like that:
         var id = li.attr("id").substring(listname.length);
-        log(id);
         listname = listname.toUpperCase();
         // get the panel and the content of the panel for the given listname:
         var panelname = ids[ listname + 'PANEL'];
@@ -567,7 +567,8 @@ function showContactSelected(event, listname) {
         content.data("contactid", id);
         // show an html representation of the contact in the panel
         // TODO: this should be the corrected version
-        log("listname.indexOf('BACKUP'): " + listname + " " + listname.indexOf("BACKUP"));
+        // log("listname.indexOf('BACKUP'): " + listname + " " +
+        // listname.indexOf("BACKUP"));
         if (listname.indexOf("BACKUP") != -1) {
             c = cContact._backup.getBackupContactById(id);
             c.appendAsString(content);
@@ -578,6 +579,7 @@ function showContactSelected(event, listname) {
             $('.contactcontent').css('font-weight', 'bold');
             $('.contactcontentadded').css('color', 'green');
             $('.contactcontentremoved').css('color', 'red');
+            $('.contactcontentremoved').css('text-decoration', 'line-through');
             $('.contactaction').css('font-style', 'italic');
         }
         panel.i18n();
@@ -675,7 +677,7 @@ $(document)
                     var id = content.data("contactid");
                     // get the contact for this id
                     var c = contactList.getById(id);
-                    log("correct clicked: " + id);
+                    // log("correct clicked: " + id);
                     panel.panel("close");
                     // and finally perform the requested operation
                     correctPrefix(c, prefix);
@@ -715,7 +717,7 @@ $(document)
                     var id = content.data("contactid");
                     // get the contact for this id
                     var c = contactList.getById(id);
-                    log("correct clicked: " + id);
+                    // log("correct clicked: " + id);
                     panel.panel("close");
                     // and finally perform the requested operation
                     contactList.correctDuplicates(id);
@@ -754,7 +756,7 @@ $(document)
                     var id = content.data("contactid");
                     // get the contact for this id
                    // var c = contactList.getById(id);
-                    log("cContact._backup.restoreContact(id) called: " + id);
+                    // log("cContact._backup.restoreContact(id) called: " + id);
                     panel.panel("close");
                     // and finally perform the requested operation
                     cContact._backup.restoreContact(id);
@@ -791,7 +793,7 @@ $(document)
                     var id = content.data("contactid");
                     // get the contact for this id
                    // var c = contactList.getById(id);
-                    log("cContact.correctFunnyCharacter(id): " + id);
+                    // log("cContact.correctFunnyCharacter(id): " + id);
                     panel.panel("close");
                     // and finally perform the requested operation
                     contactList.correctFunnyCharacter(id);
@@ -852,6 +854,4 @@ var activity = new MozActivity({
     activity.onerror = function() {
         log(this.error);
     };
-
-
 }

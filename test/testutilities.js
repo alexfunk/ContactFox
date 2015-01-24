@@ -32,9 +32,9 @@ MockLocalStorage.prototype = {
 };
 window.localStorage = new MockLocalStorage();
 
-function log(e) {
+log = function(e) {
     console.log(e);
-}
+};
 
 navigator = {
     mozContacts : {

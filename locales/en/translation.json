@@ -27,12 +27,15 @@
         "close": "Close",
         "correct": "Correct",
         "selectprefix": "Select Prefix",
-        "correctall": "Correct All"
+        "correctall": "Correct All",
+        "log" : "Messages"
     },
     "funnychars": {
         "title": "Funny Characters",
         "close": "Close",
-        "correct": "Correct"
+        "correct": "Correct",
+        "correctall": "Correct All",
+        "log" : "Messages"
     },
 
     "changecontact": {
@@ -67,7 +70,9 @@
         "key": "Public Key",
         "delete": "Delete",
         "copies": "Copies",
-        "keep": "Keep"
+        "keep": "Keep",
+        "changed" : "changed",
+        "from" : "from"
     },
     "about": {
         "title": "About ContacFox",

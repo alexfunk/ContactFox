@@ -1,3 +1,4 @@
+console.log("start");
 var fs = require('fs');
 Worker = require('webworker-threads').Worker;
 // include the java script to test in the order of dependency from
@@ -7,34 +8,42 @@ require('../js/cContacts.js');
 require('../js/cContactUtils.js');
 require('../js/cContactsList.js');
 
-jqFactory = require('../node_modules/jquery/dist/jquery.js');
-jsdom = require("jsdom").jsdom;
-document = jsdom(fs.readFileSync("m.html", {
-    encoding : "utf8"
-}));
-// document = jsdom("<html><head></head><body>hello world</body></html>");
-window = document.createWindow();
-// Mock local storage
-MockLocalStorage = function() {
-};
-MockLocalStorage.prototype = {
-    _localStorage : {},
-    getItem : function(key) {
-        var result = this._localStorage[key];
-        if (typeof result === "undefined")
-            result = null;
-        return result;
-    },
-    setItem : function(key, value) {
-        this._localStorage[key] = value;
-    }
-// TODO: mock the rest of the interface or look for a module that does it.
-};
-window.localStorage = new MockLocalStorage();
-
 function log(e) {
     console.log(e);
 }
+
+jsdom = require("jsdom").jsdom;
+var jquery = fs.readFileSync("node_modules/jquery/dist/jquery.js", "utf-8");
+
+jsdom.env({
+  file: "m.html",
+  src: [jquery],
+  done: function (errors, window) {   
+    console.log("done");
+  },
+  loaded: function (errors, w) {
+    try {
+      console.log("loaded");
+      window = w;		
+      $ = window.$;
+      document = window.document;
+      // Mock local storage
+      MockLocalStorage = function() {
+      };
+      MockLocalStorage.prototype = {
+        _localStorage : {},
+        getItem : function(key) {
+           var result = this._localStorage[key];
+           if (typeof result === "undefined")
+              result = null;
+           return result;
+        },
+        setItem : function(key, value) {
+           this._localStorage[key] = value;
+        }
+// TODO: mock the rest of the interface or look for a module that does it.
+};
+window.localStorage = new MockLocalStorage();
 
 navigator = {
     mozContacts : {
@@ -51,4 +60,12 @@ navigator = {
 // this class mocks the mozContact class for the unit tests
 mozContact = function() {
 };
-$ = jqFactory(window);
+
+
+   } catch (e) {
+     console.log("error 2 " + e + " " + errors) ;
+   }
+  }
+});
+
+

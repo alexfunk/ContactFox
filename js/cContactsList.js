@@ -457,9 +457,6 @@ cDuplicates.prototype.correctDefect = function(key) {
                     var secondary = e[j];
                     entry.unify(secondary);
                 }
-                // TODO when to send the change event
-                // compare with other correct defects
-                t._change(entry);
                 entry.save(function() {
                     log("merge successfull for id :" + key,
                             ids.TEXTAREA_DUPLICATES);
@@ -474,6 +471,9 @@ cDuplicates.prototype.correctDefect = function(key) {
                     removeEntry.remove();
                 }
                 t._defects.splice(i, 1);
+                // TODO when to send the change event
+                // compare with other correct defects
+                t._change(entry);
                 // break jquery each loop:
                 return false;
             }
@@ -609,9 +609,9 @@ cContactList.prototype = {
             this._listeners.splice(index, 1);
     },
     _notifyChange : function() {
-        $.each(this._listeners, function(i, e) {
+        $.each(this._listeners, function(i, listener) {
             try {
-                e(this);
+                listener(this);
             } catch (ex) {
                 log("Error in listener " + ex);
             }

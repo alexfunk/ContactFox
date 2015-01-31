@@ -8,9 +8,9 @@ require('../js/cContacts.js');
 require('../js/cContactUtils.js');
 require('../js/cContactsList.js');
 
-function log(e) {
-    console.log(e);
-}
+//function log(e) {
+//    console.log(e);
+//}
 
 jsdom = require("jsdom").jsdom;
 var jquery = fs.readFileSync("node_modules/jquery/dist/jquery.js", "utf-8");
@@ -44,6 +44,10 @@ jsdom.env({
 // TODO: mock the rest of the interface or look for a module that does it.
 };
 window.localStorage = new MockLocalStorage();
+
+log = function(e) {
+    console.log(e);
+};
 
 navigator = {
     mozContacts : {

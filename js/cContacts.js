@@ -10,6 +10,76 @@ if (typeof String.prototype.startsWith != 'function') {
 }
 
 /**
+ * returns the largest common chunk that this string and the given string start
+ * with example: "abc".largeChunk("abde") === "ab" "abc".largeChunk("de") === ""
+ */
+if (typeof String.prototype.largeChunk != 'function') {
+    String.prototype.largeChunk = function(str) {
+        while (str.length !== 0) {
+            if (this.startsWith(str))
+                break;
+            str = str.slice(0, str.length - 1);
+        }
+        return str;
+    };
+}
+
+/**
+ * Returns an array of changes tah describes the changes between the current
+ * string and the to string eg "abcdefgh".stringDiff("abcedfgh") =
+ * [["unchanged", "abc"], ["removed", "de"], ["added", "ed"], ["unchanged",
+ * "fgh"] TODO this should not extend string but better be in an utility class
+ * 
+ */
+if (typeof String.prototype.stringDiff != 'function') {
+    String.prototype.stringDiff = function(to) {
+        var from = this;
+        var result = [];
+        // append a change element to the result arry, if the content is not
+        // the empty string
+        var appendResult = function(op, string) {
+            if (string.length !== 0)
+                result.push([ op, string ]);
+        };
+        while (from.length > 0 && to.length > 0) {
+            // if both strings have the same start add this largest
+            // common part as unchanged and cut it from the input
+            var largeChunk = from.largeChunk(to);
+            if (largeChunk.length > 0) {
+                appendResult("unchanged", largeChunk);
+                from = from.slice(largeChunk.length, from.length);
+                to = to.slice(largeChunk.length, to.length);
+            }
+            // everything from the start of the to string is now
+            // added as 'removed' until a piece at least 3 characters are also
+            // found somewhere in the
+            // 'to' string.
+            var removed = '';
+            while (from.length > 0 && to.length > 0
+                    && (from.length < 3 || to.indexOf(from.slice(0, 3)) == -1)) {
+                removed = removed + from.slice(0, 1);
+                from = from.slice(1, from.length);
+            }
+            appendResult("removed", removed);
+            // the beginning of the 'to' string to the common part in the from
+            // string is
+            // added as 'added' to the result
+            var commonStart = to.indexOf(from.slice(0, 3));
+            if (commonStart != -1 && from.length > 0) {
+                appendResult("added", to.slice(0, commonStart));
+                to = to.slice(commonStart, to.length);
+            } else {
+                appendResult("added", to);
+                to = "";
+            }
+            // at the end both strings either start with the same or
+            // are used up completly
+        }
+        return result;
+    };
+}
+
+/**
  * constructor of a contact object
  */
 cContact = function(c) {
@@ -17,9 +87,9 @@ cContact = function(c) {
 };
 
 // TODO: is this a bug? is everything still logged to the debug window?
-function log(e) {
-    console.log(e);
-}
+// function log(message) {
+// console.log(message);
+// }
 
 /**
  * a private static variable that manages a backup of all contacts that are
@@ -146,11 +216,15 @@ cContact.prototype = {
             $.each(this.c.tel, function(i, e) {
                 if (typeof e.value === 'string' && !e.value.startsWith("+")
                         && !e.value.startsWith("00")) {
+                    log(e.value);
                     result = true;
                     return false;
                 }
             });
         }
+        if (result)
+            log("Missing Prefix: " + JSON.stringify(this.displayName()) + " "
+                    + JSON.stringify(this.key()));
         return result;
     },
     /**
@@ -316,13 +390,18 @@ cContact.prototype = {
                 return "photo";
             }
         };
+        var fToString = function(a) {
+            if (typeof a === "string")
+                return a;
+            return JSON.stringify(a);
+        };
         // helper function to convert a member that contains a string
         // each entry in the array is mapped with the function above.
         var handleArray = function(a, f) {
             var result = [];
             $.each(a, function(i, e) {
                 // if f(e) returns null, we try JSON to convert to string
-                var val = f(e) || JSON.stringify(e);
+                var val = f(e) || fToString(e);
                 if (val !== null)
                     result.push(val);
             });
@@ -331,7 +410,7 @@ cContact.prototype = {
         // define a function that converts this member to a string. If there is
         // no
         // explicit function defined we use JSON.stringify.
-        var convertFunction = memberfunction[member] || JSON.stringify;
+        var convertFunction = memberfunction[member] || fToString;
         if ($.isArray(this.c[member])) {
             return handleArray(this.c[member], convertFunction);
         } else {
@@ -432,6 +511,7 @@ cContact.prototype = {
         // if the caller sets no filter, a default is used
         if (filter === undefined) {
             filter = function(member) {
+                // show every entry but the ones listed here
                 return [ 'name', 'updated', 'published', 'id' ].indexOf(member) == -1;
             };
         }
@@ -448,11 +528,25 @@ cContact.prototype = {
                 displayText = item;
                 style = "contactcontentadded";
             } else {
-                // contact changed
-                displayText = 'changed: <span class="contactcontentadded">'
-                        + item
-                        + '</span> from: <span class="contactcontentremoved">'
-                        + otheritem + "</span>";
+                // two different strings in the same position,
+                // this means the member of the contact is changed.
+                // generate an array of changes and include it in the html
+                stringDiff = otheritem.stringDiff(item);
+                displayText = '';
+                for (i = 0; i < stringDiff.length; i++) {
+                    var change = stringDiff[i];
+                    if (change[0] === 'added') {
+                        displayText += '<span class="contactcontentadded">'
+                                + change[1] + '</span> ';
+                    }
+                    if (change[0] === 'removed') {
+                        displayText += '<span class="contactcontentremoved">'
+                                + change[1] + '</span> ';
+                    }
+                    if (change[0] === 'unchanged') {
+                        displayText += '<span>' + change[1] + '</span> ';
+                    }
+                }
                 style = "contactcontent";
             }
             var html = '<div><span data-i18n="contact.' + member + '"></span>';
@@ -474,7 +568,7 @@ cContact.prototype = {
                     appendItem(div, i, stringArray[0], otherStringArray[0]);
                 } else if (stringArray.length > 1) {
                     $.each(stringArray, function(j, string) {
-                        appendItem(div, i, string, otherStringArray[i], j);
+                        appendItem(div, i, string, otherStringArray[j], j);
                     });
                 }
             }

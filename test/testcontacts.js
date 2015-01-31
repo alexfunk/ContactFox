@@ -177,6 +177,77 @@ var fixture = [ {
         type : 'mobile',
         value : '0421 5551234-1'
     } ]
+}, {
+    // 16
+    givenName : [ 'John' ],
+    familyName : [ 'Doe' ],
+    name : [ 'John Doe' ],
+    tel : [ {
+        type : 'mobile',
+        value : '0421 5554321'
+    } ]
+}, {
+    // 17
+    givenName : [ 'John' ],
+    familyName : [ 'Doe' ],
+    name : [ 'John Doe' ],
+    tel : [ {
+        type : 'mobile',
+        value : '0421 5551234'
+    } ]
+}, {
+    // 18
+    givenName : [ 'John' ],
+    familyName : [ 'Doe' ],
+    name : [ 'John Doe' ],
+    tel : [ {
+        type : 'mobile',
+        value : '0421 5551234'
+    }, {
+        type : 'mobile',
+        value : '0421 5554321'
+    } ]
+}, {
+    // 19
+    givenName : [ 'John' ],
+    familyName : [ 'Doe' ],
+    name : [ 'John Doe' ]
+}, {
+    // 20
+    givenName : [ 'John' ],
+    familyName : [ 'Doe' ],
+    name : [ 'John Doe' ],
+    tel : [ {
+        type : 'mobile',
+        value : '0421 5551234'
+    } ]
+}, {
+    // 21
+    givenName : [ 'John' ],
+    familyName : [ 'Doe' ],
+    name : [ 'John Doe' ],
+    tel : [ {
+        type : 'mobile',
+        value : '0421 5552134'
+    } ]
+}, {
+    // 22
+    givenName : [ 'John' ],
+    familyName : [ 'DAlice' ],
+    name : [ 'John DAlice' ],
+    tel : [ {
+        type : 'mobile',
+        value : '0421 5551234'
+    } ]
+}, {
+    // 23
+    givenName : [ 'John' ],
+    familyName : [ 'DBob' ],
+    name : [ 'John DBob' ],
+    tel : [ {
+        type : 'mobile',
+        value : '0421 5551234'
+    } ]
 } ];
 var c = [];
 $.each(fixture, function(i, e) {
@@ -235,10 +306,12 @@ exports.cContacts = {
     },
     'clearDuplicateNumbers' : function(test) {
         test.expect(2);
-        c[13].clearDuplicateNumbers();
-        test.equal(c[13].c.tel.length, 1);
-        c[14].clearDuplicateNumbers();
-        test.equal(c[14].c.tel.length, 2);
+        var cclone = c[13].clone();
+        cclone.clearDuplicateNumbers();
+        test.equal(cclone.c.tel.length, 1);
+        cclone = c[14].clone();
+        cclone.clearDuplicateNumbers();
+        test.equal(cclone.c.tel.length, 2);
         test.done();
     },
     'checkAllStrings' : function(test) {
@@ -257,24 +330,29 @@ exports.cContacts = {
                 return "Jack";
             return s;
         };
-        c[14].filterAllStrings(filter);
-        test.equals(c[14].c.givenName[0], "Jack");
-        test.equals(c[14].c.familyName[0], "Doe");
+        var cclone = c[14].clone();
+        cclone.filterAllStrings(filter);
+        test.equals(cclone.c.givenName[0], "Jack");
+        test.equals(cclone.c.familyName[0], "Doe");
         test.done();
     },
     'insertPrefix' : function(test) {
         test.expect(7);
-        test.equal(c[10].hasMissingPrefix(), false);
-        c[10].insertPrefix("+44");
-        test.equal(c[10].hasMissingPrefix(), false);
-        test.equal(c[11].hasMissingPrefix(), true);
-        c[11].insertPrefix("+49");
-        test.equal(c[11].hasMissingPrefix(), false);
-        test.equal(c[12].hasMissingPrefix(), true);
-        c[12].insertPrefix("+49");
-        test.equal(c[12].hasMissingPrefix(), false);
-        c[14].insertPrefix("+49");
-        test.equal(c[14].c.tel.length, 1);
+        var cclone = c[10].clone();
+        test.equal(cclone.hasMissingPrefix(), false);
+        cclone.insertPrefix("+44");
+        test.equal(cclone.hasMissingPrefix(), false);
+        cclone = c[11].clone();
+        test.equal(cclone.hasMissingPrefix(), true);
+        cclone.insertPrefix("+49");
+        test.equal(cclone.hasMissingPrefix(), false);
+        cclone = c[12].clone();
+        test.equal(cclone.hasMissingPrefix(), true);
+        cclone.insertPrefix("+49");
+        test.equal(cclone.hasMissingPrefix(), false);
+        cclone = c[14].clone();
+        cclone.insertPrefix("+49");
+        test.equal(cclone.c.tel.length, 1);
         test.done();
     },
     'containsEMail' : function(test) {
@@ -391,10 +469,113 @@ exports.cContacts = {
     },
     'appendAsString' : function(test) {
         test.expect(1);
-        $(document.body).append('<div id="CONTACTCHANGE"></div>');
-        var div = $('#CONTACTCHANGE');
+        var domId = "AppendAsString";
+        $(document.body).append('<div id="' + domId + '"></div>');
+        var div = $('#' + domId);
         c[0].appendAsString(div);
-        test.equal($('#CONTACTCHANGE div').length, 4);
+        test.equal($('#' + domId + ' div').length, 4);
+        test.done();
+    },
+    'stringDiff1' : function(test) {
+        test.expect(7);
+        var a = "abcdef".stringDiff("abcfed");
+        test.equal(a.length, 3);
+        var first = a[0];
+        test.equal(first[0], "unchanged");
+        test.equal(first[1], "abc");
+        var second = a[1];
+        test.equal(second[0], "removed");
+        test.equal(second[1], "def");
+        var third = a[2];
+        test.equal(third[0], "added");
+        test.equal(third[1], "fed");
+        test.done();
+    },
+    'stringDiff2' : function(test) {
+        test.expect(9);
+        var a = "abcdefghi".stringDiff("abcfedghi");
+        test.equal(a.length, 4);
+        var first = a[0];
+        test.equal(first[0], "unchanged");
+        test.equal(first[1], "abc");
+        var second = a[1];
+        test.equal(second[0], "removed");
+        test.equal(second[1], "def");
+        var third = a[2];
+        test.equal(third[0], "added");
+        test.equal(third[1], "fed");
+        var fourth = a[3];
+        test.equal(fourth[0], "unchanged");
+        test.equal(fourth[1], "ghi");
+        test.done();
+    },
+    'stringDiff3' : function(test) {
+        test.expect(7);
+        var a = "Kurier am Sonntag".stringDiff("Kurier der Woche");
+        test.equal(a.length, 3);
+        var first = a[0];
+        test.equal(first[0], "unchanged");
+        test.equal(first[1], "Kurier ");
+        var second = a[1];
+        test.equal(second[0], "removed");
+        test.equal(second[1], "am Sonntag");
+        var third = a[2];
+        test.equal(third[0], "added");
+        test.equal(third[1], "der Woche");
+        test.done();
+    },
+    'stringDiff4' : function(test) {
+        test.expect(7);
+        var a = "0421123456".stringDiff("+49421123456");
+        test.equal(a.length, 3);
+        var first = a[0];
+        test.equal(first[0], "removed");
+        test.equal(first[1], "0");
+        var second = a[1];
+        test.equal(second[0], "added");
+        test.equal(second[1], "+49");
+        var third = a[2];
+        test.equal(third[0], "unchanged");
+        test.equal(third[1], "421123456");
+        test.done();
+    },
+    'appendDiffAsString' : function(test) {
+        test.expect(14);
+        var domId = "AppendDiffAsString1";
+        $(document.body).append('<div id="' + domId + '"></div>');
+        var div = $('#' + domId);
+        c[16].appendDiffAsString(div, c[17]);
+        test.equal($('#' + domId + ' div').length, 3);
+        test.equal(div.find('.contactcontentremoved').length, 1);
+        test.equal(div.find('.contactcontentadded').length, 1);
+
+        domId = "AppendDiffAsString2";
+        $(document.body).append('<div id="' + domId + '"></div>');
+        div = $('#' + domId);
+        c[18].appendDiffAsString(div, c[19]);
+        test.equal($('#' + domId + ' div').length, 4);
+        test.equal(div.find('.contactcontentremoved').length, 0);
+        test.equal(div.find('.contactcontentadded').length, 2);
+
+        domId = "AppendDiffAsString3";
+        $(document.body).append('<div id="' + domId + '"></div>');
+        div = $('#' + domId);
+        c[20].appendDiffAsString(div, c[21]);
+        test.equal($('#' + domId + ' div').length, 3);
+        test.equal(div.find('.contactcontentremoved').length, 1);
+        test.equal(div.find('.contactcontentadded').length, 1);
+
+        domId = "AppendDiffAsString4";
+        $(document.body).append('<div id="' + domId + '"></div>');
+        div = $('#' + domId);
+        c[23].appendDiffAsString(div, c[22]);
+        test.equal($('#' + domId + ' div').length, 3);
+        var removed = div.find('.contactcontentremoved');
+        test.equal(removed.length, 1);
+        test.equal(removed.text(), "Alice");
+        var added = div.find('.contactcontentadded');
+        test.equal(added.length, 1);
+        test.equal(added.text(), "Bob");
         test.done();
     },
     'appendBackupListToUL' : function(test) {

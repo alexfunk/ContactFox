@@ -51,7 +51,7 @@ cDefectList.prototype = {
         return this._defects.length;
     },
     /**
-     * has the given contact an defect. This shall be overwritten by the
+     * Does the given contact have a defect? This shall be overwritten by the
      * inheriting class.
      * 
      * @param contact
@@ -225,11 +225,51 @@ cMissingPrefix.prototype.addToUI = function(ul) {
     this.appendToUL(ul, 'missingPrefix');
 };
 cMissingPrefix.prototype._hasDefect = function(contact) {
-    return contact.hasMissingPrefix();
+    var result = false;
+    if ($.isArray(contact.c.tel)) {
+        $.each(contact.c.tel, function(i, e) {
+            if (typeof e.value === 'string' && !e.value.startsWith("+")
+                    && !e.value.startsWith("00")) {
+                log(e.value);
+                result = true;
+                return false;
+            }
+        });
+    }
+    // To debug: Why are there some contacts listed without missing prefix
+    if (result)
+        log("Missing Prefix: " + JSON.stringify(contact.displayName()) + " "
+                + JSON.stringify(contact.key()));
+    return result;
+
+    // return contact.hasMissingPrefix();
+};
+
+cMissingPrefix.prototype._insertMissingPrefix = function(contact, prefix) {
+    if ($.isArray(contact.c.tel)) {
+        $.each(contact.c.tel, function(i, e) {
+            if (typeof e.value === 'string' && !e.value.startsWith("+")
+                    && !e.value.startsWith("00")) {
+                if (e.value.startsWith("0")) {
+                    var oldValue = e.value;
+                    e.value = prefix + e.value.substring(1);
+                }
+            }
+        });
+        // OK, the prefix is added now, but maybe there is a second number
+        // in the contact
+        // that has already the given prefix. So we check for duplicate
+        // phone-number
+        // entries and remove them in this contact here
+        contact.clearDuplicateNumbers();
+    }
+
 };
 cMissingPrefix.prototype.correctDefect = function(key, prefix) {
     var contact = this.getById(key);
-    contact.insertPrefix(prefix);
+    this._insertMissingPrefix(contact, prefix);
+
+    // contact.insertPrefix(prefix);
     var mpListIndex = this._defects.indexOf(contact);
     if (mpListIndex != -1) {
         this._defects.splice(mpListIndex, 1);

@@ -297,7 +297,7 @@ cMissingPrefix.prototype.appendPreviewToContainer = function(container, id,
         params) {
     var contact = this.getById(id);
     var contactCorrected = contact.clone();
-    contactCorrected.insertPrefix(params);
+    this._insertMissingPrefix(contactCorrected, params);
     contactCorrected.appendDiffAsString(container, contact);
 };
 

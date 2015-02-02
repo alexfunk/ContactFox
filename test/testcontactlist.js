@@ -101,19 +101,26 @@ exports.cContacts = {
         test.equal(cclone.c.tel.length, 1);
         test.done();
     },
-// 'hasMissingPrefix' : function(test) {
-// test.expect(10);
-// test.equal(c[0].hasMissingPrefix(), true);
-// test.equal(c[1].hasMissingPrefix(), true);
-// test.equal(c[2].hasMissingPrefix(), true);
-// test.equal(c[3].hasMissingPrefix(), true);
-// test.equal(c[4].hasMissingPrefix(), true);
-// test.equal(c[5].hasMissingPrefix(), true);
-// test.equal(c[6].hasMissingPrefix(), false);
-// test.equal(c[10].hasMissingPrefix(), false);
-// test.equal(c[11].hasMissingPrefix(), true);
-// test.equal(c[12].hasMissingPrefix(), true);
-// test.done();
-// },
+    'hasMissingPrefix' : function(test) {
+        test.expect(10);
+        var fixtures = getFixtures();
+        var c = [];
+        $.each(fixtures, function(i, e) {
+            c.push(new cContact(e));
+        });
+        var missingPrefix = new cMissingPrefix();
+
+        test.equal(missingPrefix._hasDefect(c[0]), true);
+        test.equal(missingPrefix._hasDefect(c[1]), true);
+        test.equal(missingPrefix._hasDefect(c[2]), true);
+        test.equal(missingPrefix._hasDefect(c[3]), true);
+        test.equal(missingPrefix._hasDefect(c[4]), true);
+        test.equal(missingPrefix._hasDefect(c[5]), true);
+        test.equal(missingPrefix._hasDefect(c[6]), false);
+        test.equal(missingPrefix._hasDefect(c[10]), false);
+        test.equal(missingPrefix._hasDefect(c[11]), true);
+        test.equal(missingPrefix._hasDefect(c[12]), true);
+        test.done();
+    },
 
 };

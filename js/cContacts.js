@@ -208,48 +208,6 @@ cContact.prototype = {
         return this.displayName() == contact.displayName();
     },
     /**
-     * Checks if this contact has a number without an international dial prefix
-     */
-    hasMissingPrefix : function() {
-        var result = false;
-        if ($.isArray(this.c.tel)) {
-            $.each(this.c.tel, function(i, e) {
-                if (typeof e.value === 'string' && !e.value.startsWith("+")
-                        && !e.value.startsWith("00")) {
-                    log(e.value);
-                    result = true;
-                    return false;
-                }
-            });
-        }
-        if (result)
-            log("Missing Prefix: " + JSON.stringify(this.displayName()) + " "
-                    + JSON.stringify(this.key()));
-        return result;
-    },
-    /**
-     * insert the given prefix to all phone numbers that don't start with 00 or +
-     */
-    insertPrefix : function(prefix) {
-        if ($.isArray(this.c.tel)) {
-            $.each(this.c.tel, function(i, e) {
-                if (typeof e.value === 'string' && !e.value.startsWith("+")
-                        && !e.value.startsWith("00")) {
-                    if (e.value.startsWith("0")) {
-                        var oldValue = e.value;
-                        e.value = prefix + e.value.substring(1);
-                    }
-                }
-            });
-            // OK, the prefix is added now, but maybe there is a second number
-            // in the contact
-            // that has already the given prefix. So we check for duplicate
-            // phone-number
-            // entries and remove them in this contact here
-            this.clearDuplicateNumbers();
-        }
-    },
-    /**
      * after applying a change to a contact, numbers may be duplicated in the
      * same contact if this is the case, the duplicates are removed here.
      */

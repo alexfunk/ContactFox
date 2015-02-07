@@ -297,7 +297,7 @@ cMissingPrefix.prototype.appendPreviewToContainer = function(container, id,
         params) {
     var contact = this.getById(id);
     var contactCorrected = contact.clone();
-    contactCorrected.insertPrefix(params);
+    this._insertMissingPrefix(contactCorrected, params);
     contactCorrected.appendDiffAsString(container, contact);
 };
 
@@ -543,6 +543,7 @@ cDuplicates.prototype.notifyRemove = function(contact) {
 cContactList = function() {
     // set the contact list as parent of all defect lists, so that
     // they can notify the parentlist about changes
+    this.init();
     var t = this;
     $.each(this._defects, function(name, value) {
         value.setParent(t);
@@ -550,11 +551,17 @@ cContactList = function() {
 };
 
 cContactList.prototype = {
-    _list : [],
-    _defects : {
-        DUPLICATES : new cDuplicates(),
-        MISSINGPREFIX : new cMissingPrefix(),
-        FUNNYCHARS : new cFunnyCharacters()
+    /**
+     * This must be called from every constructor. otherwise the value of
+     * _defects is shared between instances.
+     */
+    init : function() {
+        this._list = [];
+        this._defects = {
+            DUPLICATES : new cDuplicates(),
+            MISSINGPREFIX : new cMissingPrefix(),
+            FUNNYCHARS : new cFunnyCharacters()
+        };
     },
     _listeners : [],
     add : function(contact) {
@@ -600,6 +607,9 @@ cContactList.prototype = {
     getDefectList : function(key) {
         return this._defects[key];
     },
+    // TODO: The following 12 functions should be replaced by the more generic
+    // function getDefectList. For example contactList.hasDupplicates() should
+    // be replaced by contactList.getDefectList("DUPLICATES").hasDefects()
     // ------------ duplicates -------------------------
     appendUnifyListToUL : function(ul) {
         this._defects.DUPLICATES.addToUI(ul);

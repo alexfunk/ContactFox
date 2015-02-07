@@ -75,7 +75,7 @@ exports.cContacts = {
         test.equal(contactList.getDefectList("FUNNYCHARS").numDefects(), 0);
         test.done();
     },
-    '_insertPrefix' : function(test) {
+    'defectList._insertMissingPrefix' : function(test) {
         test.expect(7);
         var fixtures = getFixtures();
         var c = [];
@@ -101,7 +101,7 @@ exports.cContacts = {
         test.equal(cclone.c.tel.length, 1);
         test.done();
     },
-    'hasMissingPrefix' : function(test) {
+    'missingPrefix._hasDefect' : function(test) {
         test.expect(10);
         var fixtures = getFixtures();
         var c = [];
@@ -122,5 +122,42 @@ exports.cContacts = {
         test.equal(missingPrefix._hasDefect(c[12]), true);
         test.done();
     },
+    'contactList.integration' : function(test) {
+        var fixtures = getFixtures();
+        var c = [];
+        $.each(fixtures, function(i, e) {
+            c.push(new cContact(e));
+        });
+        var defects = [ "DUPLICATES", "MISSINGPREFIX", "FUNNYCHARS" ];
+        // test.expect(c.length * defects.length * 3);
+        var counter = 0;
+        $.each(defects, function(j, listName) {
+            $.each(c, function(i, e) {
+                // if (i == 8) {
+                var contactList = new cContactList();
+                var defectList = contactList.getDefectList(listName);
+                contactList.add(e);
+                if (defectList.hasDefects()) {
+                    test.equal(defectList.numDefects(), 1);
+                    var msg = "defect " + listName + " for: " + e.key();
+                    console.log(msg /* + JSON.stringify(defectList) */);
+                    var domId = "diff" + counter++;
+                    $(document.body).append('<div id="' + domId + '"></div>');
+                    var div = $('#' + domId);
+                    defectList.appendPreviewToContainer(div, e.key());
+                    test.ok((div.find('.contactcontentremoved').length + div
+                            .find('.contactcontentadded').length) > 0,
+                            "changes need to be larger then 0");
 
+                    defectList.correctDefect(e.key(), "+49");
+                    // console.log("after " + JSON.stringify(defectList));
+                } else {
+                    test.equal(defectList.numDefects(), 0);
+                }
+                test.equal(defectList.numDefects(), 0);
+                // }
+            });
+        });
+        test.done();
+    }
 };

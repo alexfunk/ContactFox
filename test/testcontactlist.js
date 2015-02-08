@@ -139,12 +139,11 @@ exports.cContacts = {
                 contactList.add(e);
                 if (defectList.hasDefects()) {
                     test.equal(defectList.numDefects(), 1);
-                    var msg = "defect " + listName + " for: " + e.key();
-                    console.log(msg /* + JSON.stringify(defectList) */);
                     var domId = "diff" + counter++;
                     $(document.body).append('<div id="' + domId + '"></div>');
                     var div = $('#' + domId);
-                    defectList.appendPreviewToContainer(div, e.key());
+                    defectList.appendPreviewToContainer(div, e.key(), "+49");
+	console.log(div.html());
                     test.ok((div.find('.contactcontentremoved').length + div
                             .find('.contactcontentadded').length) > 0,
                             "changes need to be larger then 0");

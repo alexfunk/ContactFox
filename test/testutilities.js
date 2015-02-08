@@ -298,6 +298,18 @@ getFixtures = function() {
             type : 'mobile',
             value : '0421 5551234'
         } ]
+    }, {
+        // 24
+        givenName : [ 'John' ],
+        familyName : [ 'Doe' ],
+        name : [ 'John Doe' ],
+        tel : [ {
+            type : 'mobile',
+            value : '+49421 5551234'
+        }, {
+            type : 'mobile',
+            value : '0421 5551234'
+        }  ]
     } ];
 };
 

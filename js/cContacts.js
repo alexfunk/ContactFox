@@ -473,7 +473,7 @@ cContact.prototype = {
                 return [ 'name', 'updated', 'published', 'id' ].indexOf(member) == -1;
             };
         }
-        var appendItem = function(div, member, item, otheritem, index) {
+        var appendItem = function(div, member, item, otheritem, index, noIndex) {
             var displayText;
             var style;
             if (item == otheritem) {
@@ -508,7 +508,7 @@ cContact.prototype = {
                 style = "contactcontent";
             }
             var html = '<div><span data-i18n="contact.' + member + '"></span>';
-            if (index === undefined) {
+            if (noIndex) {
                 html = html + '<span> : </span>';
             } else {
                 html = html + '<span> ' + (index + 1) + ': </span>';
@@ -522,12 +522,12 @@ cContact.prototype = {
                 // i is the key of the entry like addr or phone
                 var stringArray = t.contactMemberToString(i);
                 var otherStringArray = other.contactMemberToString(i);
-                if (stringArray.length == 1) {
-                    appendItem(div, i, stringArray[0], otherStringArray[0]);
-                } else if (stringArray.length > 1) {
-                    $.each(stringArray, function(j, string) {
-                        appendItem(div, i, string, otherStringArray[j], j);
-                    });
+		var noIndex = stringArray.length == 1 && otherStringArray.length == 1;
+                $.each(stringArray, function(j, string) {
+                     appendItem(div, i, string, otherStringArray[j], j, noIndex);
+                });
+                for (var j = stringArray.length; j < otherStringArray.length; j++) {
+                    appendItem(div, i, undefined, otherStringArray[j], j, noIndex);
                 }
             }
         });

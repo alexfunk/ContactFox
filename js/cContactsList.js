@@ -73,8 +73,7 @@ cDefectList.prototype = {
         try {
             $.each(this._defects, function(i, e) {
                 try {
-                    var html = '<li id="' + id + e.key() + '"><a>'
-                            + e.displayName() + '</a></li>';
+                    var html = '<li id="' + id + e.key() + '"><a>' + e.displayName() + '</a></li>';
                     ul.append(html);
 
                 } catch (ex) {
@@ -228,18 +227,12 @@ cMissingPrefix.prototype._hasDefect = function(contact) {
     var result = false;
     if ($.isArray(contact.c.tel)) {
         $.each(contact.c.tel, function(i, e) {
-            if (typeof e.value === 'string' && !e.value.startsWith("+")
-                    && !e.value.startsWith("00")) {
-                log(e.value);
+            if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
                 result = true;
                 return false;
             }
         });
     }
-    // To debug: Why are there some contacts listed without missing prefix
-    if (result)
-        log("Missing Prefix: " + JSON.stringify(contact.displayName()) + " "
-                + JSON.stringify(contact.key()));
     return result;
 
     // return contact.hasMissingPrefix();
@@ -248,8 +241,7 @@ cMissingPrefix.prototype._hasDefect = function(contact) {
 cMissingPrefix.prototype._insertMissingPrefix = function(contact, prefix) {
     if ($.isArray(contact.c.tel)) {
         $.each(contact.c.tel, function(i, e) {
-            if (typeof e.value === 'string' && !e.value.startsWith("+")
-                    && !e.value.startsWith("00")) {
+            if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
                 if (e.value.startsWith("0")) {
                     var oldValue = e.value;
                     e.value = prefix + e.value.substring(1);
@@ -276,11 +268,9 @@ cMissingPrefix.prototype.correctDefect = function(key, prefix) {
     }
     this._change(contact);
     contact.save(function() {
-        log("prefix successfully saved for id :" + key,
-                ids.TEXTAREA_MISSINGPREFIX);
+        log("prefix successfully saved for id :" + key, ids.TEXTAREA_MISSINGPREFIX);
     }, function() {
-        log("error while saving prefix for id " + key,
-                ids.TEXTAREA_MISSINGPREFIX);
+        log("error while saving prefix for id " + key, ids.TEXTAREA_MISSINGPREFIX);
     });
 };
 /**
@@ -293,8 +283,7 @@ cMissingPrefix.prototype.correctDefect = function(key, prefix) {
  * @param params
  *                params for the intended change
  */
-cMissingPrefix.prototype.appendPreviewToContainer = function(container, id,
-        params) {
+cMissingPrefix.prototype.appendPreviewToContainer = function(container, id, params) {
     var contact = this.getById(id);
     var contactCorrected = contact.clone();
     this._insertMissingPrefix(contactCorrected, params);
@@ -352,8 +341,7 @@ cFunnyCharacters.prototype._hasDefect = function(contact) {
 };
 cFunnyCharacters.prototype.correctFunnyCharactersFilterFunction = function(s) {
     $.each(cFunnyCharacters.patternToCorrect, function(key, value) {
-        s = s.replace(cFunnyCharacters.patternToCorrect[key],
-                cFunnyCharacters.patternCorrected[key]);
+        s = s.replace(cFunnyCharacters.patternToCorrect[key], cFunnyCharacters.patternCorrected[key]);
     });
     return s;
 };
@@ -367,11 +355,9 @@ cFunnyCharacters.prototype.correctDefect = function(key) {
     }
     this._change(contact);
     contact.save(function() {
-        log("funny character successfully corrected for id :" + key,
-                ids.TEXTAREA_FUNNYCHARS);
+        log("funny character successfully corrected for id :" + key, ids.TEXTAREA_FUNNYCHARS);
     }, function() {
-        log("error while saving funny character correction for id " + key,
-                ids.TEXTAREA_FUNNYCHARS);
+        log("error while saving funny character correction for id " + key, ids.TEXTAREA_FUNNYCHARS);
     });
 };
 /**
@@ -384,12 +370,10 @@ cFunnyCharacters.prototype.correctDefect = function(key) {
  * @param params
  *                params for the intended change
  */
-cFunnyCharacters.prototype.appendPreviewToContainer = function(container, id,
-        params) {
+cFunnyCharacters.prototype.appendPreviewToContainer = function(container, id, params) {
     var contact = this.getById(id);
     var contactCorrected = contact.clone();
-    contactCorrected
-            .filterAllStrings(this.correctFunnyCharactersFilterFunction);
+    contactCorrected.filterAllStrings(this.correctFunnyCharactersFilterFunction);
     contactCorrected.appendDiffAsString(container, contact);
 };
 
@@ -419,10 +403,8 @@ cDuplicates.prototype.addToUI = function(ul) {
             try {
                 if (e.length > 1) {
                     var entry = e[0];
-                    var html = '<li id="' + entry.key() + '"><a>'
-                            + entry.displayName()
-                            + '<span class="ui-li-count">' + e.length
-                            + '</span>' + '</a></li>';
+                    var html = '<li id="' + entry.key() + '"><a>' + entry.displayName() + '<span class="ui-li-count">'
+                            + e.length + '</span>' + '</a></li>';
                     var li = ul.find('li');
                     var inserted = false;
                     $.each(li, function(i1, e1) {
@@ -498,11 +480,9 @@ cDuplicates.prototype.correctDefect = function(key) {
                     entry.unify(secondary);
                 }
                 entry.save(function() {
-                    log("merge successfull for id :" + key,
-                            ids.TEXTAREA_DUPLICATES);
+                    log("merge successfull for id :" + key, ids.TEXTAREA_DUPLICATES);
                 }, function() {
-                    log("error while merging id " + key,
-                            ids.TEXTAREA_DUPLICATES);
+                    log("error while merging id " + key, ids.TEXTAREA_DUPLICATES);
                 });
                 for ( var k = 1; k < e.length; k++) {
                     var removeEntry = e[k];

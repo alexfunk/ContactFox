@@ -1,46 +1,13 @@
 require('./testutilities.js');
-var fixture = [ {
-    givenName : [ 'John' ],
-    familyName : [ 'Doe' ],
-    name : [ 'John Doe' ],
-    tel : [ {
-        type : 'mobile',
-        value : '0421 5554321'
-    } ]
-}, {
-    givenName : [ 'John' ],
-    familyName : [ 'Doe' ],
-    name : [ 'John Doe' ],
-    tel : [ {
-        type : 'mobile',
-        value : '0421 5551234'
-    } ]
-}, {
-    givenName : [ 'Bart' ],
-    familyName : [ 'Simpson' ],
-    name : [ 'The Bartman' ],
-    tel : [ {
-        type : 'mobile',
-        value : '0421 555666'
-    } ]
-}, {
-    givenName : [ 'Bart\\,' ],
-    familyName : [ 'Simpson' ],
-    name : [ 'The Bartman' ],
-    tel : [ {
-        type : 'mobile',
-        value : '0421 555666'
-
-    } ]
-} ];
-var c = [];
-$.each(fixture, function(i, e) {
-    c.push(new cContact(e));
-});
 
 var contactList = new cContactList();
 exports.cContacts = {
     'list' : function(test) {
+        var fixtures = getFixtures();
+        var c = [];
+        $.each(fixtures, function(i, e) {
+            c.push(new cContact(e));
+        });
         test.expect(23);
 
         test.equal(contactList.size(), 0);
@@ -55,20 +22,18 @@ exports.cContacts = {
         test.equal(contactList.numDuplicates(), 1);
         test.equal(contactList.getDefectList("DUPLICATES").numDefects(), 1);
         test.equal(contactList.hasMissingPrefix(), true);
-        test.equal(contactList.getDefectList("MISSINGPREFIX").hasDefects(),
-                true);
+        test.equal(contactList.getDefectList("MISSINGPREFIX").hasDefects(), true);
         test.equal(contactList.numMissingPrefix(), 2);
         test.equal(contactList.getDefectList("MISSINGPREFIX").numDefects(), 2);
         contactList.correctDuplicates(c[0].clone().key());
         test.equal(contactList.hasDuplicates(), false);
         test.equal(contactList.size(), 1);
-        contactList.add(c[3].clone());
+        contactList.add(c[15].clone());
         test.equal(contactList.hasFunnyCharacters(), true);
         test.equal(contactList.getDefectList("FUNNYCHARS").hasDefects(), true);
         test.equal(contactList.numFunnyCharacters(), 1);
         test.equal(contactList.getDefectList("FUNNYCHARS").numDefects(), 1);
-        contactList.getDefectList("FUNNYCHARS").correctDefect(
-                c[3].clone().key());
+        contactList.getDefectList("FUNNYCHARS").correctDefect(c[15].clone().key());
         test.equal(contactList.hasFunnyCharacters(), false);
         test.equal(contactList.getDefectList("FUNNYCHARS").hasDefects(), false);
         test.equal(contactList.numFunnyCharacters(), 0);
@@ -137,21 +102,20 @@ exports.cContacts = {
                 var contactList = new cContactList();
                 var defectList = contactList.getDefectList(listName);
                 contactList.add(e);
+                var idForMsg = listName + " " + e.key();
                 if (defectList.hasDefects()) {
-                    test.equal(defectList.numDefects(), 1);
+                    test.equal(defectList.numDefects(), 1, "Has defect true, so num defects should be 1: " + idForMsg);
                     var domId = "diff" + counter++;
                     $(document.body).append('<div id="' + domId + '"></div>');
                     var div = $('#' + domId);
                     defectList.appendPreviewToContainer(div, e.key(), "+49");
-	console.log(div.html());
-                    test.ok((div.find('.contactcontentremoved').length + div
-                            .find('.contactcontentadded').length) > 0,
-                            "changes need to be larger then 0");
+                    test.ok((div.find('.contactcontentremoved').length + div.find('.contactcontentadded').length) > 0,
+                            "changes need to be larger then 0: " + idForMsg);
 
                     defectList.correctDefect(e.key(), "+49");
                     // console.log("after " + JSON.stringify(defectList));
                 } else {
-                    test.equal(defectList.numDefects(), 0);
+                    test.equal(defectList.numDefects(), 0, "no defects so numDefects should be null: " + idForMsg);
                 }
                 test.equal(defectList.numDefects(), 0);
                 // }

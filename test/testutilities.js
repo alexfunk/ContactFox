@@ -329,7 +329,13 @@ jsdom.env({
                         type : 'mobile',
                         value : '0421 5554321'
                     } ]
-                } ];
+                },
+{"bday":null,"anniversary":null,"sex":null,"genderIdentity":null,"adr":null,"email":null,"url":null,"impp":null,"tel":[{"type":["voice"],"value":"+49421 5554321"},
+ {"type":["voice"],"value":"+49421 5554321"},
+ {"type":["voice"],"value":"0421 5551234"},
+ {"type":["voice"],"value":"0421 5554321"}],"name":["John Doe"],"honorificPrefix":null,"givenName":["John"],"additionalName":null,"familyName":["Doe"],"honorificSuffix":null,"nickname":null,"category":null,"org":null,"jobTitle":null,"note":["testContact"],"key":null}
+
+ ];
             };
 
             navigator = {

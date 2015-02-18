@@ -42,13 +42,21 @@ exports.cContacts = {
         test.done();
     },
     'clearDuplicateNumbers' : function(test) {
-        test.expect(2);
+        test.expect(6);
         var cclone = c[13].clone();
         cclone.clearDuplicateNumbers();
         test.equal(cclone.c.tel.length, 1);
         cclone = c[14].clone();
         cclone.clearDuplicateNumbers();
         test.equal(cclone.c.tel.length, 2);
+        cclone = c[27].clone();
+        cclone.clearDuplicateNumbers();
+        var tel = cclone.c.tel;
+        console.log(JSON.stringify(tel));
+        test.equal(tel.length, 3);
+        test.equal(tel[0].value, "1234");
+        test.equal(tel[1].value, "4321");
+        test.equal(tel[2].value, "5555");
         test.done();
     },
     'checkAllStrings' : function(test) {
@@ -102,8 +110,7 @@ exports.cContacts = {
     },
     'addressToString' : function(test) {
         test.expect(2);
-        test.equal(c[5].addressToString(c[7].c.adr[0]),
-                'Bakerstreet 221a,AB1 CD2,London,UK');
+        test.equal(c[5].addressToString(c[7].c.adr[0]), 'Bakerstreet 221a,AB1 CD2,London,UK');
         test.equal(c[5].addressToString({
             type : 'home',
             locality : 'London',
@@ -319,8 +326,7 @@ exports.cContacts = {
             test.equal(typeof contact === 'undefined', false);
             test.equal(contact === null, false, "data may not be null");
             test.equal(contact === '', false, "data may not be empty string");
-            test.equal(id.indexOf(contact.key()) != -1, true,
-                    "the id of the li contains the id of the contact");
+            test.equal(id.indexOf(contact.key()) != -1, true, "the id of the li contains the id of the contact");
         });
         test.done();
         $('#RESTOREBACKUPLIST').empty();

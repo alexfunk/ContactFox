@@ -62,5 +62,28 @@ exports.cMissingPrefix = {
         test.equal($(removed[2]).html(), "0421 5554321", "0421 5554321 is removed");
 
         test.done();
+    },
+    'apendPreviewToContainer2' : function(test) {
+        test.expect(7);
+
+        setup();
+        missingPrefix.checkContactForDefect(c[26]);
+        var domId = "diffXXX2";
+        $(document.body).append('<div id="' + domId + '"></div>');
+        var div = $('#' + domId);
+        missingPrefix.appendPreviewToContainer(div, c[26].key(), "+49");
+        test.ok((div.find('.contactcontentremoved').length + div.find('.contactcontentadded').length) > 0,
+                "there should be at least 1 change");
+        var added = div.find('.contactcontentadded');
+        test.equal(added.length, 1, "there is one fragment added");
+        test.equal(added.first().html(), "1234", "1234 is added");
+        var removed = div.find('.contactcontentremoved');
+        test.equal(removed.length, 3, "there is one fragment and two numbers removed");
+        test.equal($(removed[0]).html(), "4321", "4321 is removed");
+        test.equal($(removed[1]).html(), "0421 5551234", "0421 5551234 is removed");
+        test.equal($(removed[2]).html(), "0421 5554321", "0421 5554321 is removed");
+
+        test.done();
     }
+
 };

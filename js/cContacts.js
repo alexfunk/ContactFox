@@ -55,8 +55,7 @@ if (typeof String.prototype.stringDiff != 'function') {
             // found somewhere in the
             // 'to' string.
             var removed = '';
-            while (from.length > 0 && to.length > 0
-                    && (from.length < 3 || to.indexOf(from.slice(0, 3)) == -1)) {
+            while (from.length > 0 && to.length > 0 && (from.length < 3 || to.indexOf(from.slice(0, 3)) == -1)) {
                 removed = removed + from.slice(0, 1);
                 from = from.slice(1, from.length);
             }
@@ -136,8 +135,7 @@ cContact.prototype = {
                 givenName = this.c.givenName[0];
             }
             var familyName = "";
-            if (($.isArray(this.c.familyName))
-                    && (this.c.familyName.length > 0)) {
+            if (($.isArray(this.c.familyName)) && (this.c.familyName.length > 0)) {
                 familyName = this.c.familyName[0];
             }
             result = familyName + "_" + givenName;
@@ -181,8 +179,7 @@ cContact.prototype = {
                 lGivenName = this.c.givenName[0];
             }
             var lFamilyName = "";
-            if (($.isArray(this.c.familyName))
-                    && (this.c.familyName.length > 0)) {
+            if (($.isArray(this.c.familyName)) && (this.c.familyName.length > 0)) {
                 lFamilyName = this.c.familyName[0];
             }
             if ((lFamilyName.length !== 0) && (lGivenName.length !== 0))
@@ -214,27 +211,33 @@ cContact.prototype = {
     clearDuplicateNumbers : function() {
         if ($.isArray(this.c.tel)) {
             var tel = this.c.tel;
-            // put all indexes of telephone numbers the toDelete array
+            // console.log("clear dupplicates: " + JSON.stringify(tel));
+            // put all indexes of telephone numbers in the toDelete array
             var toDelete = [];
+            for ( var h = 0; h < tel.length; h++) {
+                toDelete.push(false);
+            }
             for ( var i = 0; i < tel.length; i++) {
-                var currentNumber = tel[i].value;
-                // check if 'currentNumber' exist in the following numbers
-                var numberExists = false;
-                for ( var j = i + 1; j < tel.length; j++) {
-                    if (currentNumber == tel[j].value) {
-                        numberExists = true;
-                        break;
+                if (!toDelete[i]) {
+                    var currentNumber = tel[i].value;
+                    // check if 'currentNumber' exist in the following numbers
+                    // iterate backwards, to have an decending array of indices.
+                    // So the indices in the toDelete Array will not be
+                    // invalidated
+                    // is this really decending.
+                    for ( var j = tel.length - 1; i < j; j--) {
+                        if (currentNumber == tel[j].value) {
+                            toDelete[j] = true;
+                            // console.log("deleting: " + currentNumber + " from
+                            // index " + j);
+                        }
                     }
                 }
-
-                if (numberExists) {
-                    toDelete.push(i);
-                }
             }
-            // iterate backwards, so the indices in the toDelete Array will not
-            // be invalidated
-            for (i = toDelete.length; i > 0; i--) {
-                this.c.tel.splice(toDelete[i], 1);
+            for (i = toDelete.length - 1; i >= 0; i--) {
+                if (toDelete[i])
+                    this.c.tel.splice(i, 1);
+                // console.log("after splice: " + JSON.stringify(this.c.tel));
             }
         }
     },
@@ -315,8 +318,7 @@ cContact.prototype = {
             return true;
         if ((adr1 === null) || (adr2 === null))
             return false;
-        var keys = [ 'streetAddress', 'locality', 'region', 'postalCode',
-                'countryName' ];
+        var keys = [ 'streetAddress', 'locality', 'region', 'postalCode', 'countryName' ];
         var result = true;
         $.each(keys, function(i, e) {
             if (adr1[e] != adr2[e]) {
@@ -372,8 +374,7 @@ cContact.prototype = {
         if ($.isArray(this.c[member])) {
             return handleArray(this.c[member], convertFunction);
         } else {
-            if (typeof this.c[member] !== "undefined"
-                    && this.c[member] !== null) {
+            if (typeof this.c[member] !== "undefined" && this.c[member] !== null) {
                 var value = this.c[member];
                 var result = convertFunction(value);
                 if (result !== null)
@@ -391,8 +392,7 @@ cContact.prototype = {
      */
     // TODO: this should be a static function. Not related to the contact object
     addressToString : function(adr1) {
-        var keys = [ 'streetAddress', 'postalCode', 'locality', 'region',
-                'countryName' ];
+        var keys = [ 'streetAddress', 'postalCode', 'locality', 'region', 'countryName' ];
         var result = "";
         $.each(keys, function(i, e) {
             if (typeof adr1[e] !== "undefined") {
@@ -432,8 +432,7 @@ cContact.prototype = {
             } else {
                 html = html + '<span> ' + (index + 1) + ': </span>';
             }
-            html = html + '<span class="contactcontent" >' + item
-                    + '</span></div>';
+            html = html + '<span class="contactcontent" >' + item + '</span></div>';
             div.append(html);
         };
         $.each(this.members, function(i, e) {
@@ -494,12 +493,10 @@ cContact.prototype = {
                 for (i = 0; i < stringDiff.length; i++) {
                     var change = stringDiff[i];
                     if (change[0] === 'added') {
-                        displayText += '<span class="contactcontentadded">'
-                                + change[1] + '</span> ';
+                        displayText += '<span class="contactcontentadded">' + change[1] + '</span> ';
                     }
                     if (change[0] === 'removed') {
-                        displayText += '<span class="contactcontentremoved">'
-                                + change[1] + '</span> ';
+                        displayText += '<span class="contactcontentremoved">' + change[1] + '</span> ';
                     }
                     if (change[0] === 'unchanged') {
                         displayText += '<span>' + change[1] + '</span> ';
@@ -513,8 +510,7 @@ cContact.prototype = {
             } else {
                 html = html + '<span> ' + (index + 1) + ': </span>';
             }
-            html = html + '<span class="' + style + '" >' + displayText
-                    + '</span></div>';
+            html = html + '<span class="' + style + '" >' + displayText + '</span></div>';
             div.append(html);
         };
         $.each(this.members, function(i, e) {
@@ -522,11 +518,11 @@ cContact.prototype = {
                 // i is the key of the entry like addr or phone
                 var stringArray = t.contactMemberToString(i);
                 var otherStringArray = other.contactMemberToString(i);
-		var noIndex = stringArray.length == 1 && otherStringArray.length == 1;
+                var noIndex = stringArray.length == 1 && otherStringArray.length == 1;
                 $.each(stringArray, function(j, string) {
-                     appendItem(div, i, string, otherStringArray[j], j, noIndex);
+                    appendItem(div, i, string, otherStringArray[j], j, noIndex);
                 });
-                for (var j = stringArray.length; j < otherStringArray.length; j++) {
+                for ( var j = stringArray.length; j < otherStringArray.length; j++) {
                     appendItem(div, i, undefined, otherStringArray[j], j, noIndex);
                 }
             }
@@ -638,8 +634,7 @@ cContact.prototype = {
      */
     save : function(onSuccess, onError) {
         var contact;
-        var getClassOf = Function.prototype.call
-                .bind(Object.prototype.toString);
+        var getClassOf = Function.prototype.call.bind(Object.prototype.toString);
 
         // if this.c is already a mozContact, transfer it to the
         // save function because the id is alread set

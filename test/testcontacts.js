@@ -7,19 +7,19 @@ $.each(getFixtures(), function(i, e) {
 
 exports.cContacts = {
     'key' : function(test) {
-        test.expect(1);
+        test.expect(2);
 
-        test.equal(c[0].key(), "Doe_John");
+        test.equal(c[0].key(), "Doe_John", "Key schould be created from lastname + _ + firstname");
+        test.equal(c[3].key(), "_NoLastName", "if lastname is missing it starts with a _");
         test.done();
     },
     'clone' : function(test) {
         test.expect(2);
         var cclone = c[0].clone();
+        // change the clone
         cclone.c.givenName[0] = "Jack";
-        // the clone is a copy but reflects tha change
-        test.equal(cclone.key(), "Doe_Jack");
-        // the original is unchanged
-        test.equal(c[0].key(), "Doe_John");
+        test.equal(cclone.key(), "Doe_Jack", "the clone is a copy but reflects tha change");
+        test.equal(c[0].key(), "Doe_John", "the original is unchanged");
         test.done();
     },
     'displayName' : function(test) {
@@ -49,14 +49,14 @@ exports.cContacts = {
         cclone = c[14].clone();
         cclone.clearDuplicateNumbers();
         test.equal(cclone.c.tel.length, 2);
+        // contact 27 has 3 pairs of dupplicate numbers in mixed order
         cclone = c[27].clone();
         cclone.clearDuplicateNumbers();
         var tel = cclone.c.tel;
-        console.log(JSON.stringify(tel));
-        test.equal(tel.length, 3);
-        test.equal(tel[0].value, "1234");
-        test.equal(tel[1].value, "4321");
-        test.equal(tel[2].value, "5555");
+        test.equal(tel.length, 3, "after clearing the dupplicate 3 numbers should remain");
+        test.equal(tel[0].value, "1234", "the result should contain 1234");
+        test.equal(tel[1].value, "4321", "the result should contain 4321");
+        test.equal(tel[2].value, "5555", "the result should contain 5555");
         test.done();
     },
     'checkAllStrings' : function(test) {

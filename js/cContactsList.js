@@ -234,8 +234,6 @@ cMissingPrefix.prototype._hasDefect = function(contact) {
         });
     }
     return result;
-
-    // return contact.hasMissingPrefix();
 };
 
 cMissingPrefix.prototype._insertMissingPrefix = function(contact, prefix) {
@@ -518,6 +516,97 @@ cDuplicates.prototype.notifyRemove = function(contact) {
     });
 };
 
+// -------------------------------------------------------
+
+cNameMixup = function() {
+    this.init();
+};
+
+cNameMixup.inheritsFrom(cDefectList);
+
+cNameMixup.prototype.addToUI = function(ul) {
+    this.appendToUL(ul, 'nameMixup');
+};
+cNameMixup.prototype._hasDefect = function(contact) {
+    var result = false;
+    if ($.isArray(contact.c.givenName) && $.isArray(contact.c.familyName)) {
+        var aGivenName = contact.c.givenName;
+        var aFamilyName = contact.c.familyName;
+        if (aGivenName.length === 0 && aFamilyName.length === 2) {
+            result = true;
+        } else if (aGivenName.length === 2 && aFamilyName.length === 0) {
+            result = true;
+        } else if (aGivenName.length === 0 && aFamilyName.length === 1) {
+            // aFamilyName[0] has space
+            result = aFamilyName[0].indexof(" ") !== -1;
+        } else if (aGivenName.length === 1 && aFamilyName.length === 0) {
+            result = aGivenName[0].indexof(" ") !== -1;
+        } else if (aGivenName.length == aFamilyName.length) {
+            // true if all members equal --> the last is the last name
+            result = true;
+            for (i = 0; i < aGivenName.length; i++) {
+                if (aGivenName[i] !== aFamilyName[i])
+                    result = false;
+            }
+        }
+    }
+    return result;
+};
+cNameMixup.prototype._fixNameMixup = function(contact, prefix) {
+    if ($.isArray(contact.c.givenName) && $.isArray(contact.c.familyName)) {
+        var aGivenName = contact.c.givenName;
+        var aFamilyName = contact.c.familyName;
+        if (aGivenName.length === 0 && aFamilyName.length === 2) {
+            aGivenName.push(aFamilyName[0]);
+            aFamilyName.slice(0, 1);
+        } else if (aGivenName.length === 2 && aFamilyName.length === 0) {
+            aFamilyName.push(aGivenName[1]);
+            aGivenName.slice(1, 1);
+        } else if (aGivenName.length === 0 && aFamilyName.length === 1) {
+            // aFamilyName[0] has space
+            var splitIndex = aFamilyName[0].indexof(" ");
+            aGivenName.push(aFamilyName[0].splice(0, splitIndex));
+            aFamilyName[0] = aFamilyName[0].splice(splitIndex, aFamilyName[0].length);
+        } else if (aGivenName.length === 1 && aFamilyName.length === 0) {
+            result = aGivenName[0].indexof(" ") !== -1;
+        } else if (aGivenName.length == aFamilyName.length) {
+            // true if all members equal --> the last is the last name
+            result = true;
+            for (i = 0; i < aGivenName.length; i++) {
+                if (aGivenName[i] !== aFamiliyName[i])
+                    result = false;
+            }
+        }
+    }
+};
+cNameMixup.prototype.correctDefect = function(key, params) {
+    var contact = this.getById(key);
+
+    this._fixNameMixup(contact, params);
+    this._change(contact);
+    contact.save(function() {
+        log("nameMixup successfully saved for id :" + key, ids.TEXTAREA_NAMEMIXUP);
+    }, function() {
+        log("error while saving nameMixup for id " + key, ids.TEXTAREA_NAMEMIXUP);
+    });
+};
+/**
+ * append a preview of a contact that would be corrected to a given container.
+ * 
+ * @param containter
+ *                the jquery element to append to
+ * @param id
+ *                the id to find the contact
+ * @param params
+ *                params for the intended change
+ */
+cNameMixup.prototype.appendPreviewToContainer = function(container, id, params) {
+    var contact = this.getById(id);
+    var contactCorrected = contact.clone();
+    this._fixNameMixup(contactCorrected, params);
+    contactCorrected.appendDiffAsString(container, contact);
+};
+
 // --------------------------------------------------------------
 
 cContactList = function() {
@@ -540,7 +629,8 @@ cContactList.prototype = {
         this._defects = {
             DUPLICATES : new cDuplicates(),
             MISSINGPREFIX : new cMissingPrefix(),
-            FUNNYCHARS : new cFunnyCharacters()
+            FUNNYCHARS : new cFunnyCharacters(),
+            NAMEMIXUP : new cNameMixup()
         };
     },
     _listeners : [],

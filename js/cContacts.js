@@ -212,7 +212,8 @@ cContact.prototype = {
         if ($.isArray(this.c.tel)) {
             var tel = this.c.tel;
             // console.log("clear dupplicates: " + JSON.stringify(tel));
-            // put all indexes of telephone numbers in the toDelete array
+            // create an array for indices that need to be deleted
+            // set it initaly on false for all values
             var toDelete = [];
             for ( var h = 0; h < tel.length; h++) {
                 toDelete.push(false);
@@ -220,12 +221,8 @@ cContact.prototype = {
             for ( var i = 0; i < tel.length; i++) {
                 if (!toDelete[i]) {
                     var currentNumber = tel[i].value;
-                    // check if 'currentNumber' exist in the following numbers
-                    // iterate backwards, to have an decending array of indices.
-                    // So the indices in the toDelete Array will not be
-                    // invalidated
-                    // is this really decending.
-                    for ( var j = tel.length - 1; i < j; j--) {
+                    // check if 'currentNumber' exist.
+                    for ( var j = i + 1; j < tel.length; j++) {
                         if (currentNumber == tel[j].value) {
                             toDelete[j] = true;
                             // console.log("deleting: " + currentNumber + " from
@@ -234,6 +231,8 @@ cContact.prototype = {
                     }
                 }
             }
+            // iterate backwards throug the toDeleteIndex and do
+            // the actual delete, without invalidating the loop index
             for (i = toDelete.length - 1; i >= 0; i--) {
                 if (toDelete[i])
                     this.c.tel.splice(i, 1);

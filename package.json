@@ -39,7 +39,7 @@
     "grunt-contrib-concat" : "~0.3.0",
     "grunt-prettify" : "~0.3.4",
     "grunt-contrib-compress" : "~0.6.0",
-    "webworker-threads" : "0.5.3"
+    "webworker-threads" : "0.5.5"
   },
   "firefoxManifest": {
     "type" : "privileged",

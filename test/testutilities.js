@@ -388,6 +388,43 @@ jsdom.env({
                         value : '4321'
                     } ]
                 },
+                {
+                    // 28
+                    givenName : [ 'John Doe' ],
+                    name : [ 'John Doe' ],
+                    tel : [ {
+                        type : 'mobile',
+                        value : '1234'
+                    } ]
+                },
+                {
+                    // 29
+                    givenName : [ 'John', 'Doe' ],
+                    familyName : [ 'John', 'Doe' ],
+                    name : [ 'John Doe' ],
+                    tel : [ {
+                        type : 'mobile',
+                        value : '1234'
+                    } ]
+                },
+                {
+                    // 30
+                    givenName : [ 'John', 'Doe' ],
+                    name : [ 'John Doe' ],
+                    tel : [ {
+                        type : 'mobile',
+                        value : '1234'
+                    } ]
+                },
+                {
+                    // 31
+                    familyName : [ 'John', 'Doe' ],
+                    name : [ 'John Doe' ],
+                    tel : [ {
+                        type : 'mobile',
+                        value : '1234'
+                    } ]
+                },
 
                 ];
             };

@@ -15,15 +15,20 @@ function setup() {
 
 exports.cNameMixup = {
     'correctDefect' : function(test) {
-        test.expect(3);
         setup();
-        nameMixup.checkContactForDefect(c[28]);
-        console.log(c[28].key());
-        test.equal(nameMixup.numDefects(), 1);
-        nameMixup.correctDefect(c[28].key());
-        test.equal(nameMixup.numDefects(), 0);
-        test.equal(c[28].c.givenName[0], "John");
-        test.equal(c[28].c.familyName[0], "Doe");
+        var nameMixupTests = [ c[28], c[29], c[30], c[31], c[32], c[33] ];
+        test.expect(6 * nameMixupTests.length);
+        for ( var i = 0; i < nameMixupTests.length; i++) {
+            var co = nameMixupTests[i];
+            nameMixup.checkContactForDefect(co);
+            test.equal(nameMixup.numDefects(), 1, "before correct the number of defects should be 1");
+            nameMixup.correctDefect(co.key());
+            test.equal(nameMixup.numDefects(), 0, "after correct the number of defects should be 0");
+            test.equal(co.c.givenName[0], "John", "The given name should be just 'John'");
+            test.equal(co.c.familyName[0], "Doe", "The family name should be just 'Doe'");
+            test.equal(co.c.givenName.length, 1, "The given name should be just 'John'");
+            test.equal(co.c.familyName.length, 1, "The family name should be just 'Doe'");
+        }
         test.done();
     },
     'checkContactForDefect' : function(test) {

@@ -1,4 +1,6 @@
 console.log("start");
+var x = 'John Doe'.slice(4, 4);
+console.log(x);
 var fs = require('fs');
 Worker = require('webworker-threads').Worker;
 // include the java script to test in the order of dependency from
@@ -387,8 +389,7 @@ jsdom.env({
                         type : 'mobile',
                         value : '4321'
                     } ]
-                },
-                {
+                }, {
                     // 28
                     givenName : [ 'John Doe' ],
                     name : [ 'John Doe' ],
@@ -396,8 +397,7 @@ jsdom.env({
                         type : 'mobile',
                         value : '1234'
                     } ]
-                },
-                {
+                }, {
                     // 29
                     givenName : [ 'John', 'Doe' ],
                     familyName : [ 'John', 'Doe' ],
@@ -406,8 +406,7 @@ jsdom.env({
                         type : 'mobile',
                         value : '1234'
                     } ]
-                },
-                {
+                }, {
                     // 30
                     givenName : [ 'John', 'Doe' ],
                     name : [ 'John Doe' ],
@@ -415,8 +414,7 @@ jsdom.env({
                         type : 'mobile',
                         value : '1234'
                     } ]
-                },
-                {
+                }, {
                     // 31
                     familyName : [ 'John', 'Doe' ],
                     name : [ 'John Doe' ],
@@ -424,9 +422,24 @@ jsdom.env({
                         type : 'mobile',
                         value : '1234'
                     } ]
-                },
-
-                ];
+                }, {
+                    // 32
+                    familyName : [ 'John', 'Doe' ],
+                    name : [ 'John Doe' ],
+                    tel : [ {
+                        type : 'mobile',
+                        value : '1234'
+                    } ]
+                }, {
+                    // 33
+                    givenName : [ 'John Doe' ],
+                    familyName : [ 'John Doe' ],
+                    name : [ 'John Doe' ],
+                    tel : [ {
+                        type : 'mobile',
+                        value : '1234'
+                    } ]
+                }, ];
             };
 
             navigator = {

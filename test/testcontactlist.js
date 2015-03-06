@@ -97,29 +97,36 @@ exports.cContacts = {
         // test.expect(c.length * defects.length * 3);
         var counter = 0;
         $.each(defects, function(j, listName) {
-            $.each(c, function(i, e) {
-                // if (i == 8) {
-                var contactList = new cContactList();
-                var defectList = contactList.getDefectList(listName);
-                contactList.add(e);
-                var idForMsg = listName + " " + e.key();
-                if (defectList.hasDefects()) {
-                    test.equal(defectList.numDefects(), 1, "Has defect true, so num defects should be 1: " + idForMsg);
-                    var domId = "diff" + counter++;
-                    $(document.body).append('<div id="' + domId + '"></div>');
-                    var div = $('#' + domId);
-                    defectList.appendPreviewToContainer(div, e.key(), "+49");
-                    test.ok((div.find('.contactcontentremoved').length + div.find('.contactcontentadded').length) > 0,
-                            "changes need to be larger then 0: " + idForMsg);
+            $.each(c,
+                    function(i, e) {
+                        // if (i == 8) {
+                        var contactList = new cContactList();
+                        var defectList = contactList.getDefectList(listName);
+                        contactList.add(e);
+                        var idForMsg = listName + " " + e.key();
+                        if (defectList.hasDefects()) {
+                            test.equal(defectList.numDefects(), 1, "Has defect true, so num defects should be 1: "
+                                    + idForMsg);
+                            var domId = "diff" + counter++;
+                            $(document.body).append('<div id="' + domId + '"></div>');
+                            var div = $('#' + domId);
+                            defectList.appendPreviewToContainer(div, e.key(), "+49");
+                            var hasChanges = (div.find('.contactcontentremoved').length + div
+                                    .find('.contactcontentadded').length) > 0;
+                            if (!hasChanges)
+                                console.log("no changes in index " + i + ": " + div.html());
+                            test.ok(hasChanges, "changes need to be larger then 0: " + idForMsg);
 
-                    defectList.correctDefect(e.key(), "+49");
-                    // console.log("after " + JSON.stringify(defectList));
-                } else {
-                    test.equal(defectList.numDefects(), 0, "no defects so numDefects should be null: " + idForMsg);
-                }
-                test.equal(defectList.numDefects(), 0);
-                // }
-            });
+                            defectList.correctDefect(e.key(), "+49");
+                            // console.log("after " +
+                            // JSON.stringify(defectList));
+                        } else {
+                            test.equal(defectList.numDefects(), 0, "no defects so numDefects should be null: "
+                                    + idForMsg);
+                        }
+                        test.equal(defectList.numDefects(), 0);
+                        // }
+                    });
         });
         test.done();
     }

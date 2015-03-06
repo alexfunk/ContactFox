@@ -36,7 +36,7 @@ cDefectList.prototype = {
     },
     /**
      * returns true if the list contains at least on defect
-     *
+     * 
      * @returns {Boolean}
      */
     hasDefects : function() {
@@ -44,7 +44,7 @@ cDefectList.prototype = {
     },
     /**
      * shows the number of defects
-     *
+     * 
      * @returns
      */
     numDefects : function() {
@@ -53,7 +53,7 @@ cDefectList.prototype = {
     /**
      * Does the given contact have a defect? This shall be overwritten by the
      * inheriting class.
-     *
+     * 
      * @param contact
      * @returns {Boolean}
      */
@@ -63,7 +63,7 @@ cDefectList.prototype = {
     /**
      * appends an html list representation of this list to the given jquery
      * element
-     *
+     * 
      * @param ul
      *                the point to insert the html
      * @param id
@@ -88,7 +88,7 @@ cDefectList.prototype = {
     /**
      * append a preview of a contact that would be corrected to a given
      * container.
-     *
+     * 
      * @param containter
      *                the jquery element to append to
      * @param id
@@ -101,7 +101,7 @@ cDefectList.prototype = {
 
     /**
      * if the given contact contains a defect add it to the list
-     *
+     * 
      * @param contact
      */
     checkContactForDefect : function(contact) {
@@ -113,7 +113,7 @@ cDefectList.prototype = {
      * this corrects all mistaces in the defect list. This can be used from the
      * "correct all"-Buttons on the defect pages. If a lot of contacts are to be
      * corrected this would block the ui for some times
-     *
+     * 
      * @param params
      * @returns the corrected defect list
      */
@@ -128,7 +128,7 @@ cDefectList.prototype = {
     /**
      * trigger the "correct all defects" function with a worker TODO: This does
      * not work yet
-     *
+     * 
      * @param params
      */
     correctAllWithWorker : function(params) {
@@ -144,7 +144,7 @@ cDefectList.prototype = {
     },
     /**
      * returns a contact in the defectlist, by its id, if it is there
-     *
+     * 
      * @param key
      *                the key of the contact
      * @returns the contact or null if not there
@@ -162,7 +162,7 @@ cDefectList.prototype = {
     /**
      * set the contact list as the parent of the defect list, so that we can
      * notify the parent about changes
-     *
+     * 
      * @param parent
      */
     setParent : function(parent) {
@@ -170,7 +170,7 @@ cDefectList.prototype = {
     },
     /**
      * notify the parent that one contact has to be removed from the list
-     *
+     * 
      * @param contact
      */
     _remove : function(contact) {
@@ -227,7 +227,9 @@ cMissingPrefix.prototype._hasDefect = function(contact) {
     var result = false;
     if ($.isArray(contact.c.tel)) {
         $.each(contact.c.tel, function(i, e) {
-            if ( typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
+            var phonenumber = e.value;
+            if (typeof phonenumber === 'string' && !phonenumber.startsWith("+") && !phonenumber.startsWith("00")
+                    && phonenumber.startsWith("0")) {
                 result = true;
                 return false;
             }
@@ -239,7 +241,7 @@ cMissingPrefix.prototype._hasDefect = function(contact) {
 cMissingPrefix.prototype._insertMissingPrefix = function(contact, prefix) {
     if ($.isArray(contact.c.tel)) {
         $.each(contact.c.tel, function(i, e) {
-            if ( typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
+            if (typeof e.value === 'string' && !e.value.startsWith("+") && !e.value.startsWith("00")) {
                 if (e.value.startsWith("0")) {
                     var oldValue = e.value;
                     e.value = prefix + e.value.substring(1);
@@ -273,7 +275,7 @@ cMissingPrefix.prototype.correctDefect = function(key, prefix) {
 };
 /**
  * append a preview of a contact that would be corrected to a given container.
- *
+ * 
  * @param containter
  *                the jquery element to append to
  * @param id
@@ -361,7 +363,7 @@ cFunnyCharacters.prototype.correctDefect = function(key) {
 };
 /**
  * append a preview of a contact that would be corrected to a given container.
- *
+ * 
  * @param containter
  *                the jquery element to append to
  * @param id
@@ -393,7 +395,7 @@ cDuplicates.inheritsFrom(cDefectList);
  * Append the list to the given element in the dom the duplicates list is
  * handled different: There are a number of duplicates in each list entry. The
  * insertion is done in order of the length of contacts to be unified
- *
+ * 
  * @param ul
  */
 cDuplicates.prototype.addToUI = function(ul) {
@@ -402,7 +404,8 @@ cDuplicates.prototype.addToUI = function(ul) {
             try {
                 if (e.length > 1) {
                     var entry = e[0];
-                    var html = '<li id="' + entry.key() + '"><a>' + entry.displayName() + '<span class="ui-li-count">' + e.length + '</span>' + '</a></li>';
+                    var html = '<li id="' + entry.key() + '"><a>' + entry.displayName() + '<span class="ui-li-count">'
+                            + e.length + '</span>' + '</a></li>';
                     var li = ul.find('li');
                     var inserted = false;
                     $.each(li, function(i1, e1) {
@@ -473,7 +476,7 @@ cDuplicates.prototype.correctDefect = function(key) {
             // this entry is a defect. Keep the first contact in e
             var entry = e[0];
             if (entry.key() == key) {
-                for (var j = 1; j < e.length; j++) {
+                for ( var j = 1; j < e.length; j++) {
                     var secondary = e[j];
                     entry.unify(secondary);
                 }
@@ -482,7 +485,7 @@ cDuplicates.prototype.correctDefect = function(key) {
                 }, function() {
                     log("error while merging id " + key, ids.TEXTAREA_DUPLICATES);
                 });
-                for (var k = 1; k < e.length; k++) {
+                for ( var k = 1; k < e.length; k++) {
                     var removeEntry = e[k];
                     // Notify other list about removed entry
                     t._remove(removeEntry);
@@ -500,7 +503,7 @@ cDuplicates.prototype.correctDefect = function(key) {
 };
 /**
  * a contact was removed from someone else, so remove it from the defect list
- *
+ * 
  * @param contact
  *                the contact to be removed
  */
@@ -531,8 +534,6 @@ cNameMixup.prototype._hasDefect = function(contact) {
     var result = false;
     var aGivenName = $.isArray(contact.c.givenName) ? contact.c.givenName : [];
     var aFamilyName = $.isArray(contact.c.familyName) ? contact.c.familyName : [];
-    console.log("givenName: " + JSON.stringify(aGivenName));
-    console.log("familyName: " + JSON.stringify(aFamilyName));
     if (aGivenName.length === 0 && aFamilyName.length === 2) {
         result = true;
     } else if (aGivenName.length === 2 && aFamilyName.length === 0) {
@@ -542,62 +543,76 @@ cNameMixup.prototype._hasDefect = function(contact) {
         result = aFamilyName[0].indexOf(" ") !== -1;
     } else if (aGivenName.length === 1 && aFamilyName.length === 0) {
         result = aGivenName[0].indexOf(" ") !== -1;
-    } else if (aGivenName.length == aFamilyName.length) {
+    } else if (aGivenName.length == aFamilyName.length && aGivenName.length > 1) {
         // true if all members equal --> the last is the last name
         result = true;
-        for ( i = 0; i < aGivenName.length; i++) {
+        for ( var i = 0; i < aGivenName.length; i++) {
             if (aGivenName[i] !== aFamilyName[i])
                 result = false;
         }
+    } else if (aGivenName.length == 1 && aFamilyName.length == 1 && aGivenName[0] == aFamilyName[0]
+            && aGivenName[0].indexOf(' ') != -1) {
+        result = true;
     }
     return result;
 };
 cNameMixup.prototype._fixNameMixup = function(contact, prefix) {
+    contact.c.id = contact.key();
     var aGivenName = $.isArray(contact.c.givenName) ? contact.c.givenName : [];
     var aFamilyName = $.isArray(contact.c.familyName) ? contact.c.familyName : [];
-    console.log("givenName: " + JSON.stringify(aGivenName));
-    console.log("familyName: " + JSON.stringify(aFamilyName));
 
     if (aGivenName.length === 0 && aFamilyName.length === 2) {
         aGivenName.push(aFamilyName[0]);
-        aFamilyName.slice(0, 1);
+        aFamilyName.splice(0, 1);
     } else if (aGivenName.length === 2 && aFamilyName.length === 0) {
         aFamilyName.push(aGivenName[1]);
-        aGivenName.slice(1, 1);
+        aGivenName.splice(1, 1);
     } else if (aGivenName.length === 0 && aFamilyName.length === 1) {
         // aFamilyName[0] has space
-        var splitIndex = aFamilyName[0].indexOf(" ");
-        aGivenName.push(aFamilyName[0].splice(0, splitIndex));
-        aFamilyName[0] = aFamilyName[0].splice(splitIndex, aFamilyName[0].length);
+        var nameToSplit = aFamilyName[0];
+        var splitIndex = nameToSplit.indexOf(" ");
+        aGivenName.push(nameToSplit.slice(0, splitIndex));
+        aFamilyName[0] = nameToSplit.slice(splitIndex, nameToSplit.length);
     } else if (aGivenName.length === 1 && aFamilyName.length === 0) {
-        var splitIndex2 = aGivenName[0].indexOf(" ");
-        console.log("givenName: " + JSON.stringify(aGivenName) + " splitIndex2: " + splitIndex2);
-
-        aGivenName[0] = aGivenName[0].splice(0, splitIndex2);
-        aFamilyName.push(aGivenName[0].splice(splitIndex2, aGivenName[0].length));
-    } else if (aGivenName.length == aFamilyName.length) {
+        // aGivenName[0] has space
+        var nameToSplit2 = aGivenName[0];
+        var splitIndex2 = nameToSplit2.indexOf(" ");
+        aGivenName[0] = nameToSplit2.slice(0, splitIndex2);
+        aFamilyName.push(nameToSplit2.slice(splitIndex2 + 1, nameToSplit2.length));
+    } else if (aGivenName.length == aFamilyName.length && aGivenName.length > 1) {
         // true if all members equal --> the last is the last name
-        aFamilyName.slice(0, aFamilyName.length);
-        aFamilyName.push(aGivenName[aGivenName.length - 1]);
+        aFamilyName = [ aGivenName[aGivenName.length - 1] ];
         aGivenName.splice(aGivenName.length - 1, 1);
+    } else if (aGivenName.length == 1 && aFamilyName.length == 1 && aGivenName[0] == aFamilyName[0]
+            && aGivenName[0].indexOf(' ') != -1) {
+        var nameToSplit3 = aGivenName[0];
+        var splitIndex3 = nameToSplit3.indexOf(" ");
+        aGivenName[0] = nameToSplit3.slice(0, splitIndex3);
+        aFamilyName = [ nameToSplit3.slice(splitIndex3 + 1, nameToSplit3.length) ];
     }
     contact.c.givenName = aGivenName;
     contact.c.familyName = aFamilyName;
 };
 cNameMixup.prototype.correctDefect = function(key, params) {
     var contact = this.getById(key);
-
-    this._fixNameMixup(contact, params);
-    this._change(contact);
-    contact.save(function() {
-        log("nameMixup successfully saved for id :" + key, ids.TEXTAREA_NAMEMIXUP);
-    }, function() {
-        log("error while saving nameMixup for id " + key, ids.TEXTAREA_NAMEMIXUP);
-    });
+    if (contact !== null) {
+        this._fixNameMixup(contact, params);
+        // remove from _defectlist
+        var fcListIndex = this._defects.indexOf(contact);
+        if (fcListIndex != -1) {
+            this._defects.splice(fcListIndex, 1);
+        }
+        this._change(contact);
+        contact.save(function() {
+            log("nameMixup successfully saved for id :" + key, ids.TEXTAREA_NAMEMIXUP);
+        }, function() {
+            log("error while saving nameMixup for id " + key, ids.TEXTAREA_NAMEMIXUP);
+        });
+    }
 };
 /**
  * append a preview of a contact that would be corrected to a given container.
- *
+ * 
  * @param containter
  *                the jquery element to append to
  * @param id

@@ -56,6 +56,10 @@
 					<span class="i18n" data-i18n="nav.pMissingPrefix"></span>
 					<span id="NUMMISSINGPREFIX">0</span>
 				</a> 
+				<a href="#" data-role="button" data-nav="nav.pNameMixup">
+					<span class="i18n" data-i18n="nav.pNameMixup"></span>
+					<span id="NUMNAMEMIXUP">0</span>
+				</a> 
 				<a href="#" data-role="button" data-nav="nav.pAbout">
 					<span class="i18n" data-i18n="nav.pAbout"></span>
 				</a> 
@@ -172,6 +176,32 @@
 				</div>
 			</div>
 			<div id="MISSINGPREFIXLIST" ></div>
+		</div>
+	</div>
+
+	<div data-role="page" id="pNameMixup" data-theme="b">
+		<div data-role="panel" data-position="right" data-display="push" 
+			id="NAMEMIXUPPANEL">
+			<div id="NAMEMIXUPCONTENT" ></div>
+			<div>
+				<a href="#" data-role="button" id="BUTTONNAMEMIXUPCORRECT" 
+					data-i18n="NameMixup.correct"></a>
+				<a href="#" data-role="button" id="BUTTONNAMEMIXUPCLOSE" 
+					data-i18n="NameMixup.close"></a>
+			</div>
+		</div>
+		<div data-role="header">
+			<h1 class="i18n" data-i18n="NameMixup.title"></h1>
+			<a href="#pHome" class="i18n" data-role="button" data-icon="back"
+				data-nav="nav.home" data-i18n="nav.home"></a>
+		</div>
+		<div data-role="content" data-theme="b">
+			<div class="i18n" data-i18n="MissingPrefix.log"></div>
+			<textarea id="TEXTAREA_NAMEMIXUP" cols="40" rows="3" 
+			name="textarea-namemixup" class="ui-disabled"></textarea>
+			<a class="i18n" data-role="button" data-icon="gear" 
+				data-i18n="NameMixup.correctall"></a>
+			<div id="NAMEMIXUPLIST" ></div>
 		</div>
 	</div>
 

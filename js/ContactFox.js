@@ -8,6 +8,7 @@ var pages = {
     CHANGECONTACT: "pChangeContact",
     FUNNYCHARS: "pFunnyCharacters",
     MISSINGPREFIX: "pMissingPrefix",
+    NAMEMIXUP: "pNameMixup",
     ABOUT: "pAbout",
     DEBUG: "pDebug",
     RESTOREBACKUP: "pRestoreBackup"
@@ -45,6 +46,15 @@ var ids = {
     FUNNYCHARSLIST: "FUNNYCHARSLIST",
     BUTTONFUNNYCHARS: "BUTTONFUNNYCHARS",
     BUTTONFUNNYCHARSCLOSED: "BUTTONFUNNYCHARSCLOSED",
+    
+    // NAMEMIXUP
+    TEXTAREA_NAMEMIXUP: "TEXTAREA_NAMEMIXUP",
+    NUMNAMEMIXUP: "NUMNAMEMIXUP",
+    NAMEMIXUPPANEL: "NAMEMIXUPPANEL",
+    NAMEMIXUPCONTENT: "NAMEMIXUPCONTENT",
+    NAMEMIXUPLIST: "NAMEMIXUPLIST",
+    BUTTONNAMEMIXUPCORRECT : "BUTTONNAMEMIXUPCORRECT",
+    BUTTONNAMEMIXUPCLOSE: "BUTTONNAMEMIXUPCLOSE",
     
     // RESTOREBACKUP
     TEXTAREA_RESTOREBACKUP:  "TEXTAREA_RESTOREBACKUP",
@@ -113,6 +123,7 @@ function initApp() {
     buttons[pages.HOME] = $('[data-nav="nav.home"]');
     buttons[pages.FUNNYCHARS] = $('[data-nav="nav.pFunnyCharacters"]');
     buttons[pages.MISSINGPREFIX] = $('[data-nav="nav.pMissingPrefix"]');
+    buttons[pages.NAMEMIXUP] = $('[data-nav="nav.pNameMixup"]');
     buttons[pages.ABOUT] = $('[data-nav="nav.pAbout"]');
     // byGarf
     buttons[pages.HELP] = $('[data-nav="nav.pHelp"]');
@@ -143,6 +154,9 @@ function initApp() {
         });
         $('[data-i18n = "funnycharacters.correctall"]').click(function(e) {
             correctAllFunnyChars();
+        });
+        $('[data-i18n = "NameMixup.correctall"]').click(function(e) {
+            correctAllNameMixup();
         });
     } catch (ex) {
         log(ex);
@@ -236,33 +250,32 @@ function initApp() {
  * done in this function
  */
 function updateButtons() {
-    // duplicates: update enabled and number of defects -----------------------
-    var bDuplicates = $('[data-nav="nav.pDuplicates"]');
-    if (contactList.hasDuplicates()) {
-        bDuplicates.removeClass('ui-disabled');
+var pages = [
+  { defect: 'DUPLICATES',
+    button: $('[data-nav="nav.pDuplicates"]'),
+    numdiv: $('#' + ids.NUMDUPLICATES) },
+  { defect: 'FUNNYCHARS',
+    button: $('[data-nav="nav.pFunnyCharacters"]'),
+    numdiv: $('#' + ids.NUMFUNNYCHARS) },
+  { defect: 'MISSINGPREFIX',
+    button: $('[data-nav="nav.pMissingPrefix"]'),
+    numdiv: $('#' + ids.NUMMISSINGPREFIX) },
+      { defect: 'NAMEMIXUP',
+    button: $('[data-nav="nav.pNameMixup"]'),
+    numdiv: $('#' + ids.NUMNAMEMIXUP) },
+    
+];
+    // for all defect pages: update enabled and number of defects -----------------------
+for (var i = 0; i < pages.length; i++) {
+    if (contactList.getDefectList(pages[i].defect).hasDefects()) {
+        pages[i].button.removeClass('ui-disabled');
     } else {
-        bDuplicates.addClass('ui-disabled');
+        pages[i].button.addClass('ui-disabled');
     }
-    var nd = contactList.numDuplicates();
-    $('#' + ids.NUMDUPLICATES).html(nd);
-    // funnyCharacters: update enabled and number of defects ------------------
-    var bFunnyCharacters = $('[data-nav="nav.pFunnyCharacters"]');
-    if (contactList.hasFunnyCharacters()) {
-        bFunnyCharacters.removeClass('ui-disabled');
-    } else {
-        bFunnyCharacters.addClass('ui-disabled');
-    }
-    var nfc = contactList.numFunnyCharacters();
-    $('#' + ids.NUMFUNNYCHARS).html(nfc);
-    // missingPrefix: update enabled and number of defects --------------------
-    var bMissingPrefix = $('[data-nav="nav.pMissingPrefix"]');
-    if (contactList.hasMissingPrefix()) {
-        bMissingPrefix.removeClass('ui-disabled');
-    } else {
-        bMissingPrefix.addClass('ui-disabled');
-    }
-    var nmp = contactList.numMissingPrefix();
-    $('#' + ids.NUMMISSINGPREFIX).html(nmp);
+    var nd = contactList.getDefectList(pages[i].defect).numDefects();
+    pages[i].numdiv.html(nd);
+
+}
     // -----------------------------------------------------------------------
     // if the list changed, also replace the html lists on the pages
     replaceAllListsInHTML();
@@ -330,6 +343,7 @@ function replaceAllListsInHTML() {
     replaceDuplicatesListHTML();
     replaceMissingPrefixListHTML();
     replaceFunnyCharListHTML();
+    replaceNameMixupListHTML();
 }
 
 /**
@@ -384,6 +398,29 @@ function replaceFunnyCharListHTML() {
     $(mls + ' ul li').click(function(event) {
         try {
            showContactSelected(event, 'FUNNYCHARS');
+        } catch (ex) {
+            log(ex);
+        }
+    });
+    $(mls + " ul").listview()
+        .listview('refresh');
+}
+
+/**
+ * create the HTML-Code for the list and replace it at the prepared ID in the
+ * DOM
+ */
+function replaceNameMixupListHTML() {
+    // funny chars
+    var mls = '#' + ids.NAMEMIXUPLIST;
+    $(mls).empty();
+    // let jquery mobile make this list filterable by setting data-filter to
+    // true
+    $(mls).append('<ul data-filter="true"></ul>');
+    contactList.getDefectList("NAMEMIXUP").addToUI($(mls + ' ul'));
+    $(mls + ' ul li').click(function(event) {
+        try {
+           showContactSelected(event, 'NAMEMIXUP');
         } catch (ex) {
             log(ex);
         }
@@ -514,6 +551,17 @@ function correctAllMissingPrefix() {
 function correctAllFunnyChars() {
     try {
         contactList.getDefectList("FUNNYCHARS").correctAll();
+    } catch (ex) { 
+        log(ex);
+    }
+}
+
+/**
+ * correct all contacts in the funny character list
+ */
+function correctAllNameMixup() {
+    try {
+        contactList.getDefectList("NAMEMIXUP").correctAll();
     } catch (ex) { 
         log(ex);
     }
@@ -806,6 +854,43 @@ $(document)
         }
     });
 
+/**
+ * Define the event handlers for the funny characters page and its panel. This
+ * has to be done only once on page create.
+ */
+$(document)
+.on(
+    'pagecreate',
+    '#' + pages.NAMEMIXUP,
+    function() {
+        try {
+            var panel = $('#' + ids.NAMEMIXUPPANEL);
+            // if the close button is pressed, the panel is closed and
+            // the list is shown again.
+            $('#' + ids.BUTTONNAMEMIXUPCLOSE).click(function(e) {
+                panel.panel("close");
+            });
+            $('#' + ids.BUTTONNAMEMIXUPCORRECT).click(function(e) {
+                try {
+                    // find the content object to extract the current id
+                    var content = $('#' + ids.NAMEMIXUPCONTENT);
+                    // get the saved current selected id from the content data
+                    // attribute
+                    var id = content.data("contactid");
+                    // get the contact for this id
+                   // var c = contactList.getById(id);
+                    // log("cContact.correctFunnyCharacter(id): " + id);
+                    panel.panel("close");
+                    // and finally perform the requested operation
+                    contactList.getDefectList("NAMEMIXUP").correctDefect(id);
+                } catch (ex) {
+                    log(ex);
+                }
+            });
+        } catch (e) {
+            log(e);
+        }
+    });
 
 /**
  * Open an URl from the app in the browser, like showing the online help

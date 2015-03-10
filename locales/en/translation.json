@@ -15,6 +15,7 @@
         "pDebug": "Debug",
         "pFunnyCharacters": "Funny Characters",
         "pMissingPrefix": "Missing +XX Prefix",
+        "pNameMixup": "Given- / Familyname",
         "pAbout": "about ContactFox...",
         "bExit": "Close"
     },
@@ -37,6 +38,14 @@
         "correctall": "Correct All",
         "log" : "Messages"
     },
+        "NameMixup": {
+        "title": "Given- and Familyname",
+        "close": "Close",
+        "correct": "Correct",
+        "correctall": "Correct All",
+        "log" : "Messages"
+    },
+
 
     "changecontact": {
         "title": "Change Contact"

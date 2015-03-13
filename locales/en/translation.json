@@ -43,7 +43,9 @@
         "close": "Close",
         "correct": "Correct",
         "correctall": "Correct All",
-        "log" : "Messages"
+        "log" : "Messages",
+        "switchfirstfamilyname" : "switch givenname and familyname"
+        
     },
 
 

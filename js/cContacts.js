@@ -517,7 +517,7 @@ cContact.prototype = {
                 // i is the key of the entry like addr or phone
                 var stringArray = t.contactMemberToString(i);
                 var otherStringArray = other.contactMemberToString(i);
-                var noIndex = stringArray.length == 1 && otherStringArray.length == 1;
+                var noIndex = stringArray.length <= 1 && otherStringArray.length <= 1;
                 $.each(stringArray, function(j, string) {
                     appendItem(div, i, string, otherStringArray[j], j, noIndex);
                 });

@@ -43,7 +43,8 @@
         "close": "Schließen",
         "correct": "Korrigieren",
         "correctall": "Alle Korrigieren",
-        "log" : "Meldungen"
+        "log" : "Meldungen",
+        "switchfirstfamilyname" : "Vor- und Nachname vertauschen"
     },
     "changecontact": {
         "title": "Kontakt Ändern"

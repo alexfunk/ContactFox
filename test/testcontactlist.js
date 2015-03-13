@@ -93,7 +93,7 @@ exports.cContacts = {
         $.each(fixtures, function(i, e) {
             c.push(new cContact(e));
         });
-        var defects = [ "DUPLICATES", "MISSINGPREFIX", "FUNNYCHARS" ];
+        var defects = [ "DUPLICATES", "MISSINGPREFIX", "FUNNYCHARS", "NAMEMIXUP" ];
         // test.expect(c.length * defects.length * 3);
         var counter = 0;
         $.each(defects, function(j, listName) {
@@ -111,6 +111,7 @@ exports.cContacts = {
                             $(document.body).append('<div id="' + domId + '"></div>');
                             var div = $('#' + domId);
                             defectList.appendPreviewToContainer(div, e.key(), "+49");
+
                             var hasChanges = (div.find('.contactcontentremoved').length + div
                                     .find('.contactcontentadded').length) > 0;
                             if (!hasChanges)
@@ -118,8 +119,6 @@ exports.cContacts = {
                             test.ok(hasChanges, "changes need to be larger then 0: " + idForMsg);
 
                             defectList.correctDefect(e.key(), "+49");
-                            // console.log("after " +
-                            // JSON.stringify(defectList));
                         } else {
                             test.equal(defectList.numDefects(), 0, "no defects so numDefects should be null: "
                                     + idForMsg);

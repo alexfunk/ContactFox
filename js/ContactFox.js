@@ -250,32 +250,33 @@ function initApp() {
  * done in this function
  */
 function updateButtons() {
-var pages = [
-  { defect: 'DUPLICATES',
-    button: $('[data-nav="nav.pDuplicates"]'),
-    numdiv: $('#' + ids.NUMDUPLICATES) },
-  { defect: 'FUNNYCHARS',
-    button: $('[data-nav="nav.pFunnyCharacters"]'),
-    numdiv: $('#' + ids.NUMFUNNYCHARS) },
-  { defect: 'MISSINGPREFIX',
-    button: $('[data-nav="nav.pMissingPrefix"]'),
-    numdiv: $('#' + ids.NUMMISSINGPREFIX) },
-      { defect: 'NAMEMIXUP',
-    button: $('[data-nav="nav.pNameMixup"]'),
-    numdiv: $('#' + ids.NUMNAMEMIXUP) },
+    var pages = [
+      { defect: 'DUPLICATES',
+        button: $('[data-nav="nav.pDuplicates"]'),
+        numdiv: $('#' + ids.NUMDUPLICATES) },
+      { defect: 'FUNNYCHARS',
+        button: $('[data-nav="nav.pFunnyCharacters"]'),
+        numdiv: $('#' + ids.NUMFUNNYCHARS) },
+      { defect: 'MISSINGPREFIX',
+        button: $('[data-nav="nav.pMissingPrefix"]'),
+        numdiv: $('#' + ids.NUMMISSINGPREFIX) },
+          { defect: 'NAMEMIXUP',
+        button: $('[data-nav="nav.pNameMixup"]'),
+        numdiv: $('#' + ids.NUMNAMEMIXUP) },
+        
+    ];
+        // for all defect pages: update enabled and number of defects
+        // -----------------------
+    for (var i = 0; i < pages.length; i++) {
+        if (contactList.getDefectList(pages[i].defect).hasDefects()) {
+            pages[i].button.removeClass('ui-disabled');
+        } else {
+            pages[i].button.addClass('ui-disabled');
+        }
+        var nd = contactList.getDefectList(pages[i].defect).numDefects();
+        pages[i].numdiv.html(nd);
     
-];
-    // for all defect pages: update enabled and number of defects -----------------------
-for (var i = 0; i < pages.length; i++) {
-    if (contactList.getDefectList(pages[i].defect).hasDefects()) {
-        pages[i].button.removeClass('ui-disabled');
-    } else {
-        pages[i].button.addClass('ui-disabled');
     }
-    var nd = contactList.getDefectList(pages[i].defect).numDefects();
-    pages[i].numdiv.html(nd);
-
-}
     // -----------------------------------------------------------------------
     // if the list changed, also replace the html lists on the pages
     replaceAllListsInHTML();
@@ -614,21 +615,13 @@ function showContactSelected(event, listname) {
         // save the current selected id in a content data attribute
         content.data("contactid", id);
         // show an html representation of the contact in the panel
-        // TODO: this should be the corrected version
         // log("listname.indexOf('BACKUP'): " + listname + " " +
         // listname.indexOf("BACKUP"));
         if (listname.indexOf("BACKUP") != -1) {
             c = cContact._backup.getBackupContactById(id);
             c.appendAsString(content);
         } else {
-            // TODO only if this is the prefix list
-            var params = $("#" + ids.INPUTPREFIX).val();
-            contactList.getDefectList(listname).appendPreviewToContainer(content, id, params);
-            $('.contactcontent').css('font-weight', 'bold');
-            $('.contactcontentadded').css('color', 'green');
-            $('.contactcontentremoved').css('color', 'red');
-            $('.contactcontentremoved').css('text-decoration', 'line-through');
-            $('.contactaction').css('font-style', 'italic');
+            updatePreview(content, listname, id);
         }
         panel.i18n();
         panel.trigger("updatelayout");
@@ -636,6 +629,25 @@ function showContactSelected(event, listname) {
     } catch (exception) {
         log(exception);
     }
+}
+
+function updatePreview(content, listname, id) {
+    var params;
+    if (listname == "MISSINGPREFIX")
+        params = $("#" + ids.INPUTPREFIX).val();
+    else if (listname == "NAMEMIXUP") {
+        var switchNames = $('.checkbox-namemixup').prop('checked');
+        params = { "switch" : switchNames};
+    }
+    else
+        params = null;
+    contactList.getDefectList(listname).appendPreviewToContainer(content, id, params);
+    $('.contactcontent').css('font-weight', 'bold');
+    $('.contactcontentadded').css('color', 'green');
+    $('.contactcontentremoved').css('color', 'red');
+    $('.contactcontentremoved').css('text-decoration', 'line-through');
+    $('.contactaction').css('font-style', 'italic');
+
 }
 
 /**
@@ -881,12 +893,29 @@ $(document)
                    // var c = contactList.getById(id);
                     // log("cContact.correctFunnyCharacter(id): " + id);
                     panel.panel("close");
+                    var switchNames = $('.checkbox-namemixup').prop('checked');
                     // and finally perform the requested operation
-                    contactList.getDefectList("NAMEMIXUP").correctDefect(id);
+                    contactList.getDefectList("NAMEMIXUP").correctDefect(id, { "switch" : switchNames});
                 } catch (ex) {
                     log(ex);
                 }
             });
+            var cb = $('.checkbox-namemixup');
+            cb.prop('checked', false).checkboxradio("refresh");
+            cb.bind('change', function(e) {
+                var wasChecked = $(this).prop('checked');
+                var contentname = ids.NAMEMIXUPCONTENT;
+                var content = $('#' + contentname);
+                var id = content.data('contactid');
+                content.empty();
+                // show an html representation of the contact in the panel
+                // log("listname.indexOf('BACKUP'): " + listname + " " +
+                // listname.indexOf("BACKUP"));
+                updatePreview(content, "NAMEMIXUP", id);
+                panel.i18n();
+                panel.trigger("updatelayout");
+            });
+
         } catch (e) {
             log(e);
         }

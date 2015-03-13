@@ -312,7 +312,7 @@ cFunnyCharacters.patternToCorrect = {
     Uuml : "\u00C3\u009C",
     sz : "\u00C3\u009F",
     quote : "\\\"",
-    comma : "\\,"
+    quotedcomma : "\\,"
 };
 // \u00F6\u00E4\u00FC\u00D6\u00C4\u00DC\u00DF
 cFunnyCharacters.patternCorrected = {
@@ -324,7 +324,7 @@ cFunnyCharacters.patternCorrected = {
     Uuml : "\u00DC",
     sz : "\u00DF",
     quote : "",
-    comma : ","
+    quotedcomma : ""
 };
 cFunnyCharacters.prototype._hasDefect = function(contact) {
     var checkStringForFunnyCharacters = function(stringToCheck) {
@@ -556,7 +556,7 @@ cNameMixup.prototype._hasDefect = function(contact) {
     }
     return result;
 };
-cNameMixup.prototype._fixNameMixup = function(contact, prefix) {
+cNameMixup.prototype._fixNameMixup = function(contact, params) {
     contact.c.id = contact.key();
     var aGivenName = $.isArray(contact.c.givenName) ? contact.c.givenName : [];
     var aFamilyName = $.isArray(contact.c.familyName) ? contact.c.familyName : [];
@@ -590,8 +590,13 @@ cNameMixup.prototype._fixNameMixup = function(contact, prefix) {
         aGivenName[0] = nameToSplit3.slice(0, splitIndex3);
         aFamilyName = [ nameToSplit3.slice(splitIndex3 + 1, nameToSplit3.length) ];
     }
-    contact.c.givenName = aGivenName;
-    contact.c.familyName = aFamilyName;
+    if (typeof params !== "undefined" && params["switch"]) {
+        contact.c.givenName = aFamilyName;
+        contact.c.familyName = aGivenName;
+    } else {
+        contact.c.givenName = aGivenName;
+        contact.c.familyName = aFamilyName;
+    }
 };
 cNameMixup.prototype.correctDefect = function(key, params) {
     var contact = this.getById(key);

@@ -24,6 +24,8 @@ if (typeof String.prototype.largeChunk != 'function') {
     };
 }
 
+
+
 /**
  * Returns an array of changes tah describes the changes between the current
  * string and the to string eg "abcdefgh".stringDiff("abcedfgh") =
@@ -115,7 +117,8 @@ cContact.prototype = {
      * @returns {cContact}
      */
     clone : function() {
-        return new cContact(JSON.parse(JSON.stringify(this.c)));
+        return $.extend(true, {}, this);
+        // return new cContact(JSON.parse(JSON.stringify(this.c)));
     },
     /**
      * find a unique key of this contact object that can be used as an id in the

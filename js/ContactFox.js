@@ -306,6 +306,7 @@ function loadContacts() {
                         // the cursor contains a result: Another contact was
                         // found, so we add it to the contactList
                         var contact = new cContact(cursor.result);
+                        
                         // The contactlist is a smart list which is aware of
                         // all defects at any time. So the contact is not only
                         // added but also tested for defects.
@@ -705,6 +706,7 @@ $(document)
                         log(ex);
                      }
                 });
+                
             } catch (ex) {
                 log(ex);
             }
@@ -876,6 +878,7 @@ $(document)
     '#' + pages.NAMEMIXUP,
     function() {
         try {
+            var img;
             var panel = $('#' + ids.NAMEMIXUPPANEL);
             // if the close button is pressed, the panel is closed and
             // the list is shown again.
@@ -890,7 +893,16 @@ $(document)
                     // attribute
                     var id = content.data("contactid");
                     // get the contact for this id
-                   // var c = contactList.getById(id);
+                    var c = contactList.getById(id);
+                    log(JSON.stringify(c));
+                    log("img: " + img);
+
+                    if (typeof c.c.photo === 'undefined' || c.c.photo === null) {
+                        log("photo undefined");
+                        c.c.photo = [];
+                        log(JSON.stringify(c));
+                    }
+                    c.c.photo.push(img);
                     // log("cContact.correctFunnyCharacter(id): " + id);
                     panel.panel("close");
                     var switchNames = $('.checkbox-namemixup').prop('checked');
@@ -908,13 +920,25 @@ $(document)
                 var content = $('#' + contentname);
                 var id = content.data('contactid');
                 content.empty();
-                // show an html representation of the contact in the panel
-                // log("listname.indexOf('BACKUP'): " + listname + " " +
-                // listname.indexOf("BACKUP"));
                 updatePreview(content, "NAMEMIXUP", id);
                 panel.i18n();
                 panel.trigger("updatelayout");
             });
+        var canvas = $('#smileyCanvas')[0];
+
+        if (canvas.getContext) {
+            var ctx = canvas.getContext('2d');
+            var imageObj = new Image();
+            imageObj.onload = function() {
+                ctx.drawImage(imageObj, 69, 50);
+                log("img on load: " + img );
+                canvas.toBlob(function(blob) {
+                    img = blob;
+                    
+                }, "image/png");
+            };
+            imageObj.src = 'images/SmileyNeutral.svg';
+        }
 
         } catch (e) {
             log(e);
